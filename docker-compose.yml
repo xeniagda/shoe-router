@@ -5,12 +5,30 @@ services:
     volumes:
       - ./nginx-routing/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx-routing/static:/var/www/static:ro
+
+      - ./ssl/certs:/etc/letsencrypt:ro
+      - ./ssl/conf:/var/www/certbot:ro
     ports:
       - "80:80"
+      - "443:443"
     restart: on-failure
     depends_on:
       - mulambdati
       - citrons_server
+      - egg
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./ssl/certs:/etc/letsencrypt
+      - ./ssl/conf:/var/www/certbot
+    depends_on:
+      - router
+
+  egg:
+    build: egg
+    volumes:
+      - ./ssl/certs:/etc/letsencrypt
 
   mulambdati:
     extends:
