@@ -1,3 +1,6 @@
 [submodule "mulambdati"]
 	path = mulambdati
 	url = https://github.com/loovjo/mulambdati.git
+[submodule "citrons-server"]
+	path = citrons-server
+	url = https://github.com/loovjo/citrons-server
