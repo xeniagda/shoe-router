@@ -16,3 +16,8 @@ services:
     extends:
       file: mulambdati/docker-compose.yml
       service: mulambdati
+
+  citrons_server:
+    extends:
+      file: citrons-server/docker-compose.yml
+      service: blattidus
