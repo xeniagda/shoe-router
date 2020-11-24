@@ -17,3 +17,8 @@ certbot certonly --webroot -w /var/www/certbot \
     --agree-tos \
     --force-renewal \
     -d 'coral.shoes'
+
+while : ; do
+    sleep 6h
+    certbot renew
+done

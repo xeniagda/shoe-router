@@ -3,6 +3,10 @@ set -e
 cd /
 ./docker-entrypoint.sh nginx -g 'daemon off;' &
 
-sleep 2 # wait for cert to generate
+sleep 20 # wait for cert to generate
 
-echo '/etc/letsencrypt/live/coral.shoes/privkey.pem' | entr nginx -s reload
+while : ; do
+    echo 'nginx reload'
+    nginx -s reload
+    sleep 1h
+done
