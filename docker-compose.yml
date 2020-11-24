@@ -4,11 +4,10 @@ services:
     image: nginx:latest
     volumes:
       - ./nginx-routing/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx-routing/templates:/var/www:ro
+      - ./nginx-routing/static:/var/www/static:ro
     ports:
       - "80:80"
-    # restart: on-failure
-
+    restart: on-failure
     depends_on:
       - mulambdati
       - citrons_server
