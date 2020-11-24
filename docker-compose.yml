@@ -17,18 +17,11 @@ services:
       - citrons_server
       - egg
 
-  certbot:
-    image: certbot/certbot
+  certbot_wrapper:
+    build: certbot_wrapper
     volumes:
       - ./ssl/certs:/etc/letsencrypt
       - ./ssl/conf:/var/www/certbot
-    depends_on:
-      - router
-
-  egg:
-    build: egg
-    volumes:
-      - ./ssl/certs:/etc/letsencrypt
 
   mulambdati:
     extends:
