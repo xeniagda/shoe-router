@@ -18,7 +18,7 @@ certbot certonly --webroot -w /var/www/certbot \
     --force-renewal \
     -d 'coral.shoes'
 
-if [ test -f /etc/letsencrypt/live/coral.shoes-0001/]
+if [ test -f /etc/letsencrypt/live/coral.shoes-0001/] ; then
     rm -rf $cpath
     mv /etc/letsencrypt/live/coral.shoes-0001/ $cpath
 fi
