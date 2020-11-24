@@ -1,0 +1,3 @@
+[submodule "mulambdati"]
+	path = mulambdati
+	url = https://github.com/loovjo/mulambdati.git
