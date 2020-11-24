@@ -11,6 +11,7 @@ services:
 
     depends_on:
       - mulambdati
+      - citrons_server
 
   mulambdati:
     extends:
