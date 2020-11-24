@@ -12,7 +12,7 @@ sleep 2
 
 # generate real cert
 certbot certonly --webroot -w /var/www/certbot \
-    --email 'jonathan.loov@gmail.com' \
+    --email 'qewretry122@gmail.com' \
     --rsa-key-size 4096 \
     --agree-tos \
     --force-renewal \
