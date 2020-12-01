@@ -3,6 +3,8 @@
 # Stolen from https://medium.com/@pentacent/nginx-and-lets-encrypt-with-docker-in-less-than-5-minutes-b4b8a60d3a71
 # Thanks!
 
+set -e
+
 if ! [ -x "$(command -v docker-compose)" ]; then
   echo 'Error: docker-compose is not installed.' >&2
   exit 1
@@ -42,7 +44,7 @@ echo
 
 
 echo "### Starting nginx ..."
-docker-compose up --force-recreate -d nginx
+docker-compose up --force-recreate -d router
 echo
 
 echo "### Deleting dummy certificate for $domains ..."
@@ -80,4 +82,4 @@ docker-compose run --rm --entrypoint "\
 echo
 
 echo "### Reloading nginx ..."
-docker-compose exec nginx nginx -s reload
+docker-compose exec router nginx -s reload
