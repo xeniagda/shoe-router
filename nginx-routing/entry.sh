@@ -1,10 +1,8 @@
 cd /
 ./docker-entrypoint.sh nginx -g 'daemon off;' &
 
-sleep 20 # wait for cert to generate
-
 while : ; do
+    sleep 1h
     echo 'nginx reload'
     nginx -s reload
-    sleep 1h
 done
