@@ -15,6 +15,7 @@ services:
     depends_on:
       - mulambdati
       - citrons_server
+      - ilo-pi-ante-toki
 
   certbot:
     image: certbot/certbot
