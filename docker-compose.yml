@@ -7,7 +7,7 @@ services:
       - ./nginx-routing/static:/var/www/static:ro
 
       - ./ssl/certs:/etc/letsencrypt:ro
-      - ./ssl/conf:/var/www/certbot:ro
+      - ./ssl/challenge-data:/var/www/certbot:ro
     ports:
       - "80:80"
       - "443:443"
@@ -20,7 +20,7 @@ services:
     image: certbot/certbot
     volumes:
       - ./ssl/certs:/etc/letsencrypt
-      - ./ssl/conf:/var/www/certbot
+      - ./ssl/challenge-data:/var/www/certbot
 
   mulambdati:
     extends:
