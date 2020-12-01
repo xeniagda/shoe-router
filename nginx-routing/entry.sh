@@ -1,7 +1,3 @@
-set -e
-
-sleep 10 # wait for fake cert to generate
-
 cd /
 ./docker-entrypoint.sh nginx -g 'daemon off;' &
 
