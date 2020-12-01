@@ -33,3 +33,8 @@ services:
       file: citrons-server/docker-compose.yml
       service: blattidus
 
+  ilo-pi-ante-toki:
+    extends:
+      file: ilo-pi-ante-toki/docker-compose.yml
+      service: ilo-pi-ante-toki
+
