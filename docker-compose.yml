@@ -15,10 +15,9 @@ services:
     depends_on:
       - mulambdati
       - citrons_server
-      - certbot_wrapper
 
-  certbot_wrapper:
-    build: certbot_wrapper
+  certbot:
+    image: certbot/certbot
     volumes:
       - ./ssl/certs:/etc/letsencrypt
       - ./ssl/conf:/var/www/certbot
