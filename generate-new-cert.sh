@@ -44,7 +44,7 @@ for domain in $domains ; do
     echo
 done
 
-if [ $1 = '--dummy-only' ] ; then
+if [ "$1" = '--dummy-only' ] ; then
     echo 'Done!'
     exit
 fi
