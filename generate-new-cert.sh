@@ -91,4 +91,4 @@ docker-compose run --rm --entrypoint "\
 echo
 
 echo "### Stopping nginx ..."
-docker-compose down nginx
+docker-compose down
