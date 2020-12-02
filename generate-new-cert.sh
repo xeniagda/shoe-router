@@ -44,6 +44,11 @@ for domain in $domains ; do
     echo
 done
 
+if [ $1 = '--dummy-only' ] ; then
+    echo 'Done!'
+    exit
+fi
+
 echo "### Starting nginx ..."
 docker-compose up --force-recreate -d router
 echo
