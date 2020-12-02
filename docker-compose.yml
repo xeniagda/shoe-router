@@ -16,6 +16,7 @@ services:
       - mulambdati
       - citrons_server
       - ilo-pi-ante-toki
+    init: true
 
   certbot:
     image: certbot/certbot
@@ -23,19 +24,23 @@ services:
     volumes:
       - ./ssl/certs:/etc/letsencrypt
       - ./ssl/challenge-data:/var/www/certbot
+    init: true
 
   mulambdati:
     extends:
       file: mulambdati/docker-compose.yml
       service: mulambdati
+    init: true
 
   citrons_server:
     extends:
       file: citrons-server/docker-compose.yml
       service: blattidus
+    init: true
 
   ilo-pi-ante-toki:
     extends:
       file: ilo-pi-ante-toki/docker-compose.yml
       service: ilo-pi-ante-toki
+    init: true
 
