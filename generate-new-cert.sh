@@ -62,7 +62,7 @@ done
 echo "### Requesting Let's Encrypt certificate for $domains ..."
 #Join $domains to -d args
 domain_args=""
-for domain in "${domains[@]}"; do
+for domain in $domains; do
   domain_args="$domain_args -d $domain"
 done
 
