@@ -5,6 +5,7 @@ services:
     volumes:
       - ./nginx-routing/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx-routing/static:/var/www/static:ro
+      - ./trash:/var/www/trash:ro
       - ./nginx-routing/logs:/var/log/nginx
 
       - ./ssl/certs:/etc/letsencrypt:ro
