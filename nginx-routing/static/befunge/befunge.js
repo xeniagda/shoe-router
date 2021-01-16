@@ -34,12 +34,20 @@ class Befunge {
         return [xmin, ymin, xmax+1, ymax+1];
     }
 
-    render_onto(elem) {
-        console.log("aaaa");
-        elem.innerHTML = "";
-        var field = document.createElement("table");
-        field.id = "playfield";
-
+    render_stack(stack) {
+        let scrollLeft = stack.scrollLeft; // preserve
+        stack.innerHTML = "";
+        stack.id = "stack";
+        for (var thing of this.stack.slice().reverse()) {
+            var thingItem = document.createElement("div");
+            thingItem.classList.add("stackitem");
+            thingItem.innerText = thing;
+            stack.appendChild(thingItem);
+        }
+        stack.scrollLeft= scrollLeft;
+    }
+    render_field(field) {
+        field.innerHTML = "";
         const [xmin, ymin, xmax, ymax] = this.get_bounds();
 
         var head_row = document.createElement("tr");
@@ -78,8 +86,6 @@ class Befunge {
             }
             field.appendChild(row);
         }
-
-        elem.appendChild(field);
     }
 }
 
@@ -103,4 +109,8 @@ b.set_tile(5, 1, ',');
 b.set_tile(6, 1, ',');
 b.set_tile(7, 1, '<');
 
-b.render_onto(document.getElementById("playfield"));
+for (var i = 0; i < 100; i++) {
+    b.stack.push(i);
+}
+b.render_field(document.getElementById("playfield"));
+b.render_stack(document.getElementById("stack"));
