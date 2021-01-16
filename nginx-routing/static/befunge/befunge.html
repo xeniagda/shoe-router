@@ -1,0 +1,82 @@
+<html>
+    <meta charset="UTF-8">
+    <head>
+        <link rel="stylesheet" href="/default.css">
+        <style>
+
+#playfield {
+    border: 1px solid black;
+    border-spacing: 0;
+}
+#playfield td {
+    width: 1em;
+    height: 1em;
+    text-align: center;
+}
+td:not(.line) :not(.row) {
+    border: 1px solid #bbbbbb;
+    border-width: 0.5px 0.5px 0.5px 0.5px;
+}
+.line, .row {
+    color: gray;
+}
+#editing {
+    //background: red;
+}
+#ip {
+    background: green;
+    border: 1px solid black;
+}
+
+.ip-active {
+    color: black;
+}
+
+.up {
+    border-radius: 0.5em 0.5em 0 0;
+}
+
+.down {
+    border-radius: 0 0 0.5em 0.5em;
+}
+
+.right {
+    border-radius: 0 0.5em 0.5em 0;
+}
+
+.left {
+    border-radius: 0.5em 0 0 0.5em;
+}
+        </style>
+    </head>
+    <body>
+        aaaaa
+
+        <div id="play">
+            <table id="playfield">
+                <tr>
+                    <td class="row">🍄</td>
+                    <td class="row">0</td>
+                    <td class="row">1</td>
+                    <td class="row ip-active">2</td>
+                    <td class="row">3</td>
+                </tr>
+                <tr>
+                    <td class="line ip-active">0</td>
+                    <td>"</td>
+                    <td>H</td>
+                    <td class="down" id="ip">e</td>
+                    <td>"</td>
+                </tr>
+                <tr>
+                    <td class="line">1</td>
+                    <td id="editing">a</td>
+                    <td>a</td>
+                    <td>a</td>
+                    <td>a</td>
+                </tr>
+            </table>
+        </div>
+    </body>
+    <script src="/befunge/befunge.js"></script>
+</html>
