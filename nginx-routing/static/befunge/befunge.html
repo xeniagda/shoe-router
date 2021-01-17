@@ -20,8 +20,8 @@ td:not(.line) :not(.row) {
 .line, .row {
     color: gray;
 }
-#editing {
-    //background: red;
+.cursor {
+    box-shadow: 0px 0px 2px blue;
 }
 #ip {
     background: green;
@@ -64,7 +64,7 @@ td:not(.line) :not(.row) {
         aaaaa
 
         <div id="play">
-            <button onclick="b.step(); render()"> go </button>
+            <button onclick="b.step(); b.redraw()"> go </button>
             Stack:
             <div id="stack"></div>
             Info:

@@ -1,4 +1,5 @@
 direction_names = ["up", "right", "down", "left"];
+direction_arrows = {"^": 0, ">": 1, "v": 2, "<": 3};
 direction_deltaxys = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 
 class Befunge {
@@ -13,26 +14,43 @@ class Befunge {
         this.is_running = true;
         this.stack = [];
         this.output = "";
+
+        this.cursor = null; // [x, y, dir] or null. current editing cell
     }
     set_tile(x, y, tile) {
-        this.grid[""+[x, y]] = tile;
+        if (tile == " ") {
+            delete this.grid[""+[x,y]];
+        } else {
+            this.grid[""+[x, y]] = tile;
+        }
     }
     get_tile(x, y) {
-        return this.grid[""+[x, y]];
+        let key = [""+[x, y]];
+        if (this.grid[key] === undefined) {
+            return " ";
+        } else {
+            return this.grid[""+[x, y]];
+        }
     }
     get_bounds() {
         var xmin = Infinity;
         var ymin = Infinity;
         var xmax = -Infinity;
         var ymax = -Infinity;
-        for (const sxy in this.grid) {
-            let xy = JSON.parse(`[${sxy}]`);
+        function reminmax(xy) {
+            if (xy == null) { return; }
             xmin = Math.min(xmin, xy[0]);
             ymin = Math.min(ymin, xy[1]);
             xmax = Math.max(xmax, xy[0]);
             ymax = Math.max(ymax, xy[1]);
         }
-        return [xmin, ymin, xmax+1, ymax+1];
+        for (const sxy in this.grid) {
+            let xy = JSON.parse(`[${sxy}]`);
+            reminmax(xy);
+        }
+        reminmax(this.ip);
+        reminmax(this.cursor);
+        return [xmin - 1, ymin - 1, xmax + 2, ymax + 2];
     }
 
     pop() {
@@ -141,6 +159,7 @@ class Befunge {
         this.ip[0] += deltaxy[0];
         this.ip[1] += deltaxy[1];
     }
+
     step() {
         this.run_command(this.get_tile(this.ip[0], this.ip[1]));
     }
@@ -202,14 +221,64 @@ class Befunge {
                     tile.id = "ip";
                     tile.classList.add(direction_names[this.direction]);
                 }
+                if (this.cursor !== null && (x == this.cursor[0] && y == this.cursor[1])) {
+                    tile.classList.add("cursor");
+                    tile.classList.add(direction_names[this.cursor[2]]);
+                }
+                let xy = [x, y];
+                let self = this;
+                tile.addEventListener("click", function(e) {
+                    self.cursor = [xy[0], xy[1], 1];
+                    self.redraw();
+                });
                 row.appendChild(tile);
             }
             field.appendChild(row);
         }
+        field.focus();
+    }
+    redraw() {
+        this.render_field(document.getElementById("playfield"));
+        this.render_stack(document.getElementById("stack"));
+        this.render_info(document.getElementById("info"));
+    }
+    keydownhandler(e) {
+        console.log(e);
+        if (this.cursor === null) {
+            return;
+        }
+        if (e.keyCode == 8) { // backspace
+            e.preventDefault();
+        }
+        if (37 <= e.keyCode && e.keyCode < 41) { // arrow keys
+            e.preventDefault();
+            this.cursor[2] = (e.keyCode - 34) % 4;
+            let deltaxy = direction_deltaxys[this.cursor[2]];
+            if (!e.shiftKey) {
+                this.cursor[0] += deltaxy[0];
+                this.cursor[1] += deltaxy[1];
+            }
+            this.redraw();
+        }
+    }
+    keypresshandler(e) {
+        if (this.cursor === null) {
+            return;
+        }
+        this.set_tile(this.cursor[0], this.cursor[1], e.key);
+        if (direction_arrows[e.key] !== undefined) {
+            this.cursor[2] = direction_arrows[e.key];
+        }
+        let deltaxy = direction_deltaxys[this.cursor[2]];
+        this.cursor[0] += deltaxy[0];
+        this.cursor[1] += deltaxy[1];
+        this.redraw();
     }
 }
 
 b = new Befunge();
+document.body.onkeydown = e => b.keydownhandler(e);
+document.body.onkeypress = e => b.keypresshandler(e);
 
 b.set_tile(0, 0, 'v');
 b.set_tile(1, 0, '>');
@@ -238,9 +307,5 @@ b.set_tile(5, 2, ' ');
 b.set_tile(6, 2, ' ');
 b.set_tile(7, 2, ' ');
 
-function render() {
-    b.render_field(document.getElementById("playfield"));
-    b.render_stack(document.getElementById("stack"));
-    b.render_info(document.getElementById("info"));
-}
-render();
+b.redraw();
+
