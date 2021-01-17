@@ -241,6 +241,8 @@ class Befunge {
         this.render_field(document.getElementById("playfield"));
         this.render_stack(document.getElementById("stack"));
         this.render_info(document.getElementById("info"));
+
+        window.localStorage.setItem("saved_grid", JSON.stringify(this.grid));
     }
     keydownhandler(e) {
         console.log(e);
@@ -277,35 +279,13 @@ class Befunge {
 }
 
 b = new Befunge();
+if (window.localStorage.getItem("saved_grid") !== null) {
+    b.grid = JSON.parse(window.localStorage.getItem("saved_grid"));
+}
+
 document.body.onkeydown = e => b.keydownhandler(e);
 document.body.onkeypress = e => b.keypresshandler(e);
-
-b.set_tile(0, 0, 'v');
-b.set_tile(1, 0, '>');
-b.set_tile(2, 0, '1');
-b.set_tile(3, 0, 'v');
-b.set_tile(4, 0, ' ');
-b.set_tile(5, 0, ' ');
-b.set_tile(6, 0, ' ');
-b.set_tile(7, 0, ' ');
-
-b.set_tile(0, 1, '>');
-b.set_tile(1, 1, '?');
-b.set_tile(2, 1, '<');
-b.set_tile(3, 1, '>');
-b.set_tile(4, 1, ':');
-b.set_tile(5, 1, '|');
-b.set_tile(6, 1, ' ');
-b.set_tile(7, 1, ' ');
-
-b.set_tile(0, 2, ' ');
-b.set_tile(1, 2, '>');
-b.set_tile(2, 2, '0');
-b.set_tile(3, 2, '^');
-b.set_tile(4, 2, ' ');
-b.set_tile(5, 2, ' ');
-b.set_tile(6, 2, ' ');
-b.set_tile(7, 2, ' ');
+document.body.onclick = e => { b.cursor = null; b.redraw(); };
 
 b.redraw();
 
