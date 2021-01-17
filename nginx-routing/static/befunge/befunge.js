@@ -248,6 +248,18 @@ class Befunge {
 
         window.localStorage.setItem("saved_grid", JSON.stringify(this.grid));
     }
+    render_to_text() {
+        var out = "";
+        const [xmin, ymin, xmax, ymax] = this.get_bounds();
+        for (var y = 0; y < ymax; y++) {
+            for (var x = 0; x < xmax; x++) {
+                let ch = this.get_tile(x, y);
+                out += ch;
+            }
+            out += "\n";
+        }
+        return out;
+    }
     keydownhandler(e) {
         if (this.cursor === null) {
             return;
@@ -297,3 +309,27 @@ document.body.onclick = e => { b.cursor = null; b.redraw(); };
 
 b.redraw();
 
+function pop_the_up() {
+    var popup = document.getElementById("popup");
+    popup.style = "";
+    var code = document.getElementById("code-raw");
+    code.value = b.render_to_text();
+}
+function unpop_the_up() {
+    var popup = document.getElementById("popup");
+    popup.style = "display: none;";
+    var code = document.getElementById("code-raw");
+    b.grid = {};
+    var x = 0;
+    var y = 0;
+    for (ch of code.value) {
+        if (ch == "\n") {
+            x = 0;
+            y++;
+        } else {
+            b.set_tile(x, y, ch);
+            x++;
+        }
+    }
+    b.redraw();
+}
