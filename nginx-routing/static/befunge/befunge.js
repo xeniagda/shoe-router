@@ -101,7 +101,7 @@ class Befunge {
                 case ">":
                 case "^":
                 case "v":
-                    this.direction = "^>v<".indexOf(ch);
+                    this.direction = direction_arrows[ch];
                     break;
                 case "?": this.direction = 0 | 4 * Math.random(); break;
                 case "_":
@@ -217,19 +217,23 @@ class Befunge {
                 let ch = this.get_tile(x, y);
                 var tile = document.createElement("td");
                 tile.innerText = ch;
-                if (x == this.ip[0] && y == this.ip[1]) {
-                    tile.id = "ip";
-                    tile.classList.add(direction_names[this.direction]);
-                }
+                var cursored = false;
                 if (this.cursor !== null && (x == this.cursor[0] && y == this.cursor[1])) {
                     tile.classList.add("cursor");
                     tile.classList.add(direction_names[this.cursor[2]]);
+                    cursored = true;
+                }
+                if (x == this.ip[0] && y == this.ip[1] && !cursored) {
+                    tile.id = "ip";
+                    tile.classList.add(direction_names[this.direction]);
                 }
                 let xy = [x, y];
                 let self = this;
                 tile.addEventListener("click", function(e) {
+                    console.log(self);
                     self.cursor = [xy[0], xy[1], 1];
                     self.redraw();
+                    e.stopPropagation();
                 });
                 row.appendChild(tile);
             }
@@ -245,12 +249,16 @@ class Befunge {
         window.localStorage.setItem("saved_grid", JSON.stringify(this.grid));
     }
     keydownhandler(e) {
-        console.log(e);
         if (this.cursor === null) {
             return;
         }
         if (e.keyCode == 8) { // backspace
             e.preventDefault();
+            let deltaxy = direction_deltaxys[this.cursor[2]];
+            this.cursor[0] -= deltaxy[0];
+            this.cursor[1] -= deltaxy[1];
+            this.set_tile(this.cursor[0], this.cursor[1], " ");
+            this.redraw();
         }
         if (37 <= e.keyCode && e.keyCode < 41) { // arrow keys
             e.preventDefault();
