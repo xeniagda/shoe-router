@@ -110,15 +110,15 @@ class Execution extends Befunge {
         this.output = "";
         this.input_buffer = "aaa";
         this.needs_input = false;
-        // [interval id for draw loop, interval id for step loop] or null
-        this.draw_step_intervals = null;
+        // interval for the step-draw loop or null
+        this.draw_step_interval = null;
         this.interval_slider = 0;
 
         this.n_instructions = 0;
         this.interval_start = 0;
     }
     get_interval_delay() {
-        return Math.exp(1 - this.interval_slider / 10);
+        return Math.exp(1 - this.interval_slider / 8);
     }
     pop() {
         if (this.stack.length == 0) {
@@ -271,18 +271,33 @@ class Execution extends Befunge {
     start_interval() {
         let self = this;
         let speed = 1000 * this.get_interval_delay();
-        let step_loop = setInterval(_ => self.step(), speed);
-        let draw_loop = setInterval(_ => self.redraw(), speed < 50 ? 50 : speed);
-        this.draw_step_intervals = [step_loop, draw_loop];
+
+        if (speed < 50) {
+            let times_per_iter = 0 | 50 / speed;
+
+            let time = times_per_iter * speed;
+
+            this.draw_step_interval = setInterval(_ => {
+                for (var i = 0; i < times_per_iter; i++) {
+                    self.step()
+                }
+                self.redraw();
+            }, time);
+        } else {
+            this.draw_step_interval = setInterval(_ => {
+                self.step()
+                self.redraw();
+            }, speed);
+        }
+
         let now = new Date().getTime() / 1000;
         this.interval_start = now;
         this.n_instructions = 0;
     }
     interrupt() {
-        if (this.draw_step_intervals !== null) {
-            clearInterval(this.draw_step_intervals[0]);
-            clearInterval(this.draw_step_intervals[1]);
-            this.draw_step_intervals = null;
+        if (this.draw_step_interval !== null) {
+            clearInterval(this.draw_step_interval);
+            this.draw_step_interval = null;
         }
         this.redraw();
     }
@@ -345,7 +360,7 @@ class Execution extends Befunge {
         info.appendChild(document.createElement("br"));
 
 
-        if (this.draw_step_intervals === null) {
+        if (this.draw_step_interval === null) {
             var speed_label = document.createElement("label");
             speed_label.htmlFor = "speed";
             speed_label.innerText = "Auto speed:";
@@ -355,7 +370,8 @@ class Execution extends Befunge {
             speed_slider.id = "speed";
             speed_slider.type = "range";
             speed_slider.min = 0;
-            speed_slider.min = 1;
+            speed_slider.style = "width: 400px";
+            speed_slider.max = 100;
             speed_slider.value = this.interval_slider;
             speed_slider.onchange = e => {
                 let val = e.target.value;
