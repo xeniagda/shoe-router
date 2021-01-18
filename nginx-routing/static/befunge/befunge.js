@@ -201,8 +201,15 @@ class Execution extends Befunge {
                     this.ip[1] += deltaxy[1];
                     break;
                 case "g":
+                    var y = this.pop();
+                    var x = this.pop();
+                    this.push(this.get_tile(x, y).charCodeAt(0));
+                    break;
                 case "p":
-                    // TODO
+                    var y = this.pop();
+                    var x = this.pop();
+                    var v = this.pop();
+                    this.set_tile(x, y, String.fromCharCode(v));
                     break;
 
                 case "@": this.is_running = false; return;
