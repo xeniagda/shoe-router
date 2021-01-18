@@ -8,7 +8,6 @@ class Befunge {
         // I want to do ^ like {[x, y]: ch}, but objects don't support anything other than strings
         // as keys. Using a Map won't work either, as arrays are compared by reference, not by
         // content.
-        this.needs_input = false;
     }
     set_tile(x, y, tile) {
         if (tile == " ") {
@@ -110,6 +109,16 @@ class Execution extends Befunge {
         this.stack = [];
         this.output = "";
         this.input_buffer = "aaa";
+        this.needs_input = false;
+        // [interval id for draw loop, interval id for step loop] or null
+        this.draw_step_intervals = null;
+        this.interval_slider = 0;
+
+        this.n_instructions = 0;
+        this.interval_start = 0;
+    }
+    get_interval_delay() {
+        return Math.exp(1 - this.interval_slider / 10);
     }
     pop() {
         if (this.stack.length == 0) {
@@ -248,7 +257,7 @@ class Execution extends Befunge {
                     }
                     break;
 
-                case "@": this.is_running = false; return;
+                case "@": this.is_running = false; this.interrupt(); return;
             }
         }
         let deltaxy = direction_deltaxys[this.direction];
@@ -259,7 +268,22 @@ class Execution extends Befunge {
         this.ip[0] = (this.ip[0] - xmin) %  (xmax - xmin) + xmin;
         this.ip[1] = (this.ip[1] - ymin) %  (ymax - ymin) + ymin;
     }
+    start_interval() {
+        let self = this;
+        let speed = 1000 * this.get_interval_delay();
+        let step_loop = setInterval(_ => self.step(), speed);
+        let draw_loop = setInterval(_ => self.redraw(), speed < 50 ? 50 : speed);
+        this.draw_step_intervals = [step_loop, draw_loop];
+        let now = new Date().getTime() / 1000;
+        this.interval_start = now;
+        this.n_instructions = 0;
+    }
     interrupt() {
+        if (this.draw_step_intervals !== null) {
+            clearInterval(this.draw_step_intervals[0]);
+            clearInterval(this.draw_step_intervals[1]);
+            this.draw_step_intervals = null;
+        }
         this.redraw();
     }
     get_icon() {
@@ -267,6 +291,7 @@ class Execution extends Befunge {
     }
 
     step() {
+        this.n_instructions++;
         this.run_command(this.get_tile(this.ip[0], this.ip[1]));
     }
 
@@ -316,6 +341,48 @@ class Execution extends Befunge {
         step_button.innerText = "step!";
         step_button.onclick = e => { self.step(); self.redraw() };
         info.appendChild(step_button);
+
+        info.appendChild(document.createElement("br"));
+
+
+        if (this.draw_step_intervals === null) {
+            var speed_label = document.createElement("label");
+            speed_label.htmlFor = "speed";
+            speed_label.innerText = "Auto speed:";
+            info.appendChild(speed_label);
+
+            var speed_slider = document.createElement("input");
+            speed_slider.id = "speed";
+            speed_slider.type = "range";
+            speed_slider.min = 0;
+            speed_slider.min = 1;
+            speed_slider.value = this.interval_slider;
+            speed_slider.onchange = e => {
+                let val = e.target.value;
+                self.interval_slider = val;
+                self.redraw();
+            };
+            info.appendChild(speed_slider);
+
+            var speed = document.createElement("p");
+            speed.innerText = (1 / this.get_interval_delay()) + "Hz";
+            info.appendChild(speed);
+
+            var start_button = document.createElement("button");
+            start_button.innerText = "start auto!";
+            start_button.onclick = e => { self.start_interval(); self.redraw() };
+            info.appendChild(start_button);
+        } else {
+            var end_button = document.createElement("button");
+            end_button.innerText = "end auto!";
+            end_button.onmousedown = e => { self.interrupt(); self.redraw() };
+            info.appendChild(end_button);
+
+            var speed = document.createElement("p");
+            let now = new Date().getTime() / 1000;
+            speed.innerText = (this.n_instructions / (now - self.interval_start)) + "Hz";
+            info.appendChild(speed);
+        }
 
         var exit_button = document.createElement("button");
         exit_button.innerText = "exit!";
