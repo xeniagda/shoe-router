@@ -8,6 +8,7 @@ class Befunge {
         // I want to do ^ like {[x, y]: ch}, but objects don't support anything other than strings
         // as keys. Using a Map won't work either, as arrays are compared by reference, not by
         // content.
+        this.needs_input = false;
     }
     set_tile(x, y, tile) {
         if (tile == " ") {
@@ -106,6 +107,7 @@ class Execution extends Befunge {
         this.is_running = true;
         this.stack = [];
         this.output = "";
+        this.input_buffer = "aaa";
     }
     pop() {
         if (this.stack.length == 0) {
@@ -242,10 +244,28 @@ class Execution extends Befunge {
     }
 
     render_info(info) {
+        let self = this;
         info.innerHTML = "";
         var output = document.createElement("p");
-        output.innerText = "Output: " + this.output;
+        output.innerText = "Output: \"" + this.output + "\"";
         info.appendChild(output);
+
+        var input_label = document.createElement("label");
+        input_label.htmlFor = "input-buffer";
+        input_label.innerText = "Input:";
+        info.appendChild(input_label);
+
+        var input = document.createElement("input");
+        input.value = this.input_buffer;
+        input.id = "input-buffer";
+        input.onchange = e => {
+            self.input_buffer = e.target.value;
+            // No redraw needed
+        };
+        if (this.needs_input) {
+            input.classList.add("needed");
+        }
+        info.appendChild(input);
 
         var other_stuff = document.createElement("p");
         other_stuff.innerText = "Running? " + (this.is_running ? "yes" : "no");
@@ -253,7 +273,6 @@ class Execution extends Befunge {
 
         var step_button = document.createElement("button");
         step_button.innerText = "step!";
-        let self = this;
         step_button.onclick = e => { self.step(); self.redraw() };
         info.appendChild(step_button);
 
