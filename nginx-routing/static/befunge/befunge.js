@@ -274,6 +274,12 @@ class Execution extends Befunge {
         this.abs_render_field(field, style_tile, this.ip);
 
     }
+    keypresshandler(e) {
+        if (e.key === " ") {
+            this.step();
+            this.redraw();
+        }
+    }
 }
 
 class Editor extends Befunge {
