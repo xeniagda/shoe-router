@@ -276,6 +276,7 @@ class Execution extends Befunge {
     }
     keypresshandler(e) {
         if (e.key === " ") {
+            e.preventDefault();
             this.step();
             this.redraw();
         }
