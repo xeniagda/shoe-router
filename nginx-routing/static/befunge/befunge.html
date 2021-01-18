@@ -53,6 +53,11 @@ td:not(.line) :not(.row) {
     flex-direction: row;
     border: 1px solid #cccccc;
     overflow-x: scroll;
+    height: 4em;
+}
+
+#stack.inactivated {
+    height: 0px;
 }
 
 .stackitem {
@@ -77,13 +82,13 @@ td:not(.line) :not(.row) {
     resize: vertical;
     max-height: 100%;
 }
+
         </style>
     </head>
     <body>
         aaaaa
 
         <div id="play">
-            <button onclick="b.step(); b.redraw()"> go </button>
             Stack:
             <div id="stack"></div>
             Info:

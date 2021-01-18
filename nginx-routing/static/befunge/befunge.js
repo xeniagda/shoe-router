@@ -4,18 +4,10 @@ direction_deltaxys = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 
 class Befunge {
     constructor() {
-        this.ip = [0, 0]; // [x, y]
-        this.direction = 1;
         this.grid = {}; // {"x,y": ch}.
         // I want to do ^ like {[x, y]: ch}, but objects don't support anything other than strings
         // as keys. Using a Map won't work either, as arrays are compared by reference, not by
         // content.
-        this.in_string = false;
-        this.is_running = true;
-        this.stack = [];
-        this.output = "";
-
-        this.cursor = null; // [x, y, dir] or null. current editing cell
     }
     set_tile(x, y, tile) {
         if (tile == " ") {
@@ -50,9 +42,71 @@ class Befunge {
         }
         reminmax(this.ip);
         reminmax(this.cursor);
+        reminmax([0, 0]);
         return [xmin - 1, ymin - 1, xmax + 2, ymax + 2];
     }
+    get_icon() {
+        return "?"; // override this!
+    }
+    abs_render_field(field, style_tile, active_xy) {
+        field.innerHTML = "";
+        const [xmin, ymin, xmax, ymax] = this.get_bounds();
 
+        var head_row = document.createElement("tr");
+        var topleft = document.createElement("td");
+        topleft.innerText = this.get_icon();
+        head_row.appendChild(topleft);
+        for (var x = xmin; x < xmax; x++) {
+            var idx = document.createElement("td");
+            idx.classList.add("row");
+            if (active_xy !== null && x == active_xy[0]) {
+                idx.classList.add("ip-active");
+            }
+            idx.innerText = x + "";
+            head_row.appendChild(idx);
+        }
+        field.appendChild(head_row);
+        for (var y = ymin; y < ymax; y++) {
+            var row = document.createElement("tr");
+            var idx = document.createElement("td");
+            idx.classList.add("line");
+            if (active_xy !== null && y == active_xy[1]) {
+                idx.classList.add("ip-active");
+            }
+            idx.innerText = y + "";
+            row.appendChild(idx);
+
+            for (var x = xmin; x < xmax; x++) {
+                let ch = this.get_tile(x, y);
+                var tile = document.createElement("td");
+                tile.innerText = ch;
+                style_tile(tile, x, y);
+                row.appendChild(tile);
+            }
+            field.appendChild(row);
+        }
+        field.focus();
+    }
+    redraw() {
+        this.render_field(document.getElementById("playfield"));
+        this.render_stack(document.getElementById("stack"));
+        this.render_info(document.getElementById("info"));
+    }
+    keydownhandler(e) {}
+    keypresshandler(e) {}
+    unclickhandler(e) {}
+}
+
+class Execution extends Befunge {
+    constructor() {
+        super();
+        this.ip = [0, 0]; // [x, y]
+        this.direction = 1;
+        this.in_string = false;
+        this.is_running = true;
+        this.stack = [];
+        this.output = "";
+    }
     pop() {
         if (this.stack.length == 0) {
             return 0;
@@ -63,7 +117,6 @@ class Befunge {
     push(x) {
         this.stack.push(x);
     }
-
     run_command(ch) {
         if (!this.is_running) { return; }
         if (this.in_string) {
@@ -159,6 +212,9 @@ class Befunge {
         this.ip[0] += deltaxy[0];
         this.ip[1] += deltaxy[1];
     }
+    get_icon() {
+        return "🍄";
+    }
 
     step() {
         this.run_command(this.get_tile(this.ip[0], this.ip[1]));
@@ -168,6 +224,7 @@ class Befunge {
         let scrollLeft = stack.scrollLeft; // preserve
         stack.innerHTML = "";
         stack.id = "stack";
+        stack.classList.remove("inactivated");
         for (var thing of this.stack.slice().reverse()) {
             var thingItem = document.createElement("div");
             thingItem.classList.add("stackitem");
@@ -176,78 +233,95 @@ class Befunge {
         }
         stack.scrollLeft = scrollLeft;
     }
+
     render_info(info) {
         info.innerHTML = "";
         var output = document.createElement("p");
         output.innerText = "Output: " + this.output;
         info.appendChild(output);
+
         var other_stuff = document.createElement("p");
         other_stuff.innerText = "Running? " + (this.is_running ? "yes" : "no");
         info.appendChild(other_stuff);
+
+        var step_button = document.createElement("button");
+        step_button.innerText = "step!";
+        let self = this;
+        step_button.onclick = e => { self.step(); self.redraw() };
+        info.appendChild(step_button);
+
+        var exit_button = document.createElement("button");
+        exit_button.innerText = "exit!";
+        exit_button.onclick = e => { exec = null; funge().redraw(); };
+        info.appendChild(exit_button);
     }
+
     render_field(field) {
-        field.innerHTML = "";
-        const [xmin, ymin, xmax, ymax] = this.get_bounds();
-
-        var head_row = document.createElement("tr");
-        var topleft = document.createElement("td");
-        topleft.innerText = "🍄";
-        head_row.appendChild(topleft);
-        for (var x = xmin; x < xmax; x++) {
-            var idx = document.createElement("td");
-            idx.classList.add("row");
-            if (x == this.ip[0]) {
-                idx.classList.add("ip-active");
+        let self = this;
+        function style_tile(tile, x, y) {
+            if (x == self.ip[0] && y == self.ip[1]) {
+                tile.id = "ip";
+                tile.classList.add(direction_names[self.direction]);
             }
-            idx.innerText = x + "";
-            head_row.appendChild(idx);
         }
-        field.appendChild(head_row);
-        for (var y = ymin; y < ymax; y++) {
-            var row = document.createElement("tr");
-            var idx = document.createElement("td");
-            idx.classList.add("line");
-            if (y == this.ip[1]) {
-                idx.classList.add("ip-active");
-            }
-            idx.innerText = y + "";
-            row.appendChild(idx);
+        this.abs_render_field(field, style_tile, this.ip);
 
-            for (var x = xmin; x < xmax; x++) {
-                let ch = this.get_tile(x, y);
-                var tile = document.createElement("td");
-                tile.innerText = ch;
-                var cursored = false;
-                if (this.cursor !== null && (x == this.cursor[0] && y == this.cursor[1])) {
-                    tile.classList.add("cursor");
-                    tile.classList.add(direction_names[this.cursor[2]]);
-                    cursored = true;
-                }
-                if (x == this.ip[0] && y == this.ip[1] && !cursored) {
-                    tile.id = "ip";
-                    tile.classList.add(direction_names[this.direction]);
-                }
-                let xy = [x, y];
-                let self = this;
-                tile.addEventListener("click", function(e) {
-                    console.log(self);
-                    self.cursor = [xy[0], xy[1], 1];
-                    self.redraw();
-                    e.stopPropagation();
-                });
-                row.appendChild(tile);
-            }
-            field.appendChild(row);
-        }
-        field.focus();
     }
-    redraw() {
-        this.render_field(document.getElementById("playfield"));
-        this.render_stack(document.getElementById("stack"));
-        this.render_info(document.getElementById("info"));
+}
 
+class Editor extends Befunge {
+    constructor() {
+        super();
+        this.cursor = null; // [x, y, dir] or null. current editing cell
+    }
+
+    get_icon() {
+        return "🐝";
+    }
+
+    render_field(field) {
+        let self = this;
+        function style_tile(tile, x, y) {
+            var cursored = false;
+            if (self.cursor !== null && (x == self.cursor[0] && y == self.cursor[1])) {
+                tile.classList.add("cursor");
+                tile.classList.add(direction_names[self.cursor[2]]);
+                cursored = true;
+            }
+            // if (x == self.ip[0] && y == self.ip[1] && !cursored) {
+            //     tile.id = "ip";
+            //     tile.classList.add(direction_names[self.direction]);
+            // }
+            let xy = [x, y];
+
+            tile.addEventListener("click", function(e) {
+                self.cursor = [xy[0], xy[1], 1];
+                self.redraw();
+                e.stopPropagation();
+            });
+        }
+        this.abs_render_field(field, style_tile, this.cursor);
+    }
+
+    render_info(info) {
+        info.innerHTML = "";
+
+        var run_button = document.createElement("button");
+        run_button.innerText = "run!";
+        run_button.onclick = e => { exec = editor.to_exec(); funge().redraw(); };
+        info.appendChild(run_button);
+    }
+
+    render_stack(stack) {
+        stack.innerHTML = "";
+        stack.classList.add("inactivated");
+    }
+
+    redraw() {
+        super.redraw();
         window.localStorage.setItem("saved_grid", JSON.stringify(this.grid));
     }
+
     render_to_text() {
         var out = "";
         const [xmin, ymin, xmax, ymax] = this.get_bounds();
@@ -296,30 +370,49 @@ class Befunge {
         this.cursor[1] += deltaxy[1];
         this.redraw();
     }
+    unclickhandler(e) {
+        this.cursor = null;
+        this.redraw();
+    }
+    to_exec() {
+        var exec = new Execution();
+        Object.assign(exec.grid, this.grid);
+        return exec;
+    }
 }
 
-b = new Befunge();
+editor = new Editor();
+exec = null; // When not null, it is rendered and editor is not shown
+
+function funge() {
+    if (exec === null) {
+        return editor;
+    } else {
+        return exec;
+    }
+}
+
 if (window.localStorage.getItem("saved_grid") !== null) {
-    b.grid = JSON.parse(window.localStorage.getItem("saved_grid"));
+    editor.grid = JSON.parse(window.localStorage.getItem("saved_grid"));
 }
 
-document.body.onkeydown = e => b.keydownhandler(e);
-document.body.onkeypress = e => b.keypresshandler(e);
-document.body.onclick = e => { b.cursor = null; b.redraw(); };
+document.body.onkeydown = e => funge().keydownhandler(e);
+document.body.onkeypress = e => funge().keypresshandler(e);
+document.body.onclick = e => { funge().unclickhandler(e); };
 
-b.redraw();
+funge().redraw();
 
 function pop_the_up() {
     var popup = document.getElementById("popup");
     popup.style = "";
     var code = document.getElementById("code-raw");
-    code.value = b.render_to_text();
+    code.value = editor.render_to_text();
 }
 function unpop_the_up() {
     var popup = document.getElementById("popup");
     popup.style = "display: none;";
     var code = document.getElementById("code-raw");
-    b.grid = {};
+    editor.grid = {};
     var x = 0;
     var y = 0;
     for (ch of code.value) {
@@ -327,9 +420,9 @@ function unpop_the_up() {
             x = 0;
             y++;
         } else {
-            b.set_tile(x, y, ch);
+            editor.set_tile(x, y, ch);
             x++;
         }
     }
-    b.redraw();
+    editor.redraw();
 }
