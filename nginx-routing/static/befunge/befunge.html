@@ -7,6 +7,8 @@
 #playfield {
     border: 1px solid black;
     border-spacing: 0;
+    max-width: 100%;
+    overflow: scroll;
 }
 #playfield td {
     min-width: 1.2em;
@@ -81,6 +83,13 @@ td:not(.line) :not(.row) {
     resize: vertical;
     max-height: 100%;
 }
+#usage {
+    width: 40%;
+    border-radius: 3em;
+    padding: 3em;
+    margin: 1em;
+    border: 0.5px solid gray;
+}
 
         </style>
     </head>
@@ -123,6 +132,31 @@ td:not(.line) :not(.row) {
 
 
             <textarea id="code-raw" style="width: 100%; height: 7em;"></textarea>
+        </div>
+
+        <hr/>
+
+        <div id="usage">
+            <h3>Usage:</h3>
+            🐝-mode is for editing code. By clicking on a tile, the cursor is placed on it. The
+            cursor has a direction, and every time a character is entered, the cursor moves in that
+            direction. Pressing the arrow both moves and turns the cursor, but using shift+arrow
+            keys only turns it. Backspace moves the cursor in the opposite direction of where it's
+            facing.
+
+            <br/>
+
+            Summary:
+            <ul>
+                <li> Click: place the cursor facing rightwards. </li>
+                <li> Arrow key: Move the cursor, direction follows the key. </li>
+                <li> Shift+arrow key: Rotate the cursor in place to face the way of the arrow. </li>
+                <li> Backspace: Move the cursor in the opposite direction, delete the char. </li>
+            </ul>
+
+            <hr/>
+
+            🍄-mode runs code.
         </div>
     </body>
     <script src="/befunge/befunge.js"></script>
