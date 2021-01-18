@@ -25,7 +25,7 @@ class Befunge {
             return this.grid[""+[x, y]];
         }
     }
-    get_bounds(margin=1) {
+    get_bounds(margin=1, gridonly=false) {
         var xmin = Infinity;
         var ymin = Infinity;
         var xmax = -Infinity;
@@ -41,9 +41,11 @@ class Befunge {
             let xy = JSON.parse(`[${sxy}]`);
             reminmax(xy);
         }
-        reminmax(this.ip);
-        reminmax(this.cursor);
-        reminmax([0, 0]);
+        if (!gridonly) {
+            reminmax(this.ip);
+            reminmax(this.cursor);
+            reminmax([0, 0]);
+        }
         return [xmin - margin, ymin - margin, xmax + 1 + margin, ymax + 1 + margin];
     }
     get_icon() {
@@ -252,6 +254,10 @@ class Execution extends Befunge {
         let deltaxy = direction_deltaxys[this.direction];
         this.ip[0] += deltaxy[0];
         this.ip[1] += deltaxy[1];
+
+        let [xmin, ymin, xmax, ymax] = this.get_bounds(0, true);
+        this.ip[0] = (this.ip[0] - xmin) %  (xmax - xmin) + xmin;
+        this.ip[1] = (this.ip[1] - ymin) %  (ymax - ymin) + ymin;
     }
     interrupt() {
         this.redraw();
