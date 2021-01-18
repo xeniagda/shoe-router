@@ -329,7 +329,7 @@ class Execution extends Befunge {
 
     }
     keypresshandler(e) {
-        if (e.key === " ") {
+        if (e.key === " " && e.target.tagName !== "INPUT") {
             e.preventDefault();
             this.step();
             this.redraw();
