@@ -2,6 +2,11 @@ direction_names = ["up", "right", "down", "left"];
 direction_arrows = {"^": 0, ">": 1, "v": 2, "<": 3};
 direction_deltaxys = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 
+function mod(x, y) {
+    let div = Math.floor(x / y);
+    return x - y * div;
+}
+
 class Befunge {
     constructor() {
         this.grid = {}; // {"x,y": ch}.
@@ -265,8 +270,8 @@ class Execution extends Befunge {
         this.ip[1] += deltaxy[1];
 
         let [xmin, ymin, xmax, ymax] = this.get_bounds(0, true);
-        this.ip[0] = (this.ip[0] - xmin) %  (xmax - xmin) + xmin;
-        this.ip[1] = (this.ip[1] - ymin) %  (ymax - ymin) + ymin;
+        this.ip[0] = mod(this.ip[0] - xmin, xmax - xmin) + xmin;
+        this.ip[1] = mod(this.ip[1] - ymin, ymax - ymin) + ymin;
     }
     start_interval() {
         let self = this;
