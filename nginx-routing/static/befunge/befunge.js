@@ -213,6 +213,38 @@ class Execution extends Befunge {
                     var v = this.pop();
                     this.set_tile(x, y, String.fromCharCode(v));
                     break;
+                case "&":
+                    var num = 0;
+                    var num_len;
+                    for (num_len = 0; num_len < this.input_buffer.length; num_len++) {
+                        let ch = this.input_buffer[num_len];
+                        if ('0' <= ch && ch <= '9') {
+                            num = num * 10 + (+ch);
+                        } else {
+                            break;
+                        }
+                    }
+                    if (num_len == 0) {
+                        this.needs_input = true;
+                        this.interrupt();
+                        return;
+                    } else {
+                        this.needs_input = false;
+                        this.push(num);
+                        this.input_buffer = this.input_buffer.slice(num_len);
+                    }
+                    break;
+                case "~":
+                    if (this.input_buffer.length > 0) {
+                        this.needs_input = false;
+                        let ch = this.input_buffer.charCodeAt(0);
+                        this.input_buffer = this.input_buffer.slice(1);
+                        this.push(ch);
+                    } else {
+                        this.needs_input = true;
+                        this.interrupt();
+                    }
+                    break;
 
                 case "@": this.is_running = false; return;
             }
@@ -220,6 +252,9 @@ class Execution extends Befunge {
         let deltaxy = direction_deltaxys[this.direction];
         this.ip[0] += deltaxy[0];
         this.ip[1] += deltaxy[1];
+    }
+    interrupt() {
+        this.redraw();
     }
     get_icon() {
         return "🍄";
