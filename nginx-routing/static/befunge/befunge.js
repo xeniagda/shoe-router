@@ -24,7 +24,7 @@ class Befunge {
             return this.grid[""+[x, y]];
         }
     }
-    get_bounds() {
+    get_bounds(margin=1) {
         var xmin = Infinity;
         var ymin = Infinity;
         var xmax = -Infinity;
@@ -43,7 +43,7 @@ class Befunge {
         reminmax(this.ip);
         reminmax(this.cursor);
         reminmax([0, 0]);
-        return [xmin - 1, ymin - 1, xmax + 2, ymax + 2];
+        return [xmin - margin, ymin - margin, xmax + 1 + margin, ymax + 1 + margin];
     }
     get_icon() {
         return "?"; // override this!
@@ -337,7 +337,7 @@ class Editor extends Befunge {
 
     render_to_text() {
         var out = "";
-        const [xmin, ymin, xmax, ymax] = this.get_bounds();
+        const [xmin, ymin, xmax, ymax] = this.get_bounds(0);
         for (var y = 0; y < ymax; y++) {
             for (var x = 0; x < xmax; x++) {
                 let ch = this.get_tile(x, y);
