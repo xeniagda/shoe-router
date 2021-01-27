@@ -7,3 +7,6 @@
 [submodule "ilo-pi-ante-toki"]
 	path = ilo-pi-ante-toki
 	url = https://github.com/loovjo/ilo-pi-ante-toki.git
+[submodule "breadquest-rl"]
+	path = breadquest-rl
+	url = https://github.com/loovjo/breadquest-rl
