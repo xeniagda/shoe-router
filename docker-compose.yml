@@ -46,9 +46,17 @@ services:
       service: ilo-pi-ante-toki
     init: true
 
-  breadquest-server:
+  breadquest_server:
     extends:
       file: breadquest-rl/docker-compose.yml
-      service: breadquest-server
+      service: breadquest_server
     init: true
+
+  breadquest_rl:
+    extends:
+      file: breadquest-rl/docker-compose.yml
+      service: breadquest_rl
+    init: true
+    depends_on:
+      - breadquest_server
 
