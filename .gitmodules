@@ -10,3 +10,6 @@
 [submodule "breadquest-rl"]
 	path = breadquest-rl
 	url = https://github.com/loovjo/breadquest-rl
+[submodule "hyperbolic-nomic"]
+	path = hyperbolic-nomic
+	url = https://github.com/loovjo/hyperbolic-nomic

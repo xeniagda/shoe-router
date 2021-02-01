@@ -60,3 +60,11 @@ services:
     depends_on:
       - breadquest_server
 
+  nomic:
+    build: hyperbolic-nomic
+    volumes:
+      - ./hyperbolic-nomic/:/usr/src/app
+    ports:
+      - "9080:9080"
+    init: true
+
