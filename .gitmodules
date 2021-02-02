@@ -13,3 +13,4 @@
 [submodule "hyperbolic-nomic"]
 	path = hyperbolic-nomic
 	url = https://github.com/loovjo/hyperbolic-nomic
+	branch = main
