@@ -70,3 +70,12 @@ services:
     restart: on-failure
     init: true
 
+  george_proxy:
+    build: george-proxy
+    volumes:
+      - ./george-proxy/:/usr/src/app
+    ports:
+      - "10080:10080"
+    restart: on-failure
+    init: true
+
