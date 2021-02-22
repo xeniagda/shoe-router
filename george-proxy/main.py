@@ -33,6 +33,19 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             b"https://george.gh0.pw",
             b"https://coral.shoes/embed",
         )
+        if "embed.cgi" in url:
+            out = out.replace(
+                b"background-color: pink;",
+                b"background-color: #dddddd;border-radius:1em;padding-left:1em; padding-right:1em;",
+            )
+            out = out.replace(
+                b"color: cyan;",
+                b"color: #5f5fec;",
+            )
+            out = out.replace(
+                b"box-shadow: 5px 5px black;",
+                b"",
+            )
         self.wfile.write(out)
         self.send_response(200)
 
