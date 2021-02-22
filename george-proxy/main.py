@@ -15,7 +15,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         url = BASEPATH + self.path
 
-        print(url)
+        print(url, flush=True)
         resp = requests.get(url)
 
         self.send_response(resp.status_code)
@@ -51,7 +51,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
         return
 
-print("starting")
+print("starting", flush=True)
 with socketserver.TCPServer(("", PORT), Handler) as httpd:
-    print("serving at port", PORT)
+    print("serving at port", PORT, flush=True)
     httpd.serve_forever()
