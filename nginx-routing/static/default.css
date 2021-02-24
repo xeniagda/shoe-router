@@ -1,4 +1,4 @@
-body {
+main {
     padding: 5em;
 }
 
@@ -14,4 +14,14 @@ a > span {
     width: 1px;
     height: 1px;
     display: inline-block;
+}
+
+.pre {
+    font-family: monospace;
+    color: inherit;
+}
+
+#george {
+    border: none;
+    box-shadow: 0px 0px 4px rgba(0,0,0,20%);
 }
