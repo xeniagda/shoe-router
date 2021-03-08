@@ -3,14 +3,16 @@ services:
   router:
     build: nginx-routing
     volumes:
+      - ./ssl/certs:/etc/letsencrypt:ro
+      - ./ssl/challenge-data:/var/www/certbot:ro
+
       - ./nginx-routing/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx-routing/spammers.conf:/etc/nginx/spammers.conf:ro
-      - ./nginx-routing/static:/var/www/static:ro
       - ./trash:/var/www/trash:ro
       - ./nginx-routing/logs:/var/log/nginx
 
-      - ./ssl/certs:/etc/letsencrypt:ro
-      - ./ssl/challenge-data:/var/www/certbot:ro
+      - ./nginx-routing/static:/var/www/static
+      - ./hyperbolic-nomic/static:/var/www/static/hyperbolic-nomic
     ports:
       - "80:80"
       - "443:443"
