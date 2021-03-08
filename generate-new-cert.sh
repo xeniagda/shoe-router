@@ -10,7 +10,7 @@ if ! [ -x "$(command -v docker-compose)" ]; then
   exit 1
 fi
 
-domains="coral.shoes aaaa.coral.shoes kijetesantaka.lu crusty-cuboid.coral.shoes"
+domains="coral.shoes kijetesantaka.lu crusty-cuboid.coral.shoes"
 rsa_key_size=4096
 data_path="./ssl"
 email="jonathan.loov@gmail.com" # Adding a valid address is strongly recommended
