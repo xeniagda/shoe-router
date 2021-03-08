@@ -1,3 +1,5 @@
+sleep 1 # wait for everything to start
+
 cd /
 ./docker-entrypoint.sh nginx -g 'daemon off;' &
 
