@@ -12,7 +12,10 @@ services:
       - ./nginx-routing/logs:/var/log/nginx
 
       - ./nginx-routing/static:/var/www/static
+
       - ./hyperbolic-nomic/static:/var/www/static/hyperbolic-nomic
+      - ./ilo-pi-ante-toki/static:/var/www/static/ilo-pi-ante-toki
+      - ./mulambdati/static:/var/www/static/mulambdati
     ports:
       - "80:80"
       - "443:443"
