@@ -8,10 +8,10 @@ services:
 
       - ./nginx-routing/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx-routing/spammers.conf:/etc/nginx/spammers.conf:ro
-      - ./trash:/var/www/trash:ro
       - ./nginx-routing/logs:/var/log/nginx
 
       - ./nginx-routing/static:/var/www/static
+      - ./trash:/var/www/static/trash:ro
 
       - ./hyperbolic-nomic/static:/var/www/static/hyperbolic-nomic
       - ./ilo-pi-ante-toki/static:/var/www/static/ilo-pi-ante-toki
