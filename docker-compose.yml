@@ -11,7 +11,7 @@ services:
       - ./nginx-routing/logs:/var/log/nginx
 
       - ./nginx-routing/static:/var/www/static
-      - ./trash:/var/www/static/trash:ro
+      - ./trash:/var/www/trash:ro
 
       - ./hyperbolic-nomic/static:/var/www/static/hyperbolic-nomic
       - ./ilo-pi-ante-toki/static:/var/www/static/ilo-pi-ante-toki
