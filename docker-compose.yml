@@ -11,6 +11,7 @@ services:
       - ./nginx-routing/logs:/var/log/nginx
 
       - ./nginx-routing/static:/var/www/static
+      - ./nginx-routing/gogle:/var/www/gogle
       - ./trash:/var/www/trash:ro
 
       - ./hyperbolic-nomic/static:/var/www/static/hyperbolic-nomic
