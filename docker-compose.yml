@@ -12,6 +12,7 @@ services:
 
       - ./nginx-routing/static:/var/www/static
       - ./nginx-routing/gogle:/var/www/gogle
+      - ./nginx-routing/illegalketaminestore/:/var/www/illegalketaminestore
       - ./trash:/var/www/trash:ro
 
       - ./hyperbolic-nomic/static:/var/www/static/hyperbolic-nomic
