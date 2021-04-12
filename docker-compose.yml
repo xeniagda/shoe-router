@@ -73,3 +73,12 @@ services:
     restart: on-failure
     init: true
 
+  illegalketaminestore:
+    build: illegalketaminestore-backend
+    volumes:
+      - ./illegalketaminestore-backend//:/usr/src/app
+    ports:
+      - "12080:12080"
+    restart: on-failure
+    init: true
+
