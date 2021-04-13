@@ -12,7 +12,6 @@ services:
 
       - ./nginx-routing/static:/var/www/static
 
-      - ./hyperbolic-nomic/static:/var/www/static/hyperbolic-nomic
       - ./ilo-pi-ante-toki/static:/var/www/static/ilo-pi-ante-toki
       - ./mulambdati/static:/var/www/static/mulambdati
 
@@ -62,15 +61,6 @@ services:
     init: true
     depends_on:
       - breadquest_server
-
-  nomic:
-    build: hyperbolic-nomic
-    volumes:
-      - ./hyperbolic-nomic/:/usr/src/app
-    ports:
-      - "9080:9080"
-    restart: on-failure
-    init: true
 
   illegalketaminestore:
     build: illegalketaminestore-backend
