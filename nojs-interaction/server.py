@@ -1,5 +1,6 @@
 import sys
 
+import time
 import zlib
 import os
 import asyncio
@@ -31,6 +32,7 @@ async def cookie_clicker(us):
         us.n_cookies += us.cookies_per_second
         await us.update()
 
+
 class UserSession:
     def __init__(self, main_writer, id):
         self.main_writer = main_writer
@@ -41,7 +43,9 @@ class UserSession:
         self.n_cookies = 0
         self.cookies_per_second = 0
 
-        self.task = asyncio.ensure_future(cookie_clicker(self))
+        self.task = asyncio.create_task(cookie_clicker(self))
+
+        self.last_send = time.time()
 
     async def init(self):
         self.main_writer.write(b"""\
@@ -64,6 +68,8 @@ Transfer-Encoding: chunked\r
     def buffer_send_line(self, line):
         self.main_writer.write(hex(len(line))[2:].encode("utf-8") + b"\r\n")
         self.main_writer.write(line + b"\r\n")
+
+        self.last_send = time.time()
 
     async def handle_request(self, p, writer):
         if p.method == b"GET":
@@ -155,8 +161,14 @@ Transfer-Encoding: chunked\r
 
         await self.main_writer.drain()
 
+    async def kill(self):
+        print("Killing", self.id)
+        self.task.cancel()
+        self.main_writer.close()
+
     def __repr__(self):
         return f"UserSession(id={self.id!r})"
+
 
 SESSIONS = []
 def get_session_for(id):
@@ -189,6 +201,15 @@ async def handle(reader, writer):
     if s is not None:
         await s.handle_request(p, writer)
 
+async def cleaner():
+    while True:
+        for i in range(len(SESSIONS)):
+            if time.time() - SESSIONS[i].last_send > 10:
+                await SESSIONS[i].kill()
+                del SESSIONS[i]
+                break
+        await asyncio.sleep(1)
+
 async def main():
     if len(sys.argv) == 2:
         port = int(sys.argv[1])
@@ -199,6 +220,8 @@ async def main():
 
     addr = server.sockets[0].getsockname()
     print(f'Serving on {addr}', flush=True)
+
+    asyncio.create_task(cleaner())
 
     async with server:
         await server.serve_forever()
