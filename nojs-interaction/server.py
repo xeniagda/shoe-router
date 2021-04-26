@@ -85,12 +85,13 @@ Transfer-Encoding: chunked\r
             await self.update()
 
         if p.path == b"/purchase.png" and p.query == self.fmt(b"{id}&{t}"):
-            print(self.id, "purchase", flush=True)
-            self.t += 1
-            self.n_cookies -= self.thing_cost()
-            self.cookies_per_second *= 1.5
-            self.cookies_per_second += 2
-            await self.update()
+            if self.n_cookies >= self.thing_cost():
+                print(self.id, "purchase", flush=True)
+                self.t += 1
+                self.n_cookies -= self.thing_cost()
+                self.cookies_per_second *= 1.5
+                self.cookies_per_second += 2
+                await self.update()
 
     def fmt(self, data):
         return data.replace(b"{id}", self.id).replace(b"{t}", str(self.t).encode("utf-8"))
@@ -101,14 +102,14 @@ Transfer-Encoding: chunked\r
     async def update(self):
         self.buffer_send_line(f'''<style>
 #n-cookies::before {{
-    content: "{self.n_cookies}";
+    content: "{int(self.n_cookies)}";
 }}
 #per-second::before {{
     content: "{self.cookies_per_second}";
 }}
 
 .purchase-thing:after {{
-    content: "{self.thing_cost()}";
+    content: "{int(self.thing_cost())}";
 }}
 '''.encode())
         if self.n_cookies < self.thing_cost():
