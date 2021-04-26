@@ -7,33 +7,28 @@ body {
     margin: 0;
 }
 
-.subspace {
-    height: 80vh;
-    width: 100%;
-    padding-top: 10em;
-    box-sizing: border-box;
-    text-align: center;
-}
-
-#aaaa:hover {
-    background-image: url("track-2.png?{id}");
-}
-#bbb:active {
-    background-image: url("track-3.png?{id}");
-}
-
 h2 {
     margin: 0;
+}
+
+p::after {
+    content: "unloaded";
+}
+
+#buttonholder {
+    position: static;
+}
+
+button {
+    position: absolute;
 }
 
         </style>
     </head>
     <body>
-        <div id="spacer">
-            <div id="s1" class="subspace" style="background: blue;">   <h2> aa </h2> <p id="aaaa"> mouse over here! </p> </div>
-            <div id="s2" class="subspace" style="background: red;">    <h2> aa </h2> <p id="bbb"> click me </p> </div>
-            <div id="s3" class="subspace" style="background: yellow;"> <h2> scroll down  </h2> </div>
-            <div id="s4" class="subspace" style="background: orange;"> <h2> aa </h2> </div>
+        <p id="data"> </p>
+        <div id="buttonholder">
+            <button id="b1" > increase! </button>
+            <button id="b2" > increase! </button>
         </div>
-        <img src="track-1.png?{id}" loading="lazy" width="1" height="1">
     </body>

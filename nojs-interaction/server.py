@@ -6,6 +6,9 @@ import asyncio
 from http_parse import HTTPParser
 import random
 
+DEFAULT_PNG = open("static/default.png", "br").read()
+
+
 def gen_id():
     return str(random.randint(0, 1000000000000)).encode("utf-8")
 
@@ -20,11 +23,16 @@ Content-Length: {len(data)}\r
 
     writer.write(data)
     await writer.drain()
+    writer.close()
 
 class UserSession:
     def __init__(self, main_writer, id):
         self.main_writer = main_writer
         self.id = id
+
+        self.t = 0
+
+        self.val_x = 0
 
     async def init(self):
         self.main_writer.write(b"""\
@@ -35,8 +43,10 @@ Transfer-Encoding: chunked\r
 \r
 """)
         await self.main_writer.drain()
-        self.buffer_send_line(open("static/main.html", "br").read().replace(b"{id}", self.id))
+        self.buffer_send_line(self.fmt(open("static/main.html", "br").read()))
         await self.main_writer.drain()
+
+        await self.update()
 
     def end(self):
         self.buffer_send_line(b"")
@@ -55,18 +65,42 @@ Transfer-Encoding: chunked\r
             print("GETting", path, flush=True)
             if os.path.isfile(path):
                 await send_response(writer, open(path, "br").read(), "image/png")
+            else:
+                await send_response(writer, DEFAULT_PNG, "image/png")
 
-        if p.path == b"/track-1.png":
-            self.buffer_send_line(b'<style> #s3, #s4 { color: white; background: black !important; } #s3 > h2::before { content: "you have been lazy image loaded ";} </style> ')
-            await self.main_writer.drain()
+        if p.path == b"/press.png" and p.query == self.fmt(b"{id}&{t}"):
+            print("aaaa")
+            self.t += 1
+            await self.update()
 
-        if p.path == b"/track-2.png":
-            self.buffer_send_line(b'<style> #s1 { color: white; background: black !important; } #s1 > h2::before { content: "hover  ";} </style> ')
-            await self.main_writer.drain()
+    def fmt(self, data):
+        return data.replace(b"{id}", self.id).replace(b"{t}", str(self.t).encode("utf-8"))
 
-        if p.path == b"/track-3.png":
-            self.buffer_send_line(b'<style> #s2 { color: white; background: black !important; } #s2 > h2::before { content: ":active ";} </style> ')
-            await self.main_writer.drain()
+    async def update(self):
+        self.buffer_send_line(self.fmt(b'''<style>
+p::after {
+    content: "{t}";
+}
+'''))
+        if self.t % 2 == 0:
+            self.buffer_send_line(self.fmt(b'''
+#b1 { visibility: visible; }
+#b2 { visibility: hidden; }
+
+#b1:active { background: url("press.png?{id}&{t}"); }
+
+</style>'''))
+        else:
+            self.buffer_send_line(self.fmt(b'''
+#b2 { visibility: visible; }
+#b1 { visibility: hidden; }
+
+#b2:active { background: url("press.png?{id}&{t}"); }
+
+</style>'''))
+        self.buffer_send_line(self.fmt(b'''</style>'''))
+
+        await self.main_writer.drain()
 
     def __repr__(self):
         return f"UserSession(id={self.id!r})"
@@ -96,7 +130,7 @@ async def handle(reader, writer):
         SESSIONS.append(s)
         await s.init()
     else:
-        s = get_session_for(p.query)
+        s = get_session_for(p.query.split(b"&")[0])
 
     if s is not None:
         print(f"Handling {p!r} for session {s!r}", flush=True)
