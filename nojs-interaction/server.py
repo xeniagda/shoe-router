@@ -44,7 +44,7 @@ Transfer-Encoding: chunked\r
 
     def buffer_send_line(self, line):
         self.main_writer.write(hex(len(line))[2:].encode("utf-8") + b"\r\n")
-        self.main_writer.write(line)
+        self.main_writer.write(line + b"\r\n")
 
     async def handle_request(self, p, writer):
         if p.method == b"GET":
