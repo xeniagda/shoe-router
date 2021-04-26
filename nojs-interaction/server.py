@@ -52,22 +52,19 @@ Transfer-Encoding: chunked\r
                 return
 
             path = os.path.join("static", p.path.decode("utf-8")[1:])
-            print("GETting", path)
+            print("GETting", path, flush=True)
             if os.path.isfile(path):
                 await send_response(writer, open(path, "br").read(), "image/png")
 
         if p.path == b"/track-1.png":
-            print("the")
-            self.buffer_send_line(b'<style> #s3 { color: white; background: black !important; } #s3 > h2::before { content: "you have been lazy image loaded ";} </style> ')
+            self.buffer_send_line(b'<style> #s3, #s4 { color: white; background: black !important; } #s3 > h2::before { content: "you have been lazy image loaded ";} </style> ')
             await self.main_writer.drain()
 
         if p.path == b"/track-2.png":
-            print("the")
             self.buffer_send_line(b'<style> #s1 { color: white; background: black !important; } #s1 > h2::before { content: "hover  ";} </style> ')
             await self.main_writer.drain()
 
         if p.path == b"/track-3.png":
-            print("the")
             self.buffer_send_line(b'<style> #s2 { color: white; background: black !important; } #s2 > h2::before { content: ":active ";} </style> ')
             await self.main_writer.drain()
 
@@ -91,7 +88,7 @@ async def handle(reader, writer):
 
     addr = writer.get_extra_info('peername')
 
-    print(f"Received {p} from {addr!r}")
+    print(f"Received {p} from {addr!r}", flush=True)
 
     if p.query == None:
         id = gen_id()
@@ -102,7 +99,7 @@ async def handle(reader, writer):
         s = get_session_for(p.query)
 
     if s is not None:
-        print(f"Handling {p!r} for session {s!r}")
+        print(f"Handling {p!r} for session {s!r}", flush=True)
         await s.handle_request(p, writer)
 
 async def main():
@@ -111,12 +108,14 @@ async def main():
     else:
         port = 13080
     server = await asyncio.start_server(
-        handle, '127.0.0.1', port)
+        handle, '0.0.0.0', port)
 
     addr = server.sockets[0].getsockname()
-    print(f'Serving on {addr}')
+    print(f'Serving on {addr}', flush=True)
 
     async with server:
         await server.serve_forever()
+
+print("Starting", flush=True)
 
 asyncio.run(main())
