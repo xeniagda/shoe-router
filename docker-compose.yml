@@ -71,3 +71,12 @@ services:
     restart: on-failure
     init: true
 
+  nojs-interaction:
+    build: nojs-interaction
+    volumes:
+      - ./nojs-interaction/:/usr/src/app
+    ports:
+      - "13080:13080"
+    restart: on-failure
+    init: true
+
