@@ -73,7 +73,7 @@ Transfer-Encoding: chunked\r
 
     async def handle_request(self, p, writer):
         if p.method == b"GET":
-            if p.path == b"/":
+            if p.path == b"/" or b"./" in p.path:
                 return
 
             path = os.path.join("static", p.path.decode("utf-8")[1:])
@@ -92,7 +92,7 @@ Transfer-Encoding: chunked\r
 
         if p.path == b"/purchase.png" and p.query == self.fmt(b"{id}&{t}"):
             if self.n_cookies >= self.thing_cost():
-                print(self.id, "purchase", flush=True)
+                print(self.id, "purchased", self.thing_cost(), "has", self.n_cookies, flush=True)
                 self.t += 1
                 self.n_cookies -= self.thing_cost()
                 self.cookies_per_second *= 1.5
@@ -191,6 +191,8 @@ async def handle(reader, writer):
         print(f"Received {p} from {addr!r}", flush=True)
 
     if p.query == None:
+        print("New user joined!", flush=True)
+        print_stats()
         id = gen_id()
         s = UserSession(writer, id)
         SESSIONS.append(s)
@@ -207,8 +209,14 @@ async def cleaner():
             if time.time() - SESSIONS[i].last_send > 10:
                 await SESSIONS[i].kill()
                 del SESSIONS[i]
+                print_stats()
                 break
         await asyncio.sleep(1)
+
+def print_stats():
+    print("Currenty", len(SESSIONS), "active connetions", flush=True)
+    if SESSIONS != []:
+        print("Best session:", max(s.n_cookies for s in SESSIONS), flush=True)
 
 async def main():
     if len(sys.argv) == 2:
