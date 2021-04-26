@@ -11,24 +11,27 @@ h2 {
     margin: 0;
 }
 
-p::after {
-    content: "unloaded";
+.buttonholder {
+    position: relative;
+    height: 4ex;
 }
-
-#buttonholder {
-    position: static;
-}
-
-button {
+.buttonholder > button {
     position: absolute;
 }
 
         </style>
     </head>
     <body>
-        <p id="data"> </p>
-        <div id="buttonholder">
-            <button id="b1" > increase! </button>
-            <button id="b2" > increase! </button>
+        <p id="n-cookies"> 🍪 </p>
+        <p id="per-second"> 🍪/s </p>
+
+        <div class="buttonholder">
+            <button id="click-cookie-1" > click cookie! </button>
+            <button id="click-cookie-2" > click cookie! </button>
+        </div>
+
+        <div class="buttonholder">
+            <button class="purchase-thing" id="purchase-thing-1"> purchase cookienator for </button>
+            <button class="purchase-thing" id="purchase-thing-2"> purchase cookienator for </button>
         </div>
     </body>

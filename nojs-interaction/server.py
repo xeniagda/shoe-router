@@ -7,7 +7,7 @@ from http_parse import HTTPParser
 import random
 
 DEFAULT_PNG = open("static/default.png", "br").read()
-
+DEBUG = False
 
 def gen_id():
     return str(random.randint(0, 1000000000000)).encode("utf-8")
@@ -25,6 +25,12 @@ Content-Length: {len(data)}\r
     await writer.drain()
     writer.close()
 
+async def cookie_clicker(us):
+    while True:
+        await asyncio.sleep(1)
+        us.n_cookies += us.cookies_per_second
+        await us.update()
+
 class UserSession:
     def __init__(self, main_writer, id):
         self.main_writer = main_writer
@@ -32,7 +38,10 @@ class UserSession:
 
         self.t = 0
 
-        self.val_x = 0
+        self.n_cookies = 0
+        self.cookies_per_second = 0
+
+        self.task = asyncio.ensure_future(cookie_clicker(self))
 
     async def init(self):
         self.main_writer.write(b"""\
@@ -62,40 +71,83 @@ Transfer-Encoding: chunked\r
                 return
 
             path = os.path.join("static", p.path.decode("utf-8")[1:])
-            print("GETting", path, flush=True)
+            if DEBUG:
+                print("GETting", path, flush=True)
+
             if os.path.isfile(path):
                 await send_response(writer, open(path, "br").read(), "image/png")
             else:
                 await send_response(writer, DEFAULT_PNG, "image/png")
 
         if p.path == b"/press.png" and p.query == self.fmt(b"{id}&{t}"):
-            print("aaaa")
             self.t += 1
+            self.n_cookies += 1
+            await self.update()
+
+        if p.path == b"/purchase.png" and p.query == self.fmt(b"{id}&{t}"):
+            print(self.id, "purchase", flush=True)
+            self.t += 1
+            self.n_cookies -= self.thing_cost()
+            self.cookies_per_second *= 1.5
+            self.cookies_per_second += 2
             await self.update()
 
     def fmt(self, data):
         return data.replace(b"{id}", self.id).replace(b"{t}", str(self.t).encode("utf-8"))
 
+    def thing_cost(self):
+        return 10 + 90 * self.cookies_per_second
+
     async def update(self):
-        self.buffer_send_line(self.fmt(b'''<style>
-p::after {
-    content: "{t}";
-}
-'''))
+        self.buffer_send_line(f'''<style>
+#n-cookies::before {{
+    content: "{self.n_cookies}";
+}}
+#per-second::before {{
+    content: "{self.cookies_per_second}";
+}}
+
+.purchase-thing:after {{
+    content: "{self.thing_cost()}";
+}}
+'''.encode())
+        if self.n_cookies < self.thing_cost():
+            self.buffer_send_line(f'''
+.purchase-thing {{
+    background-color: gray;
+}}
+'''.encode())
+        else:
+            self.buffer_send_line(f'''
+.purchase-thing {{
+    background-color: green;
+}}
+'''.encode())
         if self.t % 2 == 0:
             self.buffer_send_line(self.fmt(b'''
-#b1 { visibility: visible; }
-#b2 { visibility: hidden; }
+#click-cookie-1 { visibility: visible; }
+#click-cookie-2 { visibility: hidden; }
 
-#b1:active { background: url("press.png?{id}&{t}"); }
+#click-cookie-1:active { background: url("press.png?{id}&{t}"); }
+
+
+#purchase-thing-1 { visibility: visible; }
+#purchase-thing-2 { visibility: hidden; }
+
+#purchase-thing-1:active { background: url("purchase.png?{id}&{t}"); }
 
 </style>'''))
         else:
             self.buffer_send_line(self.fmt(b'''
-#b2 { visibility: visible; }
-#b1 { visibility: hidden; }
+#click-cookie-2 { visibility: visible; }
+#click-cookie-1 { visibility: hidden; }
 
-#b2:active { background: url("press.png?{id}&{t}"); }
+#click-cookie-2:active { background: url("press.png?{id}&{t}"); }
+
+#purchase-thing-2 { visibility: visible; }
+#purchase-thing-1 { visibility: hidden; }
+
+#purchase-thing-2:active { background: url("purchase.png?{id}&{t}"); }
 
 </style>'''))
         self.buffer_send_line(self.fmt(b'''</style>'''))
@@ -122,7 +174,8 @@ async def handle(reader, writer):
 
     addr = writer.get_extra_info('peername')
 
-    print(f"Received {p} from {addr!r}", flush=True)
+    if DEBUG:
+        print(f"Received {p} from {addr!r}", flush=True)
 
     if p.query == None:
         id = gen_id()
@@ -133,7 +186,6 @@ async def handle(reader, writer):
         s = get_session_for(p.query.split(b"&")[0])
 
     if s is not None:
-        print(f"Handling {p!r} for session {s!r}", flush=True)
         await s.handle_request(p, writer)
 
 async def main():
