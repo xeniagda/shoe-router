@@ -1,3 +1,5 @@
+import sys
+
 import zlib
 import os
 import asyncio
@@ -104,8 +106,12 @@ async def handle(reader, writer):
         await s.handle_request(p, writer)
 
 async def main():
+    if len(sys.argv) == 2:
+        port = int(sys.argv[1])
+    else:
+        port = 13080
     server = await asyncio.start_server(
-        handle, '127.0.0.1', 8888)
+        handle, '127.0.0.1', port)
 
     addr = server.sockets[0].getsockname()
     print(f'Serving on {addr}')
