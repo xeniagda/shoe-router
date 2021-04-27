@@ -143,7 +143,7 @@ Transfer-Encoding: chunked\r
 
 #purchase-thing-1:active { background: url("purchase.png?{id}&{t}"); }
 
-</style>'''))
+'''))
         else:
             self.buffer_send_line(self.fmt(b'''
 #click-cookie-2 { visibility: visible; }
@@ -156,7 +156,7 @@ Transfer-Encoding: chunked\r
 
 #purchase-thing-2:active { background: url("purchase.png?{id}&{t}"); }
 
-</style>'''))
+'''))
         self.buffer_send_line(self.fmt(b'''</style>'''))
 
         await self.main_writer.drain()
