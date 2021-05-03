@@ -4,7 +4,7 @@ import time
 import zlib
 import os
 import asyncio
-from http_parse import HTTPParser
+from http_parse import HTTPParser, ParserExpectedException
 import random
 
 DEFAULT_PNG = open("static/default.png", "br").read()
@@ -191,9 +191,13 @@ def get_session_for(id):
 async def handle(reader, writer):
     global SESSION
     p = HTTPParser()
-    while not p.done:
-        dat = await reader.read(1)
-        p.pass_ch(dat)
+    try:
+        while not p.done:
+            dat = await reader.read(1)
+            p.pass_ch(dat)
+    except ParserExpectedException as e:
+        print("Got invalid http request :(", flush=True)
+        writer.close()
 
     addr = writer.get_extra_info('peername')
 
