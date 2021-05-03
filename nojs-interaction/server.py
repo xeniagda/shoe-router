@@ -14,7 +14,7 @@ def gen_id():
     return str(random.randint(0, 1000000000000)).encode("utf-8")
 
 def gen_cookie():
-    return "session-" + str(random.randint(0, 1000000000000)).encode("utf-8")
+    return b"session-" + str(random.randint(0, 1000000000000)).encode("utf-8")
 
 async def send_response(writer, data, content_type):
     writer.write(f"""\
@@ -32,13 +32,19 @@ Content-Length: {len(data)}\r
 async def cookie_clicker(uc):
     while True:
         await asyncio.sleep(1)
-        uc.sess.step()
-        await uc.update()
+        if len(uc.sess.current_connections) != [] and uc.sess.current_connections[0] == uc.id:
+            uc.sess.step()
+
+        asyncio.create_task(uc.update())
+
+SESSIONS = {} # {cookie_str: CCSession}
 
 class CCSession:
     def __init__(self, n_cookies=0, cookies_per_second=0):
         self.n_cookies = n_cookies
         self.cookies_per_second = cookies_per_second
+
+        self.current_connections = []
 
     def step(self):
         self.n_cookies += self.cookies_per_second
@@ -55,22 +61,33 @@ class UserConnection:
         self.t = 0
 
         self.sess = sess
+        self.sess.current_connections.append(self.id)
 
         self.task = asyncio.create_task(cookie_clicker(self))
 
         self.last_send = time.time()
 
-    async def init(self):
+    async def drain(self):
+        try:
+            await self.main_writer.drain()
+        except BrokenPipeError as _:
+            await self.kill()
+        except ConnectionResetError as _:
+            await self.kill()
+
+    async def init(self, sess_cookie=None):
         self.main_writer.write(b"""\
 HTTP/1.1 200 OK\r
 Content-Type: text/html; charset=UTF-8\r
 Server: lol\r
 Transfer-Encoding: chunked\r
-\r
 """)
-        await self.main_writer.drain()
+        if sess_cookie != None:
+            self.main_writer.write(b'Set-Cookie: session=' + sess_cookie + b'\r\n')
+        self.main_writer.write(b'\r\n')
+        await self.drain()
         self.buffer_send_line(self.fmt(open("static/main.html", "br").read()))
-        await self.main_writer.drain()
+        await self.drain()
 
         await self.update()
 
@@ -169,12 +186,13 @@ Transfer-Encoding: chunked\r
 '''))
         self.buffer_send_line(self.fmt(b'''</style>'''))
 
-        await self.main_writer.drain()
+        await self.drain()
 
     async def kill(self):
         print("Killing", self.id)
         self.task.cancel()
         self.main_writer.close()
+        self.sess.current_connections = [id for id in self.sess.current_connections if id != self.id]
 
     def __repr__(self):
         return f"UserConnection(id={self.id!r})"
@@ -189,7 +207,8 @@ def get_session_for(id):
     return None
 
 async def handle(reader, writer):
-    global SESSION
+    global CONNECTIONS, SESSIONS
+
     p = HTTPParser()
     try:
         while not p.done:
@@ -206,12 +225,33 @@ async def handle(reader, writer):
 
     if p.query == None:
         print("New user joined!", flush=True)
+
+        print(p.headers)
+        sess = None
+        if b"Cookie" in p.headers:
+            parts = p.headers[b"Cookie"].split(b";")
+            for part in parts:
+                kv = part.split(b"=")
+                if len(kv) != 2:
+                    continue
+                k, v = kv
+
+                if k == b"session" and v in SESSIONS:
+                    sess = SESSIONS[v]
+                    sess_cookie = v
+
+        if sess == None:
+            sess = CCSession()
+            sess_cookie = gen_cookie()
+
+            SESSIONS[sess_cookie] = sess
+
         print_stats()
         id = gen_id()
-        sess = CCSession()
+
         c = UserConnection(writer, id, sess)
         CONNECTIONS.append(c)
-        await c.init()
+        await c.init(sess_cookie)
     else:
         c = get_session_for(p.query.split(b"&")[0])
 
