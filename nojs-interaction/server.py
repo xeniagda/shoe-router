@@ -13,6 +13,9 @@ DEBUG = False
 def gen_id():
     return str(random.randint(0, 1000000000000)).encode("utf-8")
 
+def gen_cookie():
+    return "session-" + str(random.randint(0, 1000000000000)).encode("utf-8")
+
 async def send_response(writer, data, content_type):
     writer.write(f"""\
 HTTP/1.1 200 OK\r
@@ -26,22 +29,32 @@ Content-Length: {len(data)}\r
     await writer.drain()
     writer.close()
 
-async def cookie_clicker(us):
+async def cookie_clicker(uc):
     while True:
         await asyncio.sleep(1)
-        us.n_cookies += us.cookies_per_second
-        await us.update()
+        uc.sess.step()
+        await uc.update()
+
+class CCSession:
+    def __init__(self, n_cookies=0, cookies_per_second=0):
+        self.n_cookies = n_cookies
+        self.cookies_per_second = cookies_per_second
+
+    def step(self):
+        self.n_cookies += self.cookies_per_second
+
+    def thing_cost(self):
+        return 10 + 90 * self.cookies_per_second
 
 
-class UserSession:
-    def __init__(self, main_writer, id):
+class UserConnection:
+    def __init__(self, main_writer, id, sess):
         self.main_writer = main_writer
         self.id = id
 
         self.t = 0
 
-        self.n_cookies = 0
-        self.cookies_per_second = 0
+        self.sess = sess
 
         self.task = asyncio.create_task(cookie_clicker(self))
 
@@ -87,38 +100,35 @@ Transfer-Encoding: chunked\r
 
         if p.path == b"/press.png" and p.query == self.fmt(b"{id}&{t}"):
             self.t += 1
-            self.n_cookies += 1
+            self.sess.n_cookies += 1
             await self.update()
 
         if p.path == b"/purchase.png" and p.query == self.fmt(b"{id}&{t}"):
-            if self.n_cookies >= self.thing_cost():
-                print(self.id, "purchased", self.thing_cost(), "has", self.n_cookies, flush=True)
+            if self.sess.n_cookies >= self.sess.thing_cost():
+                print(self.id, "purchased", self.sess.thing_cost(), "has", self.sess.n_cookies, flush=True)
                 self.t += 1
-                self.n_cookies -= self.thing_cost()
-                self.cookies_per_second *= 1.5
-                self.cookies_per_second += 2
+                self.sess.n_cookies -= self.sess.thing_cost()
+                self.sess.cookies_per_second *= 1.5
+                self.sess.cookies_per_second += 2
                 await self.update()
 
     def fmt(self, data):
         return data.replace(b"{id}", self.id).replace(b"{t}", str(self.t).encode("utf-8"))
 
-    def thing_cost(self):
-        return 10 + 90 * self.cookies_per_second
-
     async def update(self):
         self.buffer_send_line(f'''<style>
 #n-cookies::before {{
-    content: "{int(self.n_cookies)}";
+    content: "{int(self.sess.n_cookies)}";
 }}
 #per-second::before {{
-    content: "{self.cookies_per_second}";
+    content: "{self.sess.cookies_per_second}";
 }}
 
 .purchase-thing:after {{
-    content: "{int(self.thing_cost())}";
+    content: "{int(self.sess.thing_cost())}";
 }}
 '''.encode())
-        if self.n_cookies < self.thing_cost():
+        if self.sess.n_cookies < self.sess.thing_cost():
             self.buffer_send_line(f'''
 .purchase-thing {{
     background-color: gray;
@@ -167,14 +177,14 @@ Transfer-Encoding: chunked\r
         self.main_writer.close()
 
     def __repr__(self):
-        return f"UserSession(id={self.id!r})"
+        return f"UserConnection(id={self.id!r})"
 
 
-SESSIONS = []
+CONNECTIONS = []
 def get_session_for(id):
-    for s in SESSIONS:
-        if s.id == id:
-            return s
+    for c in CONNECTIONS:
+        if c.id == id:
+            return c
 
     return None
 
@@ -194,29 +204,30 @@ async def handle(reader, writer):
         print("New user joined!", flush=True)
         print_stats()
         id = gen_id()
-        s = UserSession(writer, id)
-        SESSIONS.append(s)
-        await s.init()
+        sess = CCSession()
+        c = UserConnection(writer, id, sess)
+        CONNECTIONS.append(c)
+        await c.init()
     else:
-        s = get_session_for(p.query.split(b"&")[0])
+        c = get_session_for(p.query.split(b"&")[0])
 
-    if s is not None:
-        await s.handle_request(p, writer)
+    if c is not None:
+        await c.handle_request(p, writer)
 
 async def cleaner():
     while True:
-        for i in range(len(SESSIONS)):
-            if time.time() - SESSIONS[i].last_send > 10:
-                await SESSIONS[i].kill()
-                del SESSIONS[i]
+        for i in range(len(CONNECTIONS)):
+            if time.time() - CONNECTIONS[i].last_send > 10:
+                await CONNECTIONS[i].kill()
+                del CONNECTIONS[i]
                 print_stats()
                 break
         await asyncio.sleep(1)
 
 def print_stats():
-    print("Currenty", len(SESSIONS), "active connetions", flush=True)
-    if SESSIONS != []:
-        print("Best session:", max(s.n_cookies for s in SESSIONS), flush=True)
+    print("Currenty", len(CONNECTIONS), "active connetions", flush=True)
+    if CONNECTIONS != []:
+        print("Best session:", max(c.sess.n_cookies for c in CONNECTIONS), flush=True)
 
 async def main():
     if len(sys.argv) == 2:
