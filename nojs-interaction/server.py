@@ -1,5 +1,5 @@
 import sys
-
+import pickle
 import time
 import zlib
 import os
@@ -7,8 +7,10 @@ import asyncio
 from http_parse import HTTPParser, ParserExpectedException
 import random
 
+BACKUP = "data.pkl"
+
 DEFAULT_PNG = open("static/default.png", "br").read()
-DEBUG = False
+DEBUG = "-v" in sys.argv
 
 def gen_id():
     return str(random.randint(0, 1000000000000)).encode("utf-8")
@@ -37,8 +39,6 @@ async def cookie_clicker(uc):
 
         asyncio.create_task(uc.update())
 
-SESSIONS = {} # {cookie_str: CCSession}
-
 class CCSession:
     def __init__(self, n_cookies=0, cookies_per_second=0):
         self.n_cookies = n_cookies
@@ -52,6 +52,24 @@ class CCSession:
     def thing_cost(self):
         return 10 + 90 * self.cookies_per_second
 
+
+    # Avoid pickling current_connections
+    # https://stackoverflow.com/a/54139237/1753929
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        del state["current_connections"]
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        self.current_connections = []
+
+SESSIONS = {} # {cookie_str: CCSession}
+if os.path.isfile(BACKUP):
+    with open(BACKUP, "rb") as bf:
+        SESSIONS = pickle.load(bf)
+
+print(SESSIONS)
 
 class UserConnection:
     def __init__(self, main_writer, id, sess):
@@ -273,6 +291,16 @@ def print_stats():
     if CONNECTIONS != []:
         print("Best session:", max(c.sess.n_cookies for c in CONNECTIONS), flush=True)
 
+async def backup_loop():
+    global SESSIONS
+    while True:
+        await asyncio.sleep(6)
+        if DEBUG:
+            print("Saving...")
+        with open(BACKUP, "wb") as bf:
+            pickle.dump(SESSIONS, bf)
+
+
 async def main():
     if len(sys.argv) == 2:
         port = int(sys.argv[1])
@@ -285,6 +313,7 @@ async def main():
     print(f'Serving on {addr}', flush=True)
 
     asyncio.create_task(cleaner())
+    asyncio.create_task(backup_loop())
 
     async with server:
         await server.serve_forever()
