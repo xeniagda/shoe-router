@@ -69,8 +69,6 @@ if os.path.isfile(BACKUP):
     with open(BACKUP, "rb") as bf:
         SESSIONS = pickle.load(bf)
 
-print(SESSIONS)
-
 class UserConnection:
     def __init__(self, main_writer, id, sess):
         self.main_writer = main_writer
@@ -244,7 +242,6 @@ async def handle(reader, writer):
     if p.query == None:
         print("New user joined!", flush=True)
 
-        print(p.headers)
         sess = None
         if b"Cookie" in p.headers:
             parts = p.headers[b"Cookie"].split(b";")
