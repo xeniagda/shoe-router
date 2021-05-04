@@ -99,7 +99,7 @@ Server: lol\r
 Transfer-Encoding: chunked\r
 """)
         if sess_cookie != None:
-            self.main_writer.write(b'Set-Cookie: session=' + sess_cookie + b'\r\n')
+            self.main_writer.write(b'Set-Cookie: session=' + sess_cookie + b'; expires=Fri, 31 Dec 9999 23:59:59 GMT\r\n')
         self.main_writer.write(b'\r\n')
         await self.drain()
         self.buffer_send_line(self.fmt(open("static/main.html", "br").read()))
