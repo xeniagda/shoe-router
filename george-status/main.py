@@ -10,8 +10,10 @@ async def query_page(sess, stati, user):
     try:
         stati[user.name] = await george_status.george_status(sess, user.link)
         print(f"{user.name} = success in {time.time() - start:.3}s!")
-    except:
-        print(user.name, "=epic fail")
+    except george_status.GeorgeError as e:
+        print(user.name, "=epic fail (", e, ")")
+    except BaseException as e:
+        print(user.name, "= oh no", type(e), e)
 
 async def main():
     async with aiohttp.ClientSession() as sess:

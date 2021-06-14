@@ -1,5 +1,12 @@
+import aiohttp.web
 import json
 from html.parser import HTMLParser
+from enum import Enum
+
+class GeorgeError(BaseException, Enum):
+    HTTP_ERROR = 0
+    NO_IFRAME = 1
+    UNICODE_ERROR = 1
 
 class GeorgeStatus:
     def __init__(self, user, curr_link, prev_link, next_link):
@@ -50,16 +57,34 @@ class GeorgeIFrameAnalyzer(HTMLParser):
             self.last_link = None
 
 async def george_status(sess, url):
-    site_req = await sess.get(url)
+    try:
+        site_req = await sess.get(url)
+    except aiohttp.ClientError as _:
+        raise GeorgeError.HTTP_ERROR
 
     extractor = GeorgeIFrameExtractor()
-    extractor.feed((await site_req.content.read()).decode())
+    try:
+        extractor.feed((await site_req.content.read()).decode())
+    except aiohttp.ClientError as _:
+        raise GeorgeError.HTTP_ERROR
+    except UnicodeDecodeError as _:
+        raise GeorgeError.UNICODE_ERROR
 
-    embed_req = await sess.get(extractor.frame_url)
+    if extractor.frame_url == None:
+        raise GeorgeError.NO_IFRAME
 
+    try:
+        embed_req = await sess.get(extractor.frame_url)
+    except aiohttp.ClientError as _:
+        raise GeorgeError.HTTP_ERROR
 
     analyzer = GeorgeIFrameAnalyzer(extractor.frame_url.split("?")[1].split("&")[0], url)
-    analyzer.feed((await embed_req.content.read()).decode())
+    try:
+        analyzer.feed((await embed_req.content.read()).decode())
+    except aiohttp.ClientError as _:
+        raise GeorgeError.HTTP_ERROR
+    except UnicodeDecodeError as _:
+        raise GeorgeError.UNICODE_ERROR
 
     return analyzer.george_status
 
