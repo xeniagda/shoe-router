@@ -10,6 +10,14 @@ class GeorgeLink:
     def __str__(self):
         return f"GeorgeLink(prev={self.prev!r}, next={self.next!r})"
 
+# a, b, c and d
+def andify(stuff):
+    if len(stuff) == 0:
+        return ""
+    if len(stuff) == 1:
+        return stuff[0]
+    return ", ".join(stuff[:-1]) + " and " + stuff[-1]
+
 class AnalysisResult:
     def __init__(self, wrong_links, no_links):
         self.wrong_links = wrong_links # set(name)
@@ -20,23 +28,23 @@ class AnalysisResult:
 
     def into_name(self):
         if len(self.wrong_links) == 0:
+            no_linkers = andify(list(self.no_links))
+
             if len(self.no_links) == 0:
-                return "a webring", False
+                return "a webring", "", False
             elif len(self.no_links) == 1:
-                return "a webline", True
+                return "a webline", f"(thanks, {no_linkers})", True
             elif len(self.no_links) < len(NUMERALS):
-                return f"{NUMERALS[len(self.no_links)]} weblines", True
-            elif len(self.no_links) < len(NUMERALS):
-                return "many weblines", True
+                return f"{NUMERALS[len(self.no_links)]} weblines", f"(thanks, {no_linkers})", True
             else:
-                return "many weblines", True
+                return "many weblines", f"(thanks, {no_linkers})", True
         else:
-            return "a webgraph", True
+            return "a webgraph", "(what are you doing, {andify(list(self.wrong_links))}})", True
 
     def into_html(self):
-        name, do_strike = self.into_name()
+        name, thanks, do_strike = self.into_name()
 
-        name = f'<span class="george">{name}</span>'
+        name = f'<span class="george">{name}</span> {thanks}'
 
         if do_strike:
             name = f"<strike>a webring</strike> {name}"
