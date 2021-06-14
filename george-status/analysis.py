@@ -36,6 +36,8 @@ class AnalysisResult:
     def into_html(self):
         name, do_strike = self.into_name()
 
+        name = f'<span class="george">{name}</span>'
+
         if do_strike:
             name = f"<strike>a webring</strike> {name}"
 
