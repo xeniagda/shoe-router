@@ -8,32 +8,7 @@ import aiohttp
 import george_status
 import analysis
 
-ANAL = None
-
-async def query_page(sess, stati, user):
-    start = time.time()
-    try:
-        stati[user.name] = await george_status.george_status(sess, user.link)
-        print(f"{user.name} = success in {time.time() - start:.3}s!")
-    except george_status.GeorgeError as e:
-        print(user.name, "=epic fail (", e, ")")
-    except BaseException as e:
-        print(user.name, "= oh no", type(e), e)
-
-async def analyze():
-    global ANAL
-
-    async with aiohttp.ClientSession() as sess:
-        users = await george_status.read_users(sess)
-
-        stati = {}
-
-        print("querying...")
-        await asyncio.gather(*[query_page(sess, stati, user) for user in users])
-
-        state = analysis.GeorgeState.from_data(users, stati)
-
-        ANAL = state.analyze()
+import query
 
 # https://stackoverflow.com/a/59645689/1753929
 def run_analyze():
@@ -41,7 +16,7 @@ def run_analyze():
     asyncio.set_event_loop(loop)
 
     while True:
-        loop.run_until_complete(analyze())
+        loop.run_until_complete(query.analyze())
         loop.run_until_complete(asyncio.sleep(60 * 60))
 
 threading.Thread(target=run_analyze, daemon=True).start()
@@ -50,10 +25,10 @@ app = flask.Flask("apioform nest")
 
 @app.route("/george-status-html")
 def status_html():
-    if ANAL == None:
+    if query.ANAL == None:
         data = "a webring"
     else:
-        data = ANAL.into_html()
+        data = query.ANAL.into_html()
 
     return flask.Response(
         response=data,
