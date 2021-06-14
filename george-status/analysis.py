@@ -51,6 +51,13 @@ class AnalysisResult:
 
         return name
 
+    def into_json_obj(self):
+        return {
+            "wrong_links": list(self.wrong_links),
+            "no_links": list(self.no_links),
+            "name": self.into_name()[0],
+        }
+
 class GeorgeState:
     def __init__(self, proper_order, links):
         self.proper_order = proper_order

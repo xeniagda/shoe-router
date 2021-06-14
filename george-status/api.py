@@ -1,3 +1,4 @@
+import json
 import flask
 import threading
 
@@ -34,6 +35,22 @@ def status_html():
         response=data,
         status=200,
         content_type="text/html",
+        headers={
+            "Cache-Control": "max-age=0",
+        }
+    )
+
+@app.route("/george-status-json")
+def status_json():
+    if query.ANAL == None:
+        data = None
+    else:
+        data = query.ANAL.into_json_obj()
+
+    return flask.Response(
+        response=json.dumps(data),
+        status=200,
+        content_type="application/json",
         headers={
             "Cache-Control": "max-age=0",
         }
