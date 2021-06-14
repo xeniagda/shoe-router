@@ -98,3 +98,12 @@ services:
     restart: on-failure
     init: true
 
+  george-status:
+    build: george-status
+    volumes:
+      - ./george-status//:/usr/src/app
+    ports:
+      - "9080:9080"
+    restart: on-failure
+    init: true
+

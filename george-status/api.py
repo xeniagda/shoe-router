@@ -66,5 +66,5 @@ def status_html():
 
 
 # TODO: Use a good server instead of flask dev server lmao
-app.run(host="0.0.0.0", port=8080)
+app.run(host="0.0.0.0", port=9080)
 # asyncio.get_event_loop().run_forever()
