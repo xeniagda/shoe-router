@@ -19,16 +19,25 @@ def andify(stuff):
     return ", ".join(stuff[:-1]) + " and " + stuff[-1]
 
 class AnalysisResult:
-    def __init__(self, wrong_links, no_links):
+    def __init__(self, wrong_links, no_links, users):
         self.wrong_links = wrong_links # set(name)
         self.no_links = no_links # set(name)
+
+        self.users = users
 
     def __str__(self):
         return f"AnalysisResult(wrong_links={self.wrong_links!r}, no_links={self.no_links!r})"
 
+    def colourize_name(self, name):
+        colours = [u.colour for u in self.users if u.name == name]
+        if len(colours) == 1:
+            return f'<span style="color: {colours[0]}">{name}</span>'
+        else:
+            return name
+
     def into_name(self):
         if len(self.wrong_links) == 0:
-            no_linkers = andify(list(self.no_links))
+            no_linkers = andify([self.colourize_name(name) for name in self.no_links])
 
             if len(self.no_links) == 0:
                 return "a webring", "", False
@@ -39,7 +48,8 @@ class AnalysisResult:
             else:
                 return "many weblines", f"(thanks, {no_linkers})", True
         else:
-            return "a webgraph", "(what are you doing, {andify(list(self.wrong_links))}})", True
+            wrong_linkers = andify([self.colourize_name(name) for name in self.wrong_links])
+            return "a webgraph", "(what are you doing, {wrong_linkers}})", True
 
     def into_html(self):
         name, thanks, do_strike = self.into_name()
@@ -59,9 +69,11 @@ class AnalysisResult:
         }
 
 class GeorgeState:
-    def __init__(self, proper_order, links):
+    def __init__(self, proper_order, links, users):
         self.proper_order = proper_order
         self.links = links # defaultdict(λ. None, {name: (prev_user, next_user)})
+
+        self.users = users
 
     def from_data(users, stati):
         proper_order = [user.name for user in users]
@@ -73,7 +85,7 @@ class GeorgeState:
         }
         links = defaultdict(lambda: (None, None), links)
 
-        return GeorgeState(proper_order, links)
+        return GeorgeState(proper_order, links, users)
 
     def analyze(self):
         wrong_links = set()
@@ -88,4 +100,4 @@ class GeorgeState:
             elif self.links[user] != (prev, next):
                 wrong_links.add(user)
 
-        return AnalysisResult(wrong_links, no_links)
+        return AnalysisResult(wrong_links, no_links, self.users)
