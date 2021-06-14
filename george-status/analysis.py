@@ -39,7 +39,7 @@ class AnalysisResult:
         if do_strike:
             name = f"<strike>a webring</strike> {name}"
 
-        return f'<span class="george">{name}</span>'
+        return name
 
 class GeorgeState:
     def __init__(self, proper_order, links):
