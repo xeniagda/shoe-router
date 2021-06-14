@@ -31,7 +31,7 @@ class AnalysisResult:
     def colourize_name(self, name):
         colours = [u.colour for u in self.users if u.name == name]
         if len(colours) == 1:
-            return f'<span style="color: {colours[0]}">{name}</span>'
+            return f'<span style="color: {colours[0]};">{name}</span>'
         else:
             return name
 
