@@ -2,6 +2,8 @@ from collections import defaultdict
 
 NUMERALS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"]
 
+SEPARATOR = "\\0"
+
 class GeorgeLink:
     def __init__(self, prev, next):
         self.prev = prev
@@ -12,6 +14,7 @@ class GeorgeLink:
 
 # a, b, c and d
 def andify(stuff):
+    stuff = list(stuff)
     if len(stuff) == 0:
         return ""
     if len(stuff) == 1:
@@ -53,6 +56,14 @@ class AnalysisResult:
             wrong_linkers = andify([self.colourize_name(name) for name in self.wrong_links])
             return "a webgraph", "(what are you doing, {wrong_linkers}})", True
 
+    def details(self):
+        nonfloccing = None
+        if len(self.nonfloccers) > 0:
+            nonfloccers = andify(map(self.colourize_name, self.nonfloccers))
+            nonfloccing = nonfloccers + " have NOT diabled FLOC (this is very bad)"
+
+        return nonfloccing
+
     def into_html(self):
         name, thanks, do_strike = self.into_name()
 
@@ -61,13 +72,17 @@ class AnalysisResult:
         if do_strike:
             name = f"<strike>a webring</strike> {name}"
 
-        return name
+        nonfloccing = self.details()
+        nonfloc = nonfloccing
+
+        return name + SEPARATOR + nonfloc
 
     def into_json_obj(self):
         return {
             "wrong_links": list(self.wrong_links),
             "no_links": list(self.no_links),
             "name": self.into_name()[0],
+            "nonfloccers": list(self.nonfloccers),
         }
 
 class GeorgeState:

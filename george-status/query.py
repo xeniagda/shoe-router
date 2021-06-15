@@ -35,4 +35,8 @@ async def analyze():
 if __name__ == "__main__":
     asyncio.run(analyze())
     print(ANAL)
+    print("===")
     print(ANAL.into_html())
+    print("===")
+    print(ANAL.into_json_obj())
+
