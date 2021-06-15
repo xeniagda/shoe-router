@@ -19,11 +19,13 @@ def andify(stuff):
     return ", ".join(stuff[:-1]) + " and " + stuff[-1]
 
 class AnalysisResult:
-    def __init__(self, wrong_links, no_links, users):
+    def __init__(self, wrong_links, no_links, users, nonfloccers):
         self.wrong_links = wrong_links # set(name)
         self.no_links = no_links # set(name)
 
         self.users = users
+
+        self.nonfloccers = nonfloccers
 
     def __str__(self):
         return f"AnalysisResult(wrong_links={self.wrong_links!r}, no_links={self.no_links!r})"
@@ -69,9 +71,10 @@ class AnalysisResult:
         }
 
 class GeorgeState:
-    def __init__(self, proper_order, links, users):
+    def __init__(self, proper_order, links, users, nonfloccers):
         self.proper_order = proper_order
         self.links = links # defaultdict(λ. None, {name: (prev_user, next_user)})
+        self.nonfloccers = nonfloccers
 
         self.users = users
 
@@ -85,7 +88,9 @@ class GeorgeState:
         }
         links = defaultdict(lambda: (None, None), links)
 
-        return GeorgeState(proper_order, links, users)
+        nonfloccers = set(u.name for u in users if not stati[u.name].disabled_floc)
+
+        return GeorgeState(proper_order, links, users, nonfloccers)
 
     def analyze(self):
         wrong_links = set()
@@ -100,4 +105,4 @@ class GeorgeState:
             elif self.links[user] != (prev, next):
                 wrong_links.add(user)
 
-        return AnalysisResult(wrong_links, no_links, self.users)
+        return AnalysisResult(wrong_links, no_links, self.users, self.nonfloccers)
