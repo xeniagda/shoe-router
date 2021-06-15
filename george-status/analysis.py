@@ -2,7 +2,7 @@ from collections import defaultdict
 
 NUMERALS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"]
 
-SEPARATOR = "♤"
+SEPARATOR = "\x1e"
 
 class GeorgeLink:
     def __init__(self, prev, next):
