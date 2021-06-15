@@ -64,7 +64,7 @@ class AnalysisResult:
 
         return nonfloccing
 
-    def into_html(self):
+    def into_html(self, show_floc=True):
         name, thanks, do_strike = self.into_name()
 
         name = f'<span class="george">{name}</span> {thanks}'
@@ -72,10 +72,13 @@ class AnalysisResult:
         if do_strike:
             name = f"<strike>a webring</strike> {name}"
 
-        nonfloccing = self.details()
-        nonfloc = nonfloccing
+        if show_floc:
+            nonfloccing = self.details()
+            nonfloc = nonfloccing
 
-        return name + SEPARATOR + nonfloc
+            return name + SEPARATOR + nonfloc
+        else:
+            return name
 
     def into_json_obj(self):
         return {

@@ -29,7 +29,23 @@ def status_html():
     if query.ANAL == None:
         data = "a webring"
     else:
-        data = query.ANAL.into_html()
+        data = query.ANAL.into_html(show_floc=False)
+
+    return flask.Response(
+        response=data,
+        status=200,
+        content_type="text/html",
+        headers={
+            "Cache-Control": "max-age=0",
+        }
+    )
+
+@app.route("/george-status-html-but-epic")
+def status_html_floc():
+    if query.ANAL == None:
+        data = "a webring"
+    else:
+        data = query.ANAL.into_html(show_floc=True)
 
     return flask.Response(
         response=data,
