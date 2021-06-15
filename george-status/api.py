@@ -34,7 +34,7 @@ def status_html():
     return flask.Response(
         response=data,
         status=200,
-        content_type="text/html",
+        content_type="text/html; charset=utf-8",
         headers={
             "Cache-Control": "max-age=0",
         }
@@ -50,7 +50,7 @@ def status_html_floc():
     return flask.Response(
         response=data,
         status=200,
-        content_type="text/html",
+        content_type="text/html; charset=utf-8",
         headers={
             "Cache-Control": "max-age=0",
         }
