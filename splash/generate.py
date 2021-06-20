@@ -26,8 +26,7 @@ def generate_text(word):
     return italicized
 
 
-def generate_image(word):
-
+def generate_splash(word):
     im = Image.open("background_no_text.png")
 
     text = generate_text(word)

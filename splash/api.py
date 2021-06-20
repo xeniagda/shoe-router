@@ -1,3 +1,5 @@
+import os
+
 import sys
 import time
 import threading
@@ -22,7 +24,7 @@ def generate_all_images():
             last_progress = time.time()
             print(i, "/", len(words))
 
-        png_data = generate.image_to_png(generate.generate_image(word))
+        png_data = generate.image_to_png(generate.generate_splash(word))
 
         IMAGES.append(png_data)
 
