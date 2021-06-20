@@ -2,18 +2,18 @@ import io
 from PIL import Image, ImageFont, ImageDraw
 
 
-fo = ImageFont.truetype("impact.ttf", 27)
+FONT_SPLASH = ImageFont.truetype("impact.ttf", 27)
+FONT_PROFILE = ImageFont.truetype("OpenSans-Regular.ttf", 16) # Open sans light 300, thanks google
 
-tilt_factor = 0.3
 
-def generate_text(word):
+def generate_text(word, fo, color, tilt_factor=0):
     w, h = fo.getsize(word)
     w_ = int(w + tilt_factor * h)
 
     res_img = Image.new("RGBA", (w, h))
 
     draw = ImageDraw.Draw(res_img)
-    draw.text((0, 0), word, font=fo, fill=(212, 0, 0))
+    draw.text((0, 0), word, font=fo, fill=color)
 
     italicized = res_img.transform(
         (w_, h),
@@ -29,9 +29,18 @@ def generate_text(word):
 def generate_splash(word):
     im = Image.open("background_no_text.png")
 
-    text = generate_text(word)
+    text = generate_text(word, fo=FONT_SPLASH, color=(212, 0, 0), tilt_factor = 0.3)
 
     im.alpha_composite(text, (447, 535))
+
+    return im
+
+def generate_profile(count):
+    im = Image.open("profile.png")
+
+    text = generate_text(str(count), fo=FONT_PROFILE, color=(0, 0, 0))
+
+    im.alpha_composite(text, (139, 24))
 
     return im
 

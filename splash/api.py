@@ -52,5 +52,22 @@ def splash():
     else:
         return make_png_response(IMAGES[0])
 
+@app.route("/profile.png")
+def profile():
+    count = 0
+    try:
+        if os.path.isfile("count.txt"):
+            with open("count.txt", "r") as f:
+                count = int(f.read())
+    except ValueError as _:
+        pass
+
+    count += 1
+
+    with open("count.txt", "w") as f:
+        f.write(str(count))
+
+    return make_png_response(generate.image_to_png(generate.generate_profile(count)))
+
 # TODO: Use a good server instead of flask dev server lmao
 app.run(host="0.0.0.0", port=8080)
