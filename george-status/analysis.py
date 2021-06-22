@@ -61,7 +61,7 @@ class AnalysisResult:
         if len(self.nonfloccers) > 0:
             nonfloccers = andify(map(self.colourize_name, self.nonfloccers))
             have_has = "has" if len(self.nonfloccers) == 1 else "have"
-            nonfloccing = nonfloccers + f" {have_has} NOT diabled FLOC (this is very bad)"
+            nonfloccing = nonfloccers + f" {have_has} NOT disabled FLOC (this is very bad)"
 
         return nonfloccing
 
