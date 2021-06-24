@@ -19,6 +19,8 @@ class GeorgeStatus:
     def __str__(self):
         return f"GeorgeStatus(user={self.user!r}, curr_link={self.curr_link!r}, prev_link={self.prev_link!r}, next_link={self.next_link!r}, disabled_floc={self.disabled_floc})"
 
+STATUS_NOT_LOADED = GeorgeStatus("", "", "", "", True)
+
 class GeorgeIFrameExtractor(HTMLParser):
     def __init__(self, *args, **kwargs):
         super(GeorgeIFrameExtractor, self).__init__(*args, **kwargs)

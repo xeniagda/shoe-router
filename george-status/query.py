@@ -9,6 +9,7 @@ ANAL = None
 
 async def query_page(sess, stati, user):
     start = time.time()
+    stati[user.name] = george_status.STATUS_NOT_LOADED
     try:
         stati[user.name] = await george_status.george_status(sess, user.link)
         print(f"{user.name} = success in {time.time() - start:.3}s!")
