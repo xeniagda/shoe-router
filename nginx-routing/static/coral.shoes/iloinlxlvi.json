@@ -5,5 +5,5 @@
     "visible": true,
     "icon": "https://coral.shoes/favicon.png",
     "isWebgroupMember": true,
-    "groupNames": "george"
+    "groupNames": ["george"]
 }
