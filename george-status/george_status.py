@@ -1,4 +1,5 @@
 import aiohttp.web
+import asyncio
 import json
 from html.parser import HTMLParser
 from enum import Enum
@@ -120,7 +121,11 @@ class GeorgeUser:
 async def read_users(sess):
     json_req = await sess.get("https://george.gh0.pw/data.cgi")
 
-    data = json.loads((await json_req.content.read()).decode())
+    try:
+        data = json.loads((await json_req.content.read()).decode())
+    except json.JSONDecodeError:
+        await asyncio.sleep(5)
+        return await read_users(sess)
 
     users = []
     for field in data:
