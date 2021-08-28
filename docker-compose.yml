@@ -13,6 +13,9 @@ services:
       - ./nginx-routing/static:/var/www/static
 
       - ./ilo-pi-ante-toki/static:/var/www/static/ilo-pi-ante-toki
+
+      - ./ilo-pi-ante-toki/save:/var/www/static/ilo-pi-ante-toki-save
+
       - ./mulambdati/static:/var/www/static/mulambdati
 
       - ./trash:/var/www/static/trash:ro
