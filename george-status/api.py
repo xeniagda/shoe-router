@@ -18,7 +18,7 @@ def run_analyze():
 
     while True:
         loop.run_until_complete(query.analyze())
-        loop.run_until_complete(asyncio.sleep(60 * 60))
+        loop.run_until_complete(asyncio.sleep(60 * 5))
 
 threading.Thread(target=run_analyze, daemon=True).start()
 
