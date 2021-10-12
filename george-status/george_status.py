@@ -99,7 +99,7 @@ async def george_status(sess, url):
         raise GeorgeError.UNICODE_ERROR
 
     if "Permissions-Policy" in site_req.headers and \
-        site_req.headers["Permissions-Policy"] == "interest-cohort=()":
+        "interest-cohort=()" in site_req.headers["Permissions-Policy"].split(","):
         analyzer.george_status.disabled_floc = True
 
     if extractor.floc_meta:
