@@ -72,6 +72,13 @@ def status_json():
         }
     )
 
+@app.route("/force-update", methods=["POST"])
+async def update():
+    await query.analyze()
+    return flask.Response(
+        response="ok",
+        status=200,
+    )
 
 # TODO: Use a good server instead of flask dev server lmao
 app.run(host="0.0.0.0", port=9080)
