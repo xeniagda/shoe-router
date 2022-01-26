@@ -76,7 +76,7 @@ class AnalysisResult:
         if show_floc:
             nonfloccing = self.details()
             if nonfloccing is None:
-                return name
+                return name + SEPARATOR
 
             return name + SEPARATOR + nonfloccing
         else:
