@@ -2,7 +2,7 @@ import io
 from PIL import Image, ImageFont, ImageDraw
 
 
-FONT_SPLASH = ImageFont.truetype("impact.ttf", 27)
+FONT_SPLASH = ImageFont.truetype("segoeuiz.ttf", 30)
 FONT_PROFILE = ImageFont.truetype("OpenSans-Regular.ttf", 16) # Open sans light 300, thanks google
 
 
@@ -29,9 +29,9 @@ def generate_text(word, fo, color, tilt_factor=0):
 def generate_splash(word):
     im = Image.open("background_no_text.png")
 
-    text = generate_text(word, fo=FONT_SPLASH, color=(212, 0, 0), tilt_factor = 0.3)
+    text = generate_text(word, fo=FONT_SPLASH, color=(212, 0, 0), tilt_factor = 0)
 
-    im.alpha_composite(text, (447, 535))
+    im.alpha_composite(text, (447, 530))
 
     return im
 
