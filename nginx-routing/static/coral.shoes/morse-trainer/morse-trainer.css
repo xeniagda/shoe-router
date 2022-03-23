@@ -60,7 +60,7 @@ header, footer {
     justify-content: center;
     align-items: center;
 
-    font-size: 15;
+    font-size: 15pt;
 }
 
 #text {
@@ -72,7 +72,7 @@ header, footer {
 
     resize: vertical;
 
-    font-size: 30;
+    font-size: 30pt;
 }
 
 .typed {
@@ -89,7 +89,7 @@ header, footer {
 }
 
 #button {
-    font-size: 60;
+    font-size: 60pt;
     background: var(--fg-1);
     color: var(--bg-1);
     padding: 2ex;
