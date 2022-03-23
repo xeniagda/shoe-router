@@ -1,0 +1,106 @@
+body {
+    --bg-1: #1C181A;
+    --bg-2: #2B282D;
+    --fg-1: #D2E5C2;
+    --fg-2: #59625E;
+    --highlight: #93B8A5;
+
+    background-color: var(--bg-1);
+    color: var(--fg-1);
+
+    margin-top: 0;
+    margin-bottom: 0;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+
+    font-family: monospace;
+}
+
+a {
+    color: var(--highlight);
+}
+
+input {
+    border: none;
+    width: 4em;
+    background-color: var(--bg-1);
+    color: var(--highlight);
+}
+
+main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+
+    width: 70%;
+    min-height: 80vh;
+}
+
+header, footer {
+    background-color: var(--bg-2);
+    width: 100vw;
+    height: 10ex;
+
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.head, .foot {
+    padding-left: 2em;
+    padding-right: 2em;
+
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 15;
+}
+
+#text {
+    border: none;
+
+    width: 80%;
+
+    box-sizing: border-box;
+
+    resize: vertical;
+
+    font-size: 30;
+}
+
+.typed {
+    color: var(--fg-2);
+}
+
+.typing {
+    background-color: var(--highlight);
+    color: var(--bg-2);
+}
+
+.untyped {
+
+}
+
+#button {
+    font-size: 60;
+    background: var(--fg-1);
+    color: var(--bg-1);
+    padding: 2ex;
+    border-radius: 1em;
+}
+
+#cursor::before {
+    content: "|";
+    color: #00000033;
+}
+
+.space {
+    color: #00000033;
+}
