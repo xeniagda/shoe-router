@@ -137,31 +137,30 @@ header, footer {
     position: relative;
     top: -5ex;
 
-    left: -5em;
+    left: -1em;
 }
 
-#button-pause-outer {
+#button-stop-outer {
     border: 0.3ex solid var(--fg-2);
     border-radius: 0.4ex;
-    width: 2.6ex;
+    width: 2.9ex;
     height: 2.9ex;
     padding: 0.3ex;
 }
 
-#button-pause-outer.active {
+#button-stop-outer.active {
     border: 0.3ex solid var(--fg-1);
     cursor: pointer;
 }
 
-#button-pause-inner {
-    border-left: 0.5ex solid var(--fg-2);
-    border-right: 0.5ex solid var(--fg-2);
-    width: 0.8em;
-    height: 1.4em;
+#button-stop-inner {
+    width: 2.5ex;
+    height: 2.5ex;
+    margin: 0.2ex;
+    background-color: var(--fg-2);
 }
-#button-pause-outer.active>#button-pause-inner {
-    border-left: 0.5ex solid var(--fg-1);
-    border-right: 0.5ex solid var(--fg-1);
+#button-stop-outer.active>#button-stop-inner {
+    background-color: var(--fg-1);
 }
 
 #text {
@@ -191,11 +190,7 @@ header, footer {
 
 #cursor::before {
     content: "|";
-    color: #00000033;
-}
-
-.space {
-    color: #00000033;
+    color: var(--fg-2);
 }
 
 #volume {
