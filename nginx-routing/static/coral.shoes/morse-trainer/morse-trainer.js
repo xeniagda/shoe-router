@@ -1,91 +1,7 @@
 const DIT = "DIT";
 const DAH = "DAH";
-
 const LETTER_SEPARATOR = "LET";
 const WORD_SEPARATOR = "WORD";
-
-var DIT_DURATION = 0;
-var DAH_DURATION = 0;
-var SYMBOL_SEP = 0;
-var LETTER_SEP = 0;
-var WORD_SEP = 0;
-
-
-
-const MORSE = [
-    ["A", ".-"],
-    ["B", "-..."],
-    ["C", "-.-."],
-    ["D", "-.."],
-    ["E", "."],
-    ["F", "..-."],
-    ["G", "--."],
-    ["H", "...."],
-    ["I", ".."],
-    ["J", ".---"],
-    ["K", "-.-"],
-    ["L", ".-.."],
-    ["M", "--"],
-    ["N", "-."],
-    ["O", "---"],
-    ["P", ".--."],
-    ["Q", "--.-"],
-    ["R", ".-."],
-    ["S", "..."],
-    ["T", "-"],
-    ["U", "..-"],
-    ["V", "...-"],
-    ["W", ".--"],
-    ["X", "-..-"],
-    ["Y", "-.--"],
-    ["Z", "--.."],
-
-    ["1", ".----"],
-    ["2", "..---"],
-    ["3", "...--"],
-    ["4", "....-"],
-    ["5", "....."],
-    ["6", "-...."],
-    ["7", "--..."],
-    ["8", "---.."],
-    ["9", "----."],
-    ["0", "-----"],
-
-    [".", ".-.-.-"],
-    [",", "--..--"],
-    ["?", "..--.."],
-    ["!", "-.-.--"],
-];
-
-var last_press_start = null;
-var last_press_end = null;
-events = [];
-
-function get_space() {
-    if (last_press_end == null) {
-        return null;
-    }
-    let delta = (Date.now() - last_press_end) / 1000;
-    if (delta > (WORD_SEP + LETTER_SEP) / 2) {
-        return WORD_SEPARATOR;
-    } else if (delta > (LETTER_SEP + SYMBOL_SEP) / 2) {
-        return LETTER_SEPARATOR;
-    }
-    return null;
-}
-
-function get_dot() {
-    if (last_press_start == null) {
-        return null;
-    }
-    let delta = (Date.now() - last_press_start) / 1000;
-    if (delta > (DAH_DURATION + DIT_DURATION) / 2) {
-        return DAH;
-    } else {
-        return DIT;
-    }
-}
-
 
 function event_span(ev) {
     let el = document.createElement("span");
@@ -148,113 +64,196 @@ function get_word(events, use_real_spaces) {
     return letters.join("");
 }
 
-let typed_text = "Hello world! ";
+const MORSE = [
+    ["A", ".-"],
+    ["B", "-..."],
+    ["C", "-.-."],
+    ["D", "-.."],
+    ["E", "."],
+    ["F", "..-."],
+    ["G", "--."],
+    ["H", "...."],
+    ["I", ".."],
+    ["J", ".---"],
+    ["K", "-.-"],
+    ["L", ".-.."],
+    ["M", "--"],
+    ["N", "-."],
+    ["O", "---"],
+    ["P", ".--."],
+    ["Q", "--.-"],
+    ["R", ".-."],
+    ["S", "..."],
+    ["T", "-"],
+    ["U", "..-"],
+    ["V", "...-"],
+    ["W", ".--"],
+    ["X", "-..-"],
+    ["Y", "-.--"],
+    ["Z", "--.."],
 
-let force_update = false;
+    ["1", ".----"],
+    ["2", "..---"],
+    ["3", "...--"],
+    ["4", "....-"],
+    ["5", "....."],
+    ["6", "-...."],
+    ["7", "--..."],
+    ["8", "---.."],
+    ["9", "----."],
+    ["0", "-----"],
 
-let main = document.getElementById("main");
+    [".", ".-.-.-"],
+    [",", "--..--"],
+    ["?", "..--.."],
+    ["!", "-.-.--"],
+];
 
-let speed_inp = document.getElementById("speed");
+class Morse {
+    // draw_callback(typed, typing, event_spans)
+    constructor(dit_speed_ms, draw_callback) {
+        this.draw_callback = draw_callback;
 
-function set_speeds(dit_speed_ms) {
-    DIT_DURATION = dit_speed_ms / 1000;
-    DAH_DURATION = 3 * DIT_DURATION;
-    SYMBOL_SEP = DIT_DURATION;
-    LETTER_SEP = 3 * DIT_DURATION;
-    WORD_SEP = 7 * DIT_DURATION;
+        this.last_press_start = null;
+        this.last_press_end = null;
+        this.events = [];
 
-    speed_inp.value = dit_speed_ms;
-    localStorage.setItem("speed", dit_speed_ms);
-}
+        this.typed_text = "Hello world! ";
 
-if (localStorage.getItem("speed") != null) {
-    set_speeds(+localStorage.getItem("speed"));
-} else {
-    set_speeds(+speed_inp.value);
-}
+        this.force_update = false;
 
-speed_inp.addEventListener("change", e => {
-    set_speeds(+e.target.value);
-});
+        this.DIT_DURATION = 0;
+        this.DAH_DURATION = 0;
+        this.SYMBOL_SEP = 0;
+        this.LETTER_SEP = 0;
+        this.WORD_SEP = 0;
 
-document.body.addEventListener("keydown", e => {
-    if (e.key == " " && !event.repeat) {
-        last_press_start = Date.now();
+        this.set_speeds(dit_speed_ms);
 
-        let space = get_space();
-        if (space != null)
-            events.push(space);
+        self = this;
+        this.redraw_int = setInterval(() => self.redraw(), 10);
 
-        last_press_end = null;
+        this.last_displayed_events = null;
     }
-    if (e.key == "Backspace") {
-        if (events.length == 0 && typed_text.length != 0) {
-            typed_text = typed_text.slice(0, typed_text.length-2) + " ";
-            force_update = true;
+
+    set_speeds(dit_speed_ms) {
+        this.DIT_DURATION = dit_speed_ms / 1000;
+        this.DAH_DURATION = 3 * this.DIT_DURATION;
+        this.SYMBOL_SEP = this.DIT_DURATION;
+        this.LETTER_SEP = 3 * this.DIT_DURATION;
+        this.WORD_SEP = 7 * this.DIT_DURATION;
+    }
+
+    get_space() {
+        if (this.last_press_end == null) {
+            return null;
+        }
+        let delta = (Date.now() - this.last_press_end) / 1000;
+        if (delta > (this.WORD_SEP + this.LETTER_SEP) / 2) {
+            return WORD_SEPARATOR;
+        } else if (delta > (this.LETTER_SEP + this.SYMBOL_SEP) / 2) {
+            return LETTER_SEPARATOR;
+        }
+        return null;
+    }
+
+    get_dot() {
+        if (this.last_press_start == null) {
+            return null;
+        }
+        let delta = (Date.now() - this.last_press_start) / 1000;
+        if (delta > (this.DAH_DURATION + this.DIT_DURATION) / 2) {
+            return DAH;
         } else {
-            events = [];
-            last_press_start = null;
-            last_press_end = null;
+            return DIT;
         }
     }
-});
 
-document.body.addEventListener("keyup", e => {
-    if (e.key == " ") {
-        last_press_end = Date.now();
+    push_word() {
+        let word = get_word(this.events, true);
+        this.typed_text += word;
+        this.events = [];
+    }
 
-        let dot = get_dot();
+    press() {
+        this.last_press_start = Date.now();
+
+        let space = this.get_space();
+        if (space != null)
+            this.events.push(space);
+
+        this.last_press_end = null;
+
+        if (space == WORD_SEPARATOR) {
+            this.push_word();
+        }
+
+        this.redraw();
+    }
+
+    release() {
+        this.last_press_end = Date.now();
+
+        let dot = this.get_dot();
         if (dot != null)
-            events.push(dot);
+            this.events.push(dot);
 
-        last_press_start = null;
-    }
-});
+        this.last_press_start = null;
 
-let last_displayed_events = null;
-function update_display() {
-    let button = document.getElementById("button");
-
-    let current_events = events.slice();
-
-    let dot = get_dot();
-    if (dot != null)
-        current_events.push(dot);
-
-    let space = get_space();
-    if (space != null)
-        current_events.push(space);
-
-    if (!force_update && last_displayed_events != null && current_events.join(" ") == last_displayed_events.join(" "))
-        return;
-    force_update = false;
-
-    last_displayed_events = current_events;
-
-    let content = [];
-    for (var i = 0; i < current_events.length; i++) {
-        let thing = current_events[i];
-        content.push(event_span(thing));
-    }
-    let current_word = get_word(current_events, false);
-    content.push(document.createElement("br"));
-    content.push(document.createTextNode(current_word));
-    button.replaceChildren(...content);
-
-    let displayed_text = typed_text + get_word(current_events, false);
-    document.getElementById("text").replaceChildren(span_with_class(typed_text, "typed"), span_with_class(get_word(current_events, false), "typing"));
-
-    if (events.length == 0) {
-        return;
+        this.redraw();
     }
 
-    let last = events[events.length-1];
-    if (last == WORD_SEPARATOR) {
-        let word = get_word(events, true);
-        typed_text += word;
-        events = [];
+    clear() {
+        if (this.events.length == 0 && this.typed_text.length != 0) {
+            this.typed_text = this.typed_text.slice(0, this.typed_text.length-2) + " ";
+            this.force_update = true;
+        } else {
+            this.events = [];
+            this.last_press_start = null;
+            this.last_press_end = null;
+        }
     }
 
+    redraw() {
+        let current_events = this.events.slice();
+
+        let dot = this.get_dot();
+        if (dot != null)
+            current_events.push(dot);
+
+        let space = this.get_space();
+        if (space != null)
+            current_events.push(space);
+
+        if (!this.force_update && this.last_displayed_events != null && current_events.join(" ") == this.last_displayed_events.join(" "))
+            return;
+        this.force_update = false;
+        this.last_displayed_events = current_events;
+
+
+        let content = [];
+        for (var i = 0; i < current_events.length; i++) {
+            let thing = current_events[i];
+            content.push(event_span(thing));
+        }
+        let current_word = get_word(current_events, false);
+        content.push(document.createElement("br"));
+        content.push(document.createTextNode(current_word));
+
+        self.draw_callback(this.typed_text, get_word(self.events, false), content);
+    }
 }
-update_display();
-setInterval(update_display, 0.010);
+
+function bind_speed_input(morse, speed_inp) {
+    if (localStorage.getItem("speed") != null) {
+        morse.set_speeds(+localStorage.getItem("speed"));
+        speed_inp.value = localStorage.getItem("speed");
+    } else {
+        morse.set_speeds(+speed_inp.value);
+    }
+
+    speed_inp.addEventListener("change", e => {
+        morse.set_speeds(+speed_inp.value);
+        localStorage.setItem("speed", speed_inp.value);
+    });
+}
