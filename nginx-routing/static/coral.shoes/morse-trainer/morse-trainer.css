@@ -18,6 +18,7 @@ body {
     justify-content: space-between;
 
     font-family: monospace;
+    font-size: 15pt;
 }
 
 a {
@@ -33,12 +34,39 @@ input {
 
 main {
     flex-grow: 1;
+
+    display: flex;
+    flex-direction: row;
+
+    align-items: flex;
+}
+
+#morse-table {
+    display: flex;
+    flex-direction: row;
+}
+
+.morse-col {
+    padding: 1em;
+}
+
+#col-mid {
+    height: 100%;
+    background-color: var(--fg-2);
+    width: 0.3em;
+}
+
+#col-left {
+    text-align: right;
+}
+
+#main-split {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-evenly;
 
-    width: 70%;
+    width: 70vw;
     min-height: 80vh;
 }
 
@@ -64,14 +92,9 @@ header, footer {
 }
 
 #text {
-    border: none;
-
-    width: 80%;
-
+    width: 100%;
     box-sizing: border-box;
-
     resize: vertical;
-
     font-size: 30pt;
 }
 

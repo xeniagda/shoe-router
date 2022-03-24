@@ -1,5 +1,5 @@
-const DIT = "DIT";
-const DAH = "DAH";
+const DIT = ".";
+const DAH = "-";
 const LETTER_SEPARATOR = "LET";
 const WORD_SEPARATOR = "WORD";
 
@@ -32,6 +32,8 @@ function span_with_class(text, cls) {
 function get_letter(ev) {
     for (var i = 0; i < MORSE.length; i++) {
         let l = MORSE[i];
+        if (l.length == 0)
+            continue;
         let sequence = l[1];
         if (sequence.length != ev.length)
             continue;
@@ -64,6 +66,7 @@ function get_word(events, use_real_spaces) {
     return letters.join("");
 }
 
+// empty element = space in table
 const MORSE = [
     ["A", ".-"],
     ["B", "-..."],
@@ -92,6 +95,8 @@ const MORSE = [
     ["Y", "-.--"],
     ["Z", "--.."],
 
+    [],
+
     ["1", ".----"],
     ["2", "..---"],
     ["3", "...--"],
@@ -102,6 +107,8 @@ const MORSE = [
     ["8", "---.."],
     ["9", "----."],
     ["0", "-----"],
+
+    [],
 
     [".", ".-.-.-"],
     [",", "--..--"],
@@ -257,3 +264,35 @@ function bind_speed_input(morse, speed_inp) {
         localStorage.setItem("speed", speed_inp.value);
     });
 }
+
+// fill morse table
+let col_left = document.getElementById("col-left");
+let children = [];
+for (var i = 0; i < MORSE.length / 2; i++) {
+    if (MORSE[i].length == 0) {
+        children.push(document.createElement("br"));
+        continue;
+    }
+    for (var j = 0; j < MORSE[i][1].length; j++)
+        children.push(event_span(MORSE[i][1][j]));
+    children.push(document.createTextNode(" "));
+    children.push(span_with_class(MORSE[i][0]));
+    children.push(document.createElement("br"));
+}
+col_left.replaceChildren(...children);
+
+let col_right = document.getElementById("col-right");
+children = [];
+for (; i < MORSE.length; i++) {
+    if (MORSE[i].length == 0) {
+        children.push(document.createElement("br"));
+        continue;
+    }
+    children.push(span_with_class(MORSE[i][0]));
+    children.push(document.createTextNode(" "));
+    for (var j = 0; j < MORSE[i][1].length; j++)
+        children.push(event_span(MORSE[i][1][j]));
+
+    children.push(document.createElement("br"));
+}
+col_right.replaceChildren(...children);
