@@ -22,7 +22,7 @@ function update_display(typed, typing, event_spans) {
     let text = document.getElementById("text");
 
     button.replaceChildren(...event_spans);
-    text.replaceChildren(span_with_class(typed, "typed"), span_with_class(get_word(typing, false), "typing"));
+    text.replaceChildren(span_with_class(typed, "type-bright"), span_with_class(typing, "type-highlight"), span_with_class("|", "type-dark"));
 
 }
 

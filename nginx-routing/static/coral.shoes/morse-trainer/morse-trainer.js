@@ -118,7 +118,7 @@ class Morse {
         this.last_press_end = null;
         this.events = [];
 
-        this.typed_text = "Hello world! ";
+        this.typed_text = "";
 
         this.force_update = false;
 
@@ -240,7 +240,7 @@ class Morse {
         content.push(document.createElement("br"));
         content.push(document.createTextNode(current_word));
 
-        self.draw_callback(this.typed_text, get_word(self.events, false), content);
+        self.draw_callback(this.typed_text, get_word(current_events, false), content);
     }
 }
 

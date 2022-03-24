@@ -75,21 +75,21 @@ header, footer {
     font-size: 30pt;
 }
 
-.typed {
+.type-dark {
     color: var(--fg-2);
 }
 
-.typing {
+.type-highlight {
     background-color: var(--highlight);
     color: var(--bg-2);
 }
 
-.untyped {
+.type-bright {
 
 }
 
 #button {
-    font-size: 60pt;
+    font-size: 40pt;
     background: var(--fg-1);
     color: var(--bg-1);
     padding: 2ex;
