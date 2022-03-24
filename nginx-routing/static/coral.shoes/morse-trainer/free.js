@@ -25,6 +25,3 @@ function update_display(typed, typing, event_spans) {
     text.replaceChildren(span_with_class(typed, "type-bright"), span_with_class(typing, "type-highlight"), span_with_class("|", "type-dark"));
 
 }
-
-update_display();
-setInterval(update_display, 0.010);
