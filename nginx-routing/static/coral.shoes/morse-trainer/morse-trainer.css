@@ -45,7 +45,7 @@ main {
 header, footer {
     background-color: var(--bg-2);
     width: 100vw;
-    height: 10ex;
+    height: 15ex;
 
     display: flex;
     justify-content: space-evenly;
