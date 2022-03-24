@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300&family=PT+Mono&display=swap');
+
 body {
     --bg-1: #1C181A;
     --bg-2: #2B282D;
@@ -17,7 +19,7 @@ body {
     align-items: center;
     justify-content: space-between;
 
-    font-family: monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 15pt;
 }
 
