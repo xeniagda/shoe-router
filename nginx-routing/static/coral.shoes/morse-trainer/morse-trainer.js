@@ -9,7 +9,7 @@ function event_span(ev) {
         el.innerText = "•";
         el.classList.add("dot");
     } else if (ev == DAH) {
-        el.innerText = "-";
+        el.innerText = "–";
         el.classList.add("dot");
     } else if (ev == LETTER_SEPARATOR) {
         el.innerText = "-";
