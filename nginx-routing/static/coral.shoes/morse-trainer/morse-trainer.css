@@ -93,10 +93,78 @@ header, footer {
     font-size: 15pt;
 }
 
-#text {
+#textpart {
     width: 100%;
+}
+
+#buttons {
+    margin: 1ex;
+    display: flex;
+}
+#buttons>* {
+    margin: 0.3em;
+}
+
+#button-play-outer {
+    border: 0.3ex solid var(--fg-2);
+    border-radius: 0.4ex;
+    width: 2.6ex;
+    height: 2.9ex;
+    padding: 0.3ex;
+}
+
+#button-play-outer.active {
+    border: 0.3ex solid var(--fg-1);
+    cursor: pointer;
+}
+
+#button-play-inner {
+    position: absolute;
+    border-top: 1.5ex solid rgba(0,0,0,0);
+    border-bottom: 1.5ex solid rgba(0,0,0,0);
+    border-left: 2.6ex solid var(--fg-2);
     box-sizing: border-box;
-    resize: vertical;
+    height: 0px;
+}
+#button-play-outer.active>#button-play-inner {
+    border-left: 2.6ex solid var(--fg-1);
+}
+
+#button-play-outer:not(.active):hover::after {
+    content: "Select part of the text to play";
+    display: block;
+    width: 50em;
+    position: relative;
+    top: -5ex;
+
+    left: -5em;
+}
+
+#button-pause-outer {
+    border: 0.3ex solid var(--fg-2);
+    border-radius: 0.4ex;
+    width: 2.6ex;
+    height: 2.9ex;
+    padding: 0.3ex;
+}
+
+#button-pause-outer.active {
+    border: 0.3ex solid var(--fg-1);
+    cursor: pointer;
+}
+
+#button-pause-inner {
+    border-left: 0.5ex solid var(--fg-2);
+    border-right: 0.5ex solid var(--fg-2);
+    width: 0.8em;
+    height: 1.4em;
+}
+#button-pause-outer.active>#button-pause-inner {
+    border-left: 0.5ex solid var(--fg-1);
+    border-right: 0.5ex solid var(--fg-1);
+}
+
+#text {
     font-size: 30pt;
 }
 
@@ -129,3 +197,8 @@ header, footer {
 .space {
     color: #00000033;
 }
+
+#volume {
+    width: 10em;
+}
+

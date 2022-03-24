@@ -15,8 +15,19 @@
         </header>
         <main id="main">
             <div id="main-split">
-                <div id="text"> </div>
-                <div id="button"> </div>
+                <div id="textpart">
+                    <div id="buttons">
+                        <div id="button-play-outer"> <div id="button-play-inner"> </div> </div>
+                        <div id="button-pause-outer"> <div id="button-pause-inner"> </div> </div>
+                    </div>
+                    <div id="text">
+                        <span class="type-bright" id="typed"></span>
+                        <span class="type-highlight" id="typing"></span>
+                        <span id="cursor"></span>
+                        <span class="type-dark" id="totype"></span>
+                    </div>
+                </div>
+                <div id="button"></div>
             </div>
             <div id="morse-table">
                 <div class="morse-col" id="col-left"> </div>
@@ -26,7 +37,8 @@
         </main>
         <footer>
             <div class="foot"> <div> Use spacebar to write morse. </br> Use backspace to clear current word. </div> </div>
-            <div class="foot"> <div> Speed for one "dit": <input id=speed type=number value=100 min=0 max=500 step=10></input> [ms]  </div>
+            <div class="foot"> <div> Volume: <input id=volume type=range value=1 min=0 max=300></input> </div> </div>
+            <div class="foot"> <div> Speed for one "dit": <input id=speed type=number value=100 min=0 max=500 step=10></input> [ms] </div> </div>
         </footer>
     </body>
 

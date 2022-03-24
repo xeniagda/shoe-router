@@ -125,7 +125,7 @@ class Morse {
         this.last_press_end = null;
         this.events = [];
 
-        this.typed_text = "";
+        this.typed_text = "CORAL DOT SHOES! ";
 
         this.force_update = false;
 
@@ -296,3 +296,63 @@ for (; i < MORSE.length; i++) {
     children.push(document.createElement("br"));
 }
 col_right.replaceChildren(...children);
+
+
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+const RAMP_TIME = 0.015;
+class MorseAudio {
+    constructor() {
+        this.audio_ctx = new AudioContext();
+
+        this.base_osc = this.audio_ctx.createOscillator();
+        this.base_osc.frequency.setValueAtTime(641, this.audio_ctx.currentTime);
+
+        this.gain = this.audio_ctx.createGain();
+        this.gain.gain.setValueAtTime(0, this.audio_ctx.currentTime);
+
+        this.volume = 1;
+
+        this.base_osc.connect(this.gain);
+        this.gain.connect(this.audio_ctx.destination);
+        this.base_osc.start();
+
+        this.is_on = false;
+
+        this.events = [];
+    }
+
+    on() {
+        this.gain.gain.setValueAtTime(0, this.audio_ctx.currentTime);
+        this.gain.gain.linearRampToValueAtTime(this.volume, this.audio_ctx.currentTime+RAMP_TIME);
+        this.is_on = true;
+    }
+
+    off() {
+        this.gain.gain.setValueAtTime(this.volume, this.audio_ctx.currentTime);
+        this.gain.gain.linearRampToValueAtTime(0, this.audio_ctx.currentTime+RAMP_TIME);
+        this.is_on = false;
+    }
+
+    set_volume(volume) {
+        this.volume = volume / 100;
+        if (this.is_on)
+            this.on();
+    }
+}
+
+function bind_volume_input(audio, volume_inp) {
+    if (localStorage.getItem("volume") != null) {
+        audio.set_volume(+localStorage.getItem("volume"));
+        volume_inp.value = localStorage.getItem("volume");
+    } else {
+        audio.set_volume(+volume_inp.value);
+    }
+
+    volume_inp.addEventListener("change", e => {
+        audio.set_volume(+volume_inp.value);
+        localStorage.setItem("volume", volume_inp.value);
+    });
+}
+
+
