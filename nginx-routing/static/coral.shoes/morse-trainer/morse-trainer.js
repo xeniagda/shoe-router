@@ -21,11 +21,13 @@ function event_span(ev) {
     return el;
 }
 
-function span_with_class(text, cls) {
+function span_with_class(text, ...clss) {
     let el = document.createElement("span");
 
     el.innerText = text;
-    el.classList.add(cls);
+
+    for (let cls of clss)
+        el.classList.add(cls);
     return el;
 }
 
@@ -273,11 +275,15 @@ for (var i = 0; i < MORSE.length / 2; i++) {
         children.push(document.createElement("br"));
         continue;
     }
+    let div = document.createElement("div");
+
+    div.classList.add("morse-element");
     for (var j = 0; j < MORSE[i][1].length; j++)
-        children.push(event_span(MORSE[i][1][j]));
-    children.push(document.createTextNode(" "));
-    children.push(span_with_class(MORSE[i][0]));
-    children.push(document.createElement("br"));
+        div.appendChild(event_span(MORSE[i][1][j]));
+
+    div.appendChild(span_with_class(" " + MORSE[i][0]));
+
+    children.push(div);
 }
 col_left.replaceChildren(...children);
 
@@ -288,12 +294,15 @@ for (; i < MORSE.length; i++) {
         children.push(document.createElement("br"));
         continue;
     }
-    children.push(span_with_class(MORSE[i][0]));
-    children.push(document.createTextNode(" "));
-    for (var j = 0; j < MORSE[i][1].length; j++)
-        children.push(event_span(MORSE[i][1][j]));
+    let div = document.createElement("div");
+    div.classList.add("morse-element");
 
-    children.push(document.createElement("br"));
+    div.appendChild(span_with_class(MORSE[i][0] + " "));
+    for (var j = 0; j < MORSE[i][1].length; j++)
+        div.appendChild(event_span(MORSE[i][1][j]));
+
+
+    children.push(div);
 }
 col_right.replaceChildren(...children);
 
