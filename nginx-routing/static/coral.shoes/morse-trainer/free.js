@@ -20,7 +20,9 @@ document.body.addEventListener("keydown", e => {
         audio.on();
     }
     if (e.key == "Backspace") {
-        morse.clear();
+        if (!morse.clear()) {
+            morse.typed_text = morse.typed_text.slice(0, morse.typed_text.length - 2) + " ";
+        }
     }
 });
 

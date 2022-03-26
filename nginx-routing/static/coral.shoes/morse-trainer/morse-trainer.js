@@ -127,7 +127,7 @@ class Morse {
         this.last_press_end = null;
         this.events = [];
 
-        this.typed_text = "CORAL DOT SHOES! ";
+        this.typed_text = "";
 
         this.force_update = false;
 
@@ -213,14 +213,10 @@ class Morse {
     }
 
     clear() {
-        if (this.events.length == 0 && this.typed_text.length != 0) {
-            this.typed_text = this.typed_text.slice(0, this.typed_text.length-2) + " ";
-            this.force_update = true;
-        } else {
-            this.events = [];
-            this.last_press_start = null;
-            this.last_press_end = null;
-        }
+        this.events = [];
+        this.last_press_start = null;
+        this.last_press_end = null;
+        this.force_update = true;
     }
 
     redraw() {
