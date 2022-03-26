@@ -88,6 +88,7 @@ main {
 
     min-height: 80vh;
     flex-grow: 1;
+    margin-right: 2em;
 }
 
 header, footer {
@@ -195,9 +196,6 @@ header, footer {
 
 #text {
     font-size: 30pt;
-}
-#text>span {
-    white-space: pre;
 }
 
 .type-dark {
