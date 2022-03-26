@@ -1,11 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300&family=PT+Mono&display=swap');
 
 body {
-    --bg-1: #1C181A;
-    --bg-2: #2B282D;
+    --bg-1: #18181c;
+    --bg-2: #272c33;
     --fg-1: #D2E5C2;
-    --fg-2: #59625E;
-    --highlight: #93B8A5;
+    --fg-2: #343d39;
+    --highlight: #7edead;
 
     background-color: var(--bg-1);
     color: var(--fg-1);
