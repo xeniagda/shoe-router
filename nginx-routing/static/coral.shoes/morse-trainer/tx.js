@@ -108,7 +108,7 @@ function update_display(typed, typing, morse_spans, text) {
                 typed = morse.typed_text;
                 break;
             }
-            if (i == current_sentence.length) {
+            if (i == current_sentence.length - 1) {
                 // TODO: Win screen?
                 select_new_sentence();
             }
