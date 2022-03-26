@@ -6,7 +6,7 @@ const WORD_SEPARATOR = "WORD";
 function event_span(ev) {
     let el = document.createElement("span");
     if (ev == DIT) {
-        el.innerText = "•";
+        el.innerText = "·";
         el.classList.add("dot");
     } else if (ev == DAH) {
         el.innerText = "–";
@@ -119,7 +119,7 @@ const MORSE = [
 ];
 
 class Morse {
-    // draw_callback(typed, typing, event_spans)
+    // draw_callback(typed, typing, morse_spans, current_word)
     constructor(dit_speed_ms, draw_callback) {
         this.draw_callback = draw_callback;
 
@@ -246,10 +246,8 @@ class Morse {
             content.push(event_span(thing));
         }
         let current_word = get_word(current_events, false);
-        content.push(document.createElement("br"));
-        content.push(document.createTextNode(current_word));
 
-        this.draw_callback(this.typed_text, get_word(current_events, false), content);
+        this.draw_callback(this.typed_text, get_word(current_events, false), content, current_word);
     }
 }
 

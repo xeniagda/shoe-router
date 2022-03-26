@@ -33,10 +33,9 @@ document.body.addEventListener("keyup", e => {
 
 const button = document.getElementById("button");
 
-function update_display(typed, typing, event_spans) {
-    console.log({"typed": typed, "typing": typing, "event_spans": event_spans});
-
-    button.replaceChildren(...event_spans);
+function update_display(typed, typing, morse_spans, text) {
+    document.getElementById("key-morse").replaceChildren(...morse_spans);
+    document.getElementById("key-text").innerText = text;
     document.getElementById("typed").innerText = typed;
     document.getElementById("typing").innerText = typing;
 }

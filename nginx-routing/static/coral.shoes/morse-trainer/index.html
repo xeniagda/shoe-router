@@ -9,9 +9,16 @@
     </head>
     <body>
         <header>
-            <div class="head"> <div> <a href="tx.html">Train TX</a> <br/> <a href="rx.html">Train RX</a> </div> </div>
-            <div class="head"> <h2> <a href="index.html">Coral Morse Trainer</a></h2> </div>
-            <div class="head"> <div> Written by @deadbraincoral#8079 <br/> Source available at <a href="https://github.com/loovjo/shoe-router/tree/master/nginx-routing/static/coral.shoes/morse-trainer">github</a> </div> </div>
+            <div class="head" id="navs">
+                <div class="nav active-page"> <a href="index.html">Free Mode</a> </div>
+                <div class="nav"> <a href="tx.html">Train TX</a> </div>
+                <div class="nav"> <a href="rx.html">Train RX</a> </div>
+            </div>
+            <div class="head">
+                <h2><a href="index.html">Coral Morse Trainer</a></h2>
+                <h3>Free Mode</h3>
+            </div>
+            <div class="head"> <div> Written by @deadbraincoral#8079 <br/> Source available on <a href="https://github.com/loovjo/shoe-router/tree/master/nginx-routing/static/coral.shoes/morse-trainer">GitHub</a> </div> </div>
         </header>
         <main id="main">
             <div id="main-split">
@@ -21,13 +28,13 @@
                         <div id="button-stop-outer"> <div id="button-stop-inner"> </div> </div>
                     </div>
                     <div id="text">
-                        <span class="type-bright" id="typed"></span>
-                        <span class="type-highlight" id="typing"></span>
-                        <span id="cursor"></span>
-                        <span class="type-dark" id="totype"></span>
+                        <span class="type-bright" id="typed"></span><span class="type-highlight" id="typing"></span><span id="cursor"></span><span class="type-dark" id="totype"></span>
                     </div>
                 </div>
-                <div id="button"></div>
+                <div id="key">
+                    <div id="key-morse"></div>
+                    <div id="key-text"></div>
+                </div>
             </div>
             <div id="morse-table">
                 <div class="morse-col" id="col-left"> </div>

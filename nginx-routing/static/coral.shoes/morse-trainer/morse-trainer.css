@@ -27,6 +27,10 @@ a {
     color: var(--highlight);
 }
 
+h2, h3 {
+    margin: 0.5ex;
+}
+
 input {
     border: none;
     width: 4em;
@@ -100,11 +104,23 @@ header, footer {
     padding-right: 2em;
 
     height: 100%;
+
     display: flex;
+    flex-direction: column;
+
     justify-content: center;
     align-items: center;
 
     font-size: 15pt;
+}
+
+.nav {
+    white-space: pre;
+}
+
+.active-page>a {
+    text-decoration: none;
+    color: var(--fg-1);
 }
 
 #textpart {
@@ -180,6 +196,9 @@ header, footer {
 #text {
     font-size: 30pt;
 }
+#text>span {
+    white-space: pre;
+}
 
 .type-dark {
     color: var(--fg-2);
@@ -199,12 +218,22 @@ header, footer {
     color: var(--fg-2);
 }
 
-#button {
+#key {
     font-size: 40pt;
-    background: var(--fg-1);
-    color: var(--bg-1);
-    padding: 2ex;
-    border-radius: 1em;
+    padding: 1ex;
+    border-radius: 1.5em;
+    border: 0.2em solid var(--highlight);
+    height: 3ex;
+    min-width: 3ex;
+}
+
+#key-morse {
+    height: 1ex;
+    position: relative;
+    top: -1ex;
+}
+#key-text {
+    height: 2ex;
 }
 
 .space {
