@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title> RX | Coral Morse Trainer </title>
+        <link rel="stylesheet" href="morse-trainer.css">
+        <script src="morse-trainer.js" defer></script>
+        <script src="rx.js" defer></script>
+    </head>
+    <body>
+        <header>
+            <div class="head" id="navs">
+                <div class="nav"> <a href="index.html">Free Mode</a> </div>
+                <div class="nav"> <a href="tx.html">Train TX</a> </div>
+                <div class="nav active-page"> <a href="rx.html">Train RX</a> </div>
+            </div>
+            <div class="head">
+                <h2><a href="index.html">Coral Morse Trainer</a></h2>
+                <h3>RX Training</h3>
+            </div>
+            <div class="head"> <div> Written by @deadbraincoral#8079 <br/> Source available on <a href="https://github.com/loovjo/shoe-router/tree/master/nginx-routing/static/coral.shoes/morse-trainer">GitHub</a> </div> </div>
+        </header>
+        <main id="main">
+            <div id="main-split">
+                <div id="textpart">
+                    <div id="buttons">
+                        <div id="button-play-outer"> <div id="button-play-inner"> </div> </div>
+                        <div id="button-stop-outer"> <div id="button-stop-inner"> </div> </div>
+                    </div>
+                    <div id="text">
+                        <span class="type-bright" id="typed"></span><span class="type-highlight" id="typing"></span><span id="cursor"></span><span class="type-dark" id="totype"></span>
+                    </div>
+                    <span id="author" class="type-bright"></span>
+                </div>
+                <div id="key">
+                    <input id="text-inp" type="text"> </input>
+                </div>
+            </div>
+            <div id="morse-table">
+                <div class="morse-col" id="col-left"> </div>
+                <div id="col-mid"> </div>
+                <div class="morse-col" id="col-right"> </div>
+            </div>
+        </main>
+        <footer>
+            <div class="foot"> <div> Use spacebar to write morse. <br/> Use backspace to clear current word. </div> </div>
+            <div class="foot"> <div> Volume: <input id=volume type=range value=1 min=0 max=300></input> </div> </div>
+            <div class="foot"> <div> Speed for one "dit": <input id=speed type=number value=100 min=0 max=500 step=10></input> [ms] </div> </div>
+        </footer>
+    </body>
+
+</html>
