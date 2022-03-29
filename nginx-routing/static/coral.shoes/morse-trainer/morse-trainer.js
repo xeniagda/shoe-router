@@ -324,7 +324,9 @@ const AudioContext = window.AudioContext || window.webkitAudioContext;
 
 const RAMP_TIME = 0.015;
 class MorseAudio {
-    constructor() {
+    constructor(morse) {
+        this.morse = morse;
+
         this.audio_ctx = new AudioContext();
 
         this.base_osc = this.audio_ctx.createOscillator();
@@ -341,7 +343,107 @@ class MorseAudio {
 
         this.is_on = false;
 
-        this.events = [];
+        // Lists of functions
+        this.on_play_ends = [];
+        this.on_play_letters = [];
+
+        let self = this;
+
+        this.playing = []; // [["on"|"off", "dit"|"dah"|"symb"|"let"|"word", idx]]
+        this.next_at = Date.now();
+
+        setInterval(() => self.tick(), 10);
+    }
+
+    tick() {
+        if (this.next_at == null || Date.now() > this.next_at) {
+            if (this.playing.length > 0) {
+                let next = this.playing[0];
+                this.playing = this.playing.slice(1);
+
+                if (next[0] == "on")
+                    this.on();
+                else
+                    this.off();
+
+                let duration = null;
+                if (next[1] == "dit")
+                    duration = this.morse.DIT_DURATION;
+                else if (next[1] == "dah")
+                    duration = this.morse.DAH_DURATION;
+                else if (next[1] == "symb")
+                    duration = this.morse.SYMBOL_SEP;
+                else if (next[1] == "let")
+                    duration = this.morse.LETTER_SEP;
+                else if (next[1] == "word")
+                    duration = this.morse.WORD_SEP;
+
+                if (duration == null) {
+                    console.log(`Unknown duration for ${next}`);
+                    return;
+                }
+                this.next_at = Date.now() + duration * 1000;
+                for (let on_play_letter of this.on_play_letters)
+                    on_play_letter(next[2]);
+            } else {
+                if (this.next_at != null) {
+                    this.next_at = null;
+                    this.off();
+
+                    for (let on_play_end of this.on_play_ends)
+                        on_play_end();
+                }
+            }
+        }
+    }
+
+    play(text) {
+        this.playing = [];
+        let last_letter = false;
+        for (var i = 0; i < text.length; i++) {
+            let char_here = text[i];
+
+            if (char_here == " " || char_here == "\n") {
+                if (last_letter)
+                    this.playing = this.playing.slice(0, this.playing.length-1); // remove last symbol separator
+                this.playing.push(["off", "word", i]);
+                last_letter = false;
+            } else {
+                let code = null;
+                for (let m of MORSE) {
+                    if (m.length == 0)
+                        continue;
+                    if (m[0] == char_here)
+                        code = m[1];
+                }
+                if (code == null) {
+                    console.warn(`unknown char ${char_here}`);
+                    continue;
+                }
+                for (let ch of code) {
+                    if (ch == DIT) {
+                        this.playing.push(["on", "dit", i]);
+                        this.playing.push(["off", "symb", i]);
+                    } else {
+                        this.playing.push(["on", "dah", i]);
+                        this.playing.push(["off", "symb", i]);
+                    }
+                }
+                // Remove last letter symbol separator
+                this.playing = this.playing.slice(0, this.playing.length-1);
+                this.playing.push(["off", "let", i]);
+                last_letter = true;
+            }
+        }
+    }
+
+    stop() {
+        this.next_at = null;
+        this.playing = [];
+        this.stop_button.classList.remove("active");
+        this.audio.off();
+
+        this.on_play_end();
     }
 
     on() {
@@ -385,80 +487,33 @@ class SelectionHandler {
     // play_start(text, start, end)
     // on_play_end()
     // on_play_letter(idx)
-    constructor(morse, audio, text_field, play_button, stop_button, on_play_start, on_play_end, on_play_letter) {
-        this.morse = morse;
+    constructor(audio, text_field, play_button, stop_button, on_play_start, on_play_end, on_play_letter) {
         this.audio = audio;
 
         this.text_field = text_field;
         this.play_button = play_button;
         this.stop_button = stop_button;
 
+
         this.on_play_start = on_play_start;
         this.on_play_end = on_play_end;
         this.on_play_letter = on_play_letter;
 
+        this.selection_offset = null;
+
         let self = this;
+
+        audio.on_play_ends.push(() => self.on_play_end());
+        audio.on_play_letters.push((idx) => {
+            self.stop_button.classList.remove("active");
+            self.on_play_letter(idx + self.selection_offset)
+        });
 
         this.play_button.addEventListener("click", () => self.play());
         this.stop_button.addEventListener("click", () => self.stop());
         setInterval(() => self.check(), 10);
 
         this.last_selection = this.get_selection();
-
-        this.playing = []; // [["on"|"off", "dit"|"dah"|"symb"|"let"|"word", idx]]
-        this.next_at = Date.now();
-
-        setInterval(() => self.tick(), 10);
-    }
-
-    tick() {
-        if (this.next_at == null || Date.now() > this.next_at) {
-            if (this.playing.length > 0) {
-                let next = this.playing[0];
-                this.playing = this.playing.slice(1);
-
-                if (next[0] == "on")
-                    this.audio.on();
-                else
-                    this.audio.off();
-
-                let duration = null;
-                if (next[1] == "dit")
-                    duration = this.morse.DIT_DURATION;
-                else if (next[1] == "dah")
-                    duration = this.morse.DAH_DURATION;
-                else if (next[1] == "symb")
-                    duration = this.morse.SYMBOL_SEP;
-                else if (next[1] == "let")
-                    duration = this.morse.LETTER_SEP;
-                else if (next[1] == "word")
-                    duration = this.morse.WORD_SEP;
-
-                if (duration == null) {
-                    console.log(`Unknown duration for ${next}`);
-                    return;
-                }
-                this.next_at = Date.now() + duration * 1000;
-                this.on_play_letter(next[2]);
-            } else {
-                if (this.next_at != null) {
-                    this.next_at = null;
-                    this.stop_button.classList.remove("active");
-                    this.audio.off();
-
-                    this.on_play_end();
-                }
-            }
-        }
-    }
-
-    stop() {
-        this.next_at = null;
-        this.playing = [];
-        this.stop_button.classList.remove("active");
-        this.audio.off();
-
-        this.on_play_end();
     }
 
     get_selection() {
@@ -501,49 +556,13 @@ class SelectionHandler {
         if (this.last_selection == null)
             return;
 
-        // TODO: This should be factored out probably
-        this.playing = [];
-        let last_let = false;
-        for (var i = 0; i < this.last_selection["text"].length; i++) {
-            let char_here = this.last_selection["text"][i];
-            let total_idx = i + this.last_selection["start"];
+        this.selection_offset = this.last_selection["start"];
 
-            if (char_here == " " || char_here == "\n") {
-                if (last_let)
-                    this.playing = this.playing.slice(0, this.playing.length-1);
-                this.playing.push(["off", "word", total_idx]);
-                last_let = false;
-            } else {
-                let code = null;
-                for (let m of MORSE) {
-                    if (m.length == 0)
-                        continue;
-                    if (m[0] == char_here)
-                        code = m[1];
-                }
-                if (code == null) {
-                    console.warn(`unknown char ${char_here}`);
-                    continue;
-                }
-                for (let ch of code) {
-                    if (ch == DIT) {
-                        this.playing.push(["on", "dit", total_idx]);
-                        this.playing.push(["off", "symb", total_idx]);
-                    } else {
-                        this.playing.push(["on", "dah", total_idx]);
-                        this.playing.push(["off", "symb", total_idx]);
-                    }
-                }
-                // Remove last letter symbol separator
-                this.playing = this.playing.slice(0, this.playing.length-1);
-                this.playing.push(["off", "let", total_idx]);
-                last_let = true;
-            }
-        }
+        this.audio.play(this.last_selection["text"]);
+
         this.on_play_start(this.last_selection["text"], this.last_selection["start"], this.last_selection["end"]);
 
         this.last_selection = null;
-
         this.stop_button.classList.add("active");
     }
 }

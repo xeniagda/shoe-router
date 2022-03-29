@@ -1,7 +1,6 @@
 morse = new Morse(100, update_display);
-audio = new MorseAudio();
+audio = new MorseAudio(morse);
 select = new SelectionHandler(
-    morse,
     audio,
     document.getElementById("totype"),
     document.getElementById("button-play-outer"),
