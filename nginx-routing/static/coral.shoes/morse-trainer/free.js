@@ -15,14 +15,21 @@ bind_speed_input(morse, document.getElementById("speed"));
 bind_volume_input(audio, document.getElementById("volume"));
 
 document.body.addEventListener("keydown", e => {
-    if (e.key == " " && !event.repeat) {
-        morse.press();
-        audio.on();
+    if (e.key == " ") {
+        e.preventDefault();
+        if (!e.repeat) {
+            morse.press();
+            audio.on();
+        }
     }
     if (e.key == "Backspace") {
         if (!morse.clear()) {
             morse.typed_text = morse.typed_text.slice(0, morse.typed_text.length - 2) + " ";
         }
+    }
+    if (e.key == "Enter") {
+        morse.submit_word();
+        e.preventDefault();
     }
 });
 

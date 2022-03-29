@@ -81,6 +81,8 @@ main {
 }
 
 #main-split {
+    position: relative;
+
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -126,6 +128,7 @@ header, footer {
 
 #textpart {
     width: 100%;
+    position: relative;
 }
 
 #buttons {
@@ -242,3 +245,10 @@ header, footer {
     width: 10em;
 }
 
+.fireworks {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}

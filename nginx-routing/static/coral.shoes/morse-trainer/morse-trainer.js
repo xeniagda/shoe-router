@@ -200,6 +200,17 @@ class Morse {
         this.redraw();
     }
 
+    submit_word() {
+        let space = this.get_space();
+        if (space != null)
+            this.events.push(space);
+        this.push_word();
+
+        this.events = [];
+        this.last_press_start = null;
+        this.last_press_end = null;
+    }
+
     release() {
         this.last_press_end = Date.now();
 
@@ -217,6 +228,11 @@ class Morse {
         this.last_press_start = null;
         this.last_press_end = null;
         this.force_update = true;
+    }
+
+    clear_all() {
+        this.typed_text = "";
+        this.clear();
     }
 
     redraw() {
@@ -527,4 +543,109 @@ class SelectionHandler {
 
         this.stop_button.classList.add("active");
     }
+}
+
+function hue2rgb(hue) {
+    let theta = 2 * Math.PI * hue;
+    let r = Math.cos(theta);
+    let g = Math.cos(theta + 2 * Math.PI / 3);
+    let b = Math.cos(theta + 2 * 2 * Math.PI / 3);
+    return [(r + 1) / 2, (g + 1) / 2, (b + 1) / 2];
+}
+
+class Fireworks {
+    constructor(canvas_element) {
+        this.canvas_element = canvas_element;
+        this.ctx = this.canvas_element.getContext("2d");
+
+        let self = this;
+
+        this.particles = [];
+        for (let i = 0; i < 10; i++) {
+            let x = Math.random() * this.canvas_element.offsetWidth;
+            let y = Math.random() * this.canvas_element.offsetHeight;
+
+            this.particles.push([x, y, (Math.random() - 0.5) * 50, -50, Math.random(), 2, 0.2 + 0.5 * Math.random()]);
+        }
+        this.gravity = 40;
+        this.dt = 0.01;
+        this.render_internal = setInterval(() => self.render(), this.dt * 1000);
+    }
+
+    render() {
+        this.canvas_element.width = this.canvas_element.offsetWidth;
+        this.canvas_element.height = this.canvas_element.offsetHeight;
+
+        this.ctx.clearRect(0, 0, this.canvas_element.width, this.canvas_element.height);
+
+        let new_particles = [];
+        for (let particle of this.particles) {
+            let x = particle[0];
+            let y = particle[1];
+            let vx = particle[2];
+            let vy = particle[3];
+            let hue = particle[4];
+            let count = particle[5];
+            let timeLeft = particle[6];
+
+            x += vx * this.dt;
+            y += vy * this.dt;
+            vy += this.gravity * this.dt;
+
+            timeLeft -= this.dt;
+
+            this.ctx.lineWidth = 2;
+
+            let [r, g, b] = hue2rgb(particle[4]);
+            this.ctx.beginPath();
+            this.ctx.strokeStyle = `rgb(${256*r}, ${256*g}, ${256*b})`;
+            this.ctx.lineWidth = count + 1;
+            this.ctx.moveTo(x, y);
+            this.ctx.lineTo(x + vx * 0.1 * (count + 1), y + vy * 0.1 * (count + 1));
+            this.ctx.stroke();
+
+            particle[0] = x;
+            particle[1] = y;
+            particle[2] = vx;
+            particle[3] = vy;
+            particle[4] = hue;
+            particle[5] = count;
+            particle[6] = timeLeft;
+            if (timeLeft > 0) {
+                if (x > 0 && x < this.canvas_element.width && y > 0 && y < this.canvas_element.height)
+                    new_particles.push(particle);
+            } else if (count > 0) {
+                for (let i = 0; i < 20;  i++) {
+                    let u = Math.random();
+                    let v = Math.random();
+
+                    let z1 = Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+                    let z2 = Math.sqrt(-2 * Math.log(u)) * Math.sin(2 * Math.PI * v);
+
+                    let child_hue = hue + Math.random() / 5;
+
+                    this.particles.push([x, y, z1 * 40, z2 * 40, child_hue, count - 1, Math.random()]);
+                }
+            }
+        }
+        this.particles = new_particles;
+
+        if (this.particles.length == 0) {
+            this.destroy();
+        }
+    }
+
+    destroy() {
+        this.canvas_element.remove();
+        clearInterval(this.render_internal);
+    }
+}
+
+function make_fireworks() {
+    let fireworks_element = document.createElement("canvas");
+    fireworks_element.classList.add("fireworks");
+
+    document.getElementById("main-split").append(fireworks_element);
+
+    return new Fireworks(fireworks_element);
 }
