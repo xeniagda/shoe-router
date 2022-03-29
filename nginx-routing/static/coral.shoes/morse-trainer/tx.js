@@ -81,6 +81,9 @@ function win() {
 }
 
 document.body.addEventListener("keydown", e => {
+    if (e.target.matches("input"))
+        return;
+
     if (e.key == " ") {
         e.preventDefault();
         if (!e.repeat) {
@@ -103,6 +106,9 @@ document.body.addEventListener("keydown", e => {
 });
 
 document.body.addEventListener("keyup", e => {
+    if (e.target.matches("input"))
+        return;
+
     if (e.key == " ") {
         morse.release();
         audio.off();
