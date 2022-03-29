@@ -440,10 +440,10 @@ class MorseAudio {
     stop() {
         this.next_at = null;
         this.playing = [];
-        this.stop_button.classList.remove("active");
-        this.audio.off();
+        this.off();
 
-        this.on_play_end();
+        for (let on_play_end of this.on_play_ends)
+            on_play_end();
     }
 
     on() {
@@ -505,7 +505,6 @@ class SelectionHandler {
 
         audio.on_play_ends.push(() => self.on_play_end());
         audio.on_play_letters.push((idx) => {
-            self.stop_button.classList.remove("active");
             self.on_play_letter(idx + self.selection_offset)
         });
 
@@ -564,6 +563,11 @@ class SelectionHandler {
 
         this.last_selection = null;
         this.stop_button.classList.add("active");
+    }
+
+    stop() {
+        this.audio.stop();
+        this.stop_button.classList.remove("active");
     }
 }
 
