@@ -33,6 +33,10 @@ document.body.addEventListener("keydown", e => {
     }
 });
 
+document.getElementById("key").addEventListener("click", e => {
+    document.getElementById("text-inp").focus();
+});
+
 document.getElementById("text-inp").addEventListener("input", e => {
     e.target.value = e.target.value.toUpperCase();
 });
