@@ -220,6 +220,9 @@ class Morse {
 
         this.last_press_start = null;
 
+        if (this.events.length == 0)
+            this.last_press_end = null;
+
         this.redraw();
     }
 
