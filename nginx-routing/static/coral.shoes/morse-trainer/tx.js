@@ -70,13 +70,26 @@ function select_new_sentence() {
     let quote = available[0|Math.random()*available.length];
     current_sentence = quote["quote"];
     author = quote["author"];
+
+    morse.clear_all();
     morse.force_update = true;
 }
 
+function win() {
+    let fw = make_fireworks();
+    select_new_sentence();
+}
+
 document.body.addEventListener("keydown", e => {
-    if (e.key == " " && !event.repeat) {
-        morse.press();
-        audio.on();
+    if (e.key == " ") {
+        e.preventDefault();
+        if (!e.repeat) {
+            morse.press();
+            audio.on();
+        }
+    }
+    if (e.key == "Enter") {
+        morse.submit_word();
         e.preventDefault();
     }
     if (e.key == "Backspace") {
@@ -102,6 +115,7 @@ const typed_len = 0;
 
 function update_display(typed, typing, morse_spans, text) {
     if (current_sentence != null) {
+        morse.typed_text += " ";
         for (let i = 0; i < morse.typed_text.length; i++) {
             if (morse.typed_text[i] != current_sentence[i]) {
                 morse.typed_text = morse.typed_text.slice(0, i);
@@ -110,7 +124,7 @@ function update_display(typed, typing, morse_spans, text) {
             }
             if (i == current_sentence.length - 1) {
                 // TODO: Win screen?
-                select_new_sentence();
+                win();
             }
         }
     }
