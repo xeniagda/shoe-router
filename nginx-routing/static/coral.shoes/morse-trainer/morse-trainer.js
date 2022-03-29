@@ -671,3 +671,71 @@ function make_fireworks() {
 
     return new Fireworks(fireworks_element);
 }
+
+// shamelessly stolen from https://stackoverflow.com/questions/6122571/simple-non-secure-hash-function-for-javascript#comment111181647_8831937
+function strhash(st) {
+    return Array.from(st).reduce((hash, char) => 0 | (31 * hash + char.charCodeAt(0)), 0);
+}
+
+class SentenceLoader {
+    constructor(on_new_sentence) {
+        this.current_sentence = null;
+        this.author = null;
+        this.quotes = [];
+
+        this.on_new_sentence = on_new_sentence;
+    }
+
+    load() {
+        let self = this;
+
+        fetch("data/quotes.json", {
+            mode: "no-cors",
+            headers: {
+                "Content-Type": "application/json"
+            },
+        }).then(data =>
+            data.json()
+        ).then(data => {
+            self.quotes = data;
+            self.select_new();
+        });
+    }
+
+    get_available_quotes() {
+        let available_quotes = [];
+
+        let hashes = localStorage.getItem("completed-hashes") || "";
+        for (let quote of this.quotes) {
+            let hash = strhash(quote["quote"]);
+            if (!hashes.includes("/" + hash.toString() + "/")) {
+                available_quotes.push(quote);
+            }
+        }
+
+        return available_quotes;
+    }
+
+    completed() {
+        if (this.current_sentence != null) {
+            let current_hashes = localStorage.getItem("completed-hashes") || "/";
+            let new_hashes = current_hashes + strhash(this.current_sentence).toString() + "/";
+            localStorage.setItem("completed-hashes", new_hashes);
+        }
+    }
+
+    select_new() {
+        let available = this.get_available_quotes();
+        if (available.length == 0) {
+            // TODO: Alert user!
+            localStorage.removeItem("completed-hashes");
+            available = quotes;
+        }
+
+        let quote = available[0|Math.random()*available.length];
+        this.current_sentence = quote["quote"];
+        this.author = quote["author"];
+
+        this.on_new_sentence();
+    }
+}
