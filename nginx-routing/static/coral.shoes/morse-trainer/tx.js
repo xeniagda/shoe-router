@@ -54,7 +54,7 @@ function get_available_quotes() {
 function sentence_completed() {
     if (current_sentence != null) {
         let current_hashes = localStorage.getItem("completed-hashes") || "/";
-        let new_hashes = current_hashes + strhash(current_sentence["quote"]).toString() + "/";
+        let new_hashes = current_hashes + strhash(current_sentence).toString() + "/";
         localStorage.setItem("completed-hashes", new_hashes);
     }
 }
@@ -76,6 +76,7 @@ function select_new_sentence() {
 }
 
 function win() {
+    sentence_completed();
     let fw = make_fireworks();
     select_new_sentence();
 }
