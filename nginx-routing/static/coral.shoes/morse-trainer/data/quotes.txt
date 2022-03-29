@@ -26,7 +26,10 @@
 "To be yourself in a world that is constantly trying to make you something else is stupid." - Ralph Waldo Emerson
 "We do not stop running because we grow old, we grow old because we have aged." - Henry David Thoreau
 "If you can't stand the heat get out of the kitchen." - Anonymous
+<<<<<<< HEAD
+"The most important ingredient in a good joke is the among us red imposter." - Albert Einstein
 "The most important ingredient in a good joke is the among us red impostor." - Albert Einstein
+>>>>>>> 68432baedc5d0cdbe83f304172c00f6a59271f12
 "Those who don't know what they are doing are no more likely to make mistakes than are those who do." - Mark Twain
 "Be who you are and say what you feel, because those who mind don't matter." - Dr. Seuss
 "There is nothing in the world more blissful than sincere ignorance and conscientious stupidity." - Walter Van Tilburg Clark
@@ -525,6 +528,6 @@
 "I do love me some cute boys"- Jonathan
 "Dont put me on the spot like that asking me for quotes"- Love
 "Your quotes are not funny"- Love
-"All quotes eventuallt trend towards cringe"- Linus
+"All quotes eventually trend towards cringe"- Linus
 "I hate morse code I hate morse code I hate morse code I hate morse code I hate morse code I hate morse code"- Mateusz
 "No, I don't want a quote"- Mateusz
