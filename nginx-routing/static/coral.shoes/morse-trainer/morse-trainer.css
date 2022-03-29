@@ -237,6 +237,10 @@ header, footer {
     height: 2ex;
 }
 
+#text-inp {
+    font-size: 40pt;
+}
+
 .space {
     color: var(--fg-2);
 }
