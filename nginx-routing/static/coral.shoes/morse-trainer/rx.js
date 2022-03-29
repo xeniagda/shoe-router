@@ -72,7 +72,12 @@ function play_current_word() {
     button_play.classList.remove("active");
     button_stop.classList.add("active");
 
+    audio.off();
+
+    let pause = audio.next_at != null;
+
     let w = "";
+
     for (let ch of sentence.current_sentence.slice(morse.typed_text.length)) {
         if (ch == " ")
             break;
@@ -80,6 +85,8 @@ function play_current_word() {
     }
 
     audio.play(w);
+    if (pause)
+        audio.next_at = Date.now() + morse.WORD_SEP * 1000;
 }
 
 function redacted_text() {
