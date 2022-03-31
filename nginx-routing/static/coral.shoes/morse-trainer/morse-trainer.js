@@ -351,7 +351,7 @@ col_right.replaceChildren(...children);
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
 const HOLD_TIME = 0.010;
-const RAMP_TIME = 0.015;
+const RAMP_TIME = 0.012;
 
 class MorseAudio {
     constructor(morse) {
