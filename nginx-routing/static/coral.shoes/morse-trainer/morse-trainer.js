@@ -350,6 +350,7 @@ col_right.replaceChildren(...children);
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
+const HOLD_TIME = 0.010;
 const RAMP_TIME = 0.015;
 
 class MorseAudio {
@@ -482,16 +483,16 @@ class MorseAudio {
     on() {
         if (this.is_on)
             return;
-        this.gain.gain.setValueAtTime(0, this.audio_ctx.currentTime);
-        this.gain.gain.linearRampToValueAtTime(this.volume, this.audio_ctx.currentTime+RAMP_TIME);
+        this.gain.gain.setValueAtTime(0, this.audio_ctx.currentTime+HOLD_TIME);
+        this.gain.gain.linearRampToValueAtTime(this.volume, this.audio_ctx.currentTime+HOLD_TIME+RAMP_TIME);
         this.is_on = true;
     }
 
     off() {
         if (!this.is_on)
             return;
-        this.gain.gain.setValueAtTime(this.volume, this.audio_ctx.currentTime);
-        this.gain.gain.linearRampToValueAtTime(0, this.audio_ctx.currentTime+RAMP_TIME);
+        this.gain.gain.setValueAtTime(this.volume, this.audio_ctx.currentTime+HOLD_TIME);
+        this.gain.gain.linearRampToValueAtTime(0, this.audio_ctx.currentTime+HOLD_TIME+RAMP_TIME);
         this.is_on = false;
     }
 
