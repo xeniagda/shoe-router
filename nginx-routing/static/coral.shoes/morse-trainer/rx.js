@@ -6,7 +6,7 @@ audio.on_play_letters.push(highlight_letter);
 let sentence = new SentenceLoader((s, a) => { morse.clear_all(); morse.force_update = true; });
 sentence.load();
 
-bind_speed_input(morse, document.getElementById("speed"));
+bind_speed_input(morse, document.getElementById("speed-dit"), document.getElementById("speed-wpm"));
 bind_volume_input(audio, document.getElementById("volume"));
 
 let did_win = false;

@@ -3,6 +3,8 @@ const DAH = "-";
 const LETTER_SEPARATOR = "LET";
 const WORD_SEPARATOR = "WORD";
 
+const DITS_PER_WORD = 50; // paris
+
 function event_span(ev) {
     let el = document.createElement("span");
     if (ev == DIT) {
@@ -137,7 +139,7 @@ class Morse {
         this.LETTER_SEP = 0;
         this.WORD_SEP = 0;
 
-        this.set_speeds(dit_speed_ms);
+        this.set_speeds_ms(dit_speed_ms);
 
         let self = this;
         this.redraw_int = setInterval(() => self.redraw(), 10);
@@ -145,12 +147,27 @@ class Morse {
         this.last_displayed_events = null;
     }
 
-    set_speeds(dit_speed_ms) {
+    set_speeds_ms(dit_speed_ms) {
         this.DIT_DURATION = dit_speed_ms / 1000;
         this.DAH_DURATION = 3 * this.DIT_DURATION;
         this.SYMBOL_SEP = this.DIT_DURATION;
         this.LETTER_SEP = 3 * this.DIT_DURATION;
         this.WORD_SEP = 7 * this.DIT_DURATION;
+    }
+
+    set_speeds_wpm(wpm) {
+        let s_per_dit = 1 / (wpm / 60 * DITS_PER_WORD);
+        this.set_speeds_ms(1000 * s_per_dit);
+    }
+
+    get_dit_speed_ms() {
+        return 0 | (this.DIT_DURATION * 1000);
+    }
+
+    get_dit_speed_wpm() {
+        let wpm = (1 / this.DIT_DURATION) / DITS_PER_WORD * 60;
+
+        return (0 | (10 * wpm)) / 10;
     }
 
     get_space() {
@@ -266,17 +283,28 @@ class Morse {
     }
 }
 
-function bind_speed_input(morse, speed_inp) {
-    if (localStorage.getItem("speed") != null) {
-        morse.set_speeds(+localStorage.getItem("speed"));
-        speed_inp.value = localStorage.getItem("speed");
+function bind_speed_input(morse, ms_inp, wpm_inp) {
+    if (localStorage.getItem("speed-ms") != null) {
+        morse.set_speeds_ms(+localStorage.getItem("speed-ms"));
     } else {
-        morse.set_speeds(+speed_inp.value);
+        morse.set_speeds_ms(+ms_inp.value);
     }
 
-    speed_inp.addEventListener("change", e => {
-        morse.set_speeds(+speed_inp.value);
-        localStorage.setItem("speed", speed_inp.value);
+    ms_inp.value = morse.get_dit_speed_ms();
+    wpm_inp.value = morse.get_dit_speed_wpm();
+
+    ms_inp.addEventListener("change", e => {
+        morse.set_speeds_ms(+ms_inp.value);
+        wpm_inp.value = morse.get_dit_speed_wpm();
+
+        localStorage.setItem("speed-ms", morse.get_dit_speed_ms());
+    });
+
+    wpm_inp.addEventListener("change", e => {
+        morse.set_speeds_wpm(+wpm_inp.value);
+        ms_inp.value = morse.get_dit_speed_ms();
+
+        localStorage.setItem("speed-ms", morse.get_dit_speed_ms());
     });
 }
 
@@ -323,6 +351,8 @@ col_right.replaceChildren(...children);
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
 const RAMP_TIME = 0.015;
+const MORSE_FREQUENCY = 512;
+
 class MorseAudio {
     constructor(morse) {
         this.morse = morse;
@@ -330,7 +360,7 @@ class MorseAudio {
         this.audio_ctx = new AudioContext();
 
         this.base_osc = this.audio_ctx.createOscillator();
-        this.base_osc.frequency.setValueAtTime(641, this.audio_ctx.currentTime);
+        this.base_osc.frequency.setValueAtTime(MORSE_FREQUENCY, this.audio_ctx.currentTime);
 
         this.gain = this.audio_ctx.createGain();
         this.gain.gain.setValueAtTime(0, this.audio_ctx.currentTime);
