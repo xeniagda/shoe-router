@@ -351,7 +351,6 @@ col_right.replaceChildren(...children);
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
 const RAMP_TIME = 0.015;
-const MORSE_FREQUENCY = 512;
 
 class MorseAudio {
     constructor(morse) {
@@ -360,7 +359,7 @@ class MorseAudio {
         this.audio_ctx = new AudioContext();
 
         this.base_osc = this.audio_ctx.createOscillator();
-        this.base_osc.frequency.setValueAtTime(MORSE_FREQUENCY, this.audio_ctx.currentTime);
+        this.base_osc.frequency.setValueAtTime(512, this.audio_ctx.currentTime);
 
         this.gain = this.audio_ctx.createGain();
         this.gain.gain.setValueAtTime(0, this.audio_ctx.currentTime);
@@ -383,6 +382,10 @@ class MorseAudio {
         this.next_at = Date.now();
 
         setInterval(() => self.tick(), 10);
+    }
+
+    set_freq(freq_hz) {
+        this.base_osc.frequency.setValueAtTime(freq_hz, this.audio_ctx.currentTime);
     }
 
     tick() {
@@ -510,6 +513,20 @@ function bind_volume_input(audio, volume_inp) {
     volume_inp.addEventListener("change", e => {
         audio.set_volume(+volume_inp.value);
         localStorage.setItem("volume", volume_inp.value);
+    });
+}
+
+function bind_frequency_input(audio, freq_inp) {
+    if (localStorage.getItem("freq") != null) {
+        audio.set_freq(+localStorage.getItem("freq"));
+        freq_inp.value = localStorage.getItem("freq");
+    } else {
+        audio.set_freq(+freq_inp.value);
+    }
+
+    freq_inp.addEventListener("change", e => {
+        audio.set_freq(+freq_inp.value);
+        localStorage.setItem("freq", freq_inp.value);
     });
 }
 

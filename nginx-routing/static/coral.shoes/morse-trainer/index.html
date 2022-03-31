@@ -44,7 +44,11 @@
         </main>
         <footer>
             <div class="foot"> <div> Use spacebar to write morse. <br/> Use backspace to clear current word. </div> </div>
-            <div class="foot"> <div> Volume: <input id=volume type=range value=1 min=0 max=300></input> </div> </div>
+            <div class="foot"> <div>
+                Volume: <input id=volume type=range value=1 min=0 max=300></input>
+                <br />
+                Frequency: <input id=freq type=number value=512 min=100 max=2000 step=10></input> [Hz]
+            </div> </div>
             <div class="foot"> <div>
                 <div> WPM: <input id=speed-wpm type=number value=12 min=1 max=50 step=1> [PARIS; 50 "dits" per word] </input>
                 <br />

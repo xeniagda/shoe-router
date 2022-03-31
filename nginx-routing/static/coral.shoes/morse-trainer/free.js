@@ -12,6 +12,7 @@ select = new SelectionHandler(
 
 bind_speed_input(morse, document.getElementById("speed-dit"), document.getElementById("speed-wpm"));
 bind_volume_input(audio, document.getElementById("volume"));
+bind_frequency_input(audio, document.getElementById("freq"));
 
 document.body.addEventListener("keydown", e => {
     if (e.target.matches("input"))
