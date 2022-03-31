@@ -11,11 +11,14 @@ select = new SelectionHandler(
 );
 
 let sentence = new SentenceLoader((s, a) => { morse.clear_all(); morse.force_update = true; });
-sentence.load();
 
 bind_speed_input(morse, document.getElementById("speed-dit"), document.getElementById("speed-wpm"));
 bind_volume_input(audio, document.getElementById("volume"));
 bind_frequency_input(audio, document.getElementById("freq"));
+
+fill_morse_table(document.getElementById("morse-table"), (el, m) => sentence.register_table_click(el, m));
+
+sentence.load();
 
 function win() {
     sentence.completed();
@@ -86,8 +89,11 @@ function update_display(typed, typing, morse_spans, text) {
     if (sentence.current_sentence != null)
         document.getElementById("totype").innerText = sentence.current_sentence.slice(typed.length + text.length);
 
-    if (sentence.author != null)
+    if (sentence.author != null) {
         document.getElementById("author").innerText = "- " + sentence.author;
+    } else {
+        document.getElementById("author").innerText = "";
+    }
 }
 
 function highlight_letter(idx) {

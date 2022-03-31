@@ -55,12 +55,17 @@ main {
     display: flex;
     flex-direction: row;
 }
+
 #morse-table span {
     white-space: pre;
 }
 
 .morse-col {
     padding: 1em;
+}
+
+.morse-inactive {
+    color: var(--fg-2);
 }
 
 #col-mid {

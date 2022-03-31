@@ -14,6 +14,8 @@ bind_speed_input(morse, document.getElementById("speed-dit"), document.getElemen
 bind_volume_input(audio, document.getElementById("volume"));
 bind_frequency_input(audio, document.getElementById("freq"));
 
+fill_morse_table(document.getElementById("morse-table"));
+
 document.body.addEventListener("keydown", e => {
     if (e.target.matches("input"))
         return;

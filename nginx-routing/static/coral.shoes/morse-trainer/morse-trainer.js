@@ -308,44 +308,51 @@ function bind_speed_input(morse, ms_inp, wpm_inp) {
     });
 }
 
-// fill morse table
-let col_left = document.getElementById("col-left");
-let children = [];
-for (var i = 0; i < MORSE.length / 2; i++) {
-    if (MORSE[i].length == 0) {
-        children.push(document.createElement("br"));
-        continue;
+function fill_morse_table(table, f) {
+    let col_left = table.children[0];
+    let children = [];
+    for (var i = 0; i < MORSE.length / 2; i++) {
+        if (MORSE[i].length == 0) {
+            children.push(document.createElement("br"));
+            continue;
+        }
+        let div = document.createElement("div");
+
+        div.classList.add("morse-element");
+        for (var j = 0; j < MORSE[i][1].length; j++)
+            div.appendChild(event_span(MORSE[i][1][j]));
+
+        div.appendChild(span_with_class(" " + MORSE[i][0]));
+
+        children.push(div);
+
+        if (f != undefined)
+            f(div, MORSE[i]);
     }
-    let div = document.createElement("div");
+    col_left.replaceChildren(...children);
 
-    div.classList.add("morse-element");
-    for (var j = 0; j < MORSE[i][1].length; j++)
-        div.appendChild(event_span(MORSE[i][1][j]));
+    let col_right = table.children[2];
+    children = [];
+    for (; i < MORSE.length; i++) {
+        if (MORSE[i].length == 0) {
+            children.push(document.createElement("br"));
+            continue;
+        }
+        let div = document.createElement("div");
+        div.classList.add("morse-element");
 
-    div.appendChild(span_with_class(" " + MORSE[i][0]));
+        div.appendChild(span_with_class(MORSE[i][0] + " "));
+        for (var j = 0; j < MORSE[i][1].length; j++)
+            div.appendChild(event_span(MORSE[i][1][j]));
 
-    children.push(div);
-}
-col_left.replaceChildren(...children);
 
-let col_right = document.getElementById("col-right");
-children = [];
-for (; i < MORSE.length; i++) {
-    if (MORSE[i].length == 0) {
-        children.push(document.createElement("br"));
-        continue;
+        children.push(div);
+
+        if (f != undefined)
+            f(div, MORSE[i]);
     }
-    let div = document.createElement("div");
-    div.classList.add("morse-element");
-
-    div.appendChild(span_with_class(MORSE[i][0] + " "));
-    for (var j = 0; j < MORSE[i][1].length; j++)
-        div.appendChild(event_span(MORSE[i][1][j]));
-
-
-    children.push(div);
+    col_right.replaceChildren(...children);
 }
-col_right.replaceChildren(...children);
 
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -729,19 +736,182 @@ function strhash(st) {
     return Array.from(st).reduce((hash, char) => 0 | (31 * hash + char.charCodeAt(0)), 0);
 }
 
+function normalized(arr) {
+    let total = 0;
+    for (let item of arr)
+        total += item;
+    return arr.map(x => x / total);
+}
+
+function weighted_pick(arr) {
+    arr = normalized(arr);
+    let x = Math.random();
+    for (let i = 0; i < arr.length; i++) {
+        x -= arr[i];
+        if (x < 0)
+            return i;
+    }
+    console.log("OH NO");
+    return arr.length - 1;
+}
+
+class MarkovGenerator {
+    constructor() {
+        this.symbols = [];
+        this.forward = [];
+        this.backward = [];
+        this.initial = [];
+
+        // Invariant: must always contain space
+        this.subset = []; // contains numbers indexing this.symbols
+    }
+
+    get_subset(arr) {
+        return this.subset.map(i => arr[i]);
+    }
+
+    async load() {
+        let self = this;
+
+        await fetch("data/markov.json", {
+            mode: "no-cors",
+            headers: {
+                "Content-Type": "application/json"
+            },
+        }).then(data =>
+            data.json()
+        ).then(data => {
+            self.symbols = data["symbols"];
+            self.forward = data["forward"];
+            self.backward = data["backward"];
+            self.initial = data["initial"];
+
+            self.subset = [self.symbols.indexOf(" ")];
+        });
+    }
+
+    toggle(letter) {
+        if (!this.symbols.includes(letter))
+            return;
+
+        let idx = this.symbols.indexOf(letter);
+        if (this.subset.includes(idx)) {
+            this.subset = this.subset.filter(a => a != idx);
+        } else {
+            this.subset.push(idx);
+        }
+    }
+
+    has_letter(l) {
+        return this.get_subset(this.symbols).includes(l);
+    }
+
+    is_on() {
+        return this.subset.length > 1;
+    }
+
+    _terminates(i) {
+        return this.symbols[this.subset[i]] == " ";
+    }
+
+    _generate_letter() {
+        for (let i = 0; i < 10; i++) {
+            let init = this.get_subset(this.initial);
+            let letter = weighted_pick(init);
+            if (this._terminates(letter))
+                continue;
+            return letter;
+        }
+        return 0;
+    }
+
+    _generate_word(containing_letter) {
+        let after = [];
+        let last_ch = containing_letter;
+        for (let i = 0; i < 10; i++) {
+            let weights = this.get_subset(this.get_subset(this.forward)[last_ch]);
+            let pick = weighted_pick(weights);
+            if (this._terminates(pick))
+                break;
+            after.push(pick);
+            last_ch = pick;
+        }
+
+        let before = [];
+        last_ch = containing_letter;
+        for (let i = 0; i < 10; i++) {
+            let weights = this.get_subset(this.get_subset(this.backward)[last_ch]);
+            let pick = weighted_pick(weights);
+            if (this._terminates(pick))
+                break;
+            before.push(pick);
+            last_ch = pick;
+        }
+        return before.reverse().concat([containing_letter]).concat(after);
+    }
+
+    _generate_text() {
+        let self = this;
+
+        let text = [];
+
+        let letters_left = [...Array(this.subset.length).keys()];
+
+        letters_left = letters_left.filter(l => !self._terminates(l));
+
+        while (letters_left.length > 0) {
+            let idx = 0 | (Math.random() * letters_left.length);
+            let letter = letters_left[idx];
+            let w = this._generate_word(letter);
+
+            letters_left = letters_left.filter(l => !w.includes(l));
+            text.push(...w);
+            text.push(this.get_subset(this.symbols).indexOf(" "));
+        }
+
+        return text.slice(0, text.length - 1);
+    }
+
+    symbolize(seq) {
+        let self = this;
+        return seq.map(a => this.symbols[this.subset[a]]).join("");
+    }
+}
+
 class SentenceLoader {
     constructor(on_new_sentence) {
         this.current_sentence = null;
         this.author = null;
         this.quotes = [];
 
+        this.markov = new MarkovGenerator();
+
+        this.table_elems = [];
+
         this.on_new_sentence = on_new_sentence;
     }
 
-    load() {
+    load_markov_subset() {
+        let subset = localStorage.getItem("subset");
+        if (subset == null)
+            return;
+
+        this.markov.subset = subset.split("|").map(x => +x);
+
+        if (this.markov.is_on()) {
+            this.select_new();
+        }
+        this.redraw_table();
+    }
+
+    store_markov_subset() {
+        localStorage.setItem("subset", this.markov.subset.map(x => "" + x).join("|"));
+    }
+
+    async load() {
         let self = this;
 
-        fetch("data/quotes.json", {
+        await fetch("data/quotes.json", {
             mode: "no-cors",
             headers: {
                 "Content-Type": "application/json"
@@ -751,7 +921,11 @@ class SentenceLoader {
         ).then(data => {
             self.quotes = data;
             self.select_new();
+
         });
+
+        await this.markov.load();
+        this.load_markov_subset();
     }
 
     get_available_quotes() {
@@ -769,7 +943,7 @@ class SentenceLoader {
     }
 
     completed() {
-        if (this.current_sentence != null) {
+        if (this.current_sentence != null && this.author != null) {
             let current_hashes = localStorage.getItem("completed-hashes") || "/";
             let new_hashes = current_hashes + strhash(this.current_sentence).toString() + "/";
             localStorage.setItem("completed-hashes", new_hashes);
@@ -777,17 +951,49 @@ class SentenceLoader {
     }
 
     select_new() {
-        let available = this.get_available_quotes();
-        if (available.length == 0) {
-            // TODO: Alert user!
-            localStorage.removeItem("completed-hashes");
-            available = quotes;
+        if (this.markov.is_on()) {
+            this.current_sentence = this.markov.symbolize(this.markov._generate_text());
+            this.author = null;
+        } else {
+            let available = this.get_available_quotes();
+            if (available.length == 0) {
+                // TODO: Alert user!
+                localStorage.removeItem("completed-hashes");
+                available = this.quotes;
+            }
+
+            let quote = available[0|Math.random()*available.length];
+            this.current_sentence = quote["quote"];
+            this.author = quote["author"];
         }
 
-        let quote = available[0|Math.random()*available.length];
-        this.current_sentence = quote["quote"];
-        this.author = quote["author"];
-
         this.on_new_sentence();
+    }
+
+    register_table_click(el, morse_data) {
+        this.table_elems.push([el, morse_data[0]]);
+
+        let self = this;
+        el.addEventListener("click", e => {
+            self.markov.toggle(morse_data[0]);
+            self.redraw_table();
+            self.store_markov_subset();
+        });
+    }
+
+    redraw_table() {
+        if (this.markov.is_on()) {
+            for (let [el, letter] of this.table_elems) {
+                if (this.markov.has_letter(letter)) {
+                    el.classList.remove("morse-inactive");
+                } else {
+                    el.classList.add("morse-inactive");
+                }
+            }
+        } else {
+            for (let [el, letter] of this.table_elems) {
+                el.classList.remove("morse-inactive");
+            }
+        }
     }
 }
