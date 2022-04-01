@@ -870,6 +870,14 @@ class MarkovGenerator {
             text.push(this.get_subset(this.symbols).indexOf(" "));
         }
 
+        while (text.length < 20) {
+            let idx = 0 | (Math.random() * this.subset.length);
+            let w = this._generate_word(idx);
+
+            text.push(...w);
+            text.push(this.get_subset(this.symbols).indexOf(" "));
+        }
+
         return text.slice(0, text.length - 1);
     }
 
