@@ -832,7 +832,7 @@ class MarkovGenerator {
             let weights = this.get_subset(this.get_subset(this.forward)[last_ch]);
             let pick = weighted_pick(weights);
             if (this._terminates(pick))
-                break;
+                continue;
             after.push(pick);
             last_ch = pick;
         }
@@ -843,7 +843,8 @@ class MarkovGenerator {
             let weights = this.get_subset(this.get_subset(this.backward)[last_ch]);
             let pick = weighted_pick(weights);
             if (this._terminates(pick))
-                break;
+                continue;
+
             before.push(pick);
             last_ch = pick;
         }
