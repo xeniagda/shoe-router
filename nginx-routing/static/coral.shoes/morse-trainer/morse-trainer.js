@@ -755,6 +755,8 @@ function weighted_pick(arr) {
     return arr.length - 1;
 }
 
+
+const MINIMUM_MARKOV_LENGTH = 20;
 class MarkovGenerator {
     constructor() {
         this.symbols = [];
@@ -870,7 +872,7 @@ class MarkovGenerator {
             text.push(this.get_subset(this.symbols).indexOf(" "));
         }
 
-        while (text.length < 20) {
+        while (text.length < MINIMUM_MARKOV_LENGTH) {
             let idx = 0 | (Math.random() * this.subset.length);
             let w = this._generate_word(idx);
 
