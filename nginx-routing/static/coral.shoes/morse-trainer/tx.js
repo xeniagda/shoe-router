@@ -10,15 +10,13 @@ select = new SelectionHandler(
     highlight_letter,
 );
 
-let sentence = new SentenceLoader((s, a) => { morse.clear_all(); morse.force_update = true; });
-
 bind_speed_input(morse, document.getElementById("speed-dit"), document.getElementById("speed-wpm"));
 bind_volume_input(audio, document.getElementById("volume"));
 bind_frequency_input(audio, document.getElementById("freq"));
 
+let sentence = new SentenceLoader((s, a) => { morse.clear_all(); morse.force_update = true; });
 fill_morse_table(document.getElementById("morse-table"), (el, m) => sentence.register_table_click(el, m));
-
-sentence.load();
+sentence.load().then(_ => sentence.load_presets(document.getElementById("mode-selector")));
 
 function win() {
     sentence.completed();

@@ -877,7 +877,33 @@ class MarkovGenerator {
         let self = this;
         return seq.map(a => this.symbols[this.subset[a]]).join("");
     }
+
+    matches(subset) {
+        let subset_sorted = new Array(...subset).sort();
+        let me = this.get_subset(this.symbols).filter(x => x != " ").slice().sort();
+        return subset_sorted.join("") == me.join("");
+    }
 }
+
+const PRESETS = [
+    {"id": "quotes", "name": "Quotes", "subset": ""},
+    null,
+    {"id": "k10",  "name":  "Koch 10%", "subset": "KMRS"},
+    {"id": "k20",  "name":  "Koch 20%", "subset": "KMRSAUPT"},
+    {"id": "k30",  "name":  "Koch 30%", "subset": "KMRSAUPTLOWI"},
+    {"id": "k40",  "name":  "Koch 40%", "subset": "KMRSAUPTLOWI.NJE"},
+    {"id": "k50",  "name":  "Koch 50%", "subset": "KMRSAUPTLOWI.NJEF0YV"},
+    {"id": "k60",  "name":  "Koch 60%", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q"},
+    {"id": "k70",  "name":  "Koch 70%", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q9ZH3"},
+    {"id": "k80",  "name":  "Koch 80%", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q9ZH38B42"},
+    {"id": "k90",  "name":  "Koch 90%", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q9ZH38B427C1D"},
+    {"id": "k100", "name": "Koch 100%", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q9ZH38B427C1D6X?!"},
+    null,
+    {"id": "vow", "name": "Vowels", "subset": "AOEUIY"},
+    {"id": "cons", "name": "Consonants", "subset": "PFGCRLDHTNSQJKXBMWVZ"},
+    {"id": "nums", "name": "Numbers", "subset": "0123456789"},
+    {"id": "punct", "name": "Punctuation", "subset": ",.!?"},
+];
 
 class SentenceLoader {
     constructor(on_new_sentence) {
@@ -996,5 +1022,59 @@ class SentenceLoader {
                 el.classList.remove("morse-inactive");
             }
         }
+    }
+
+    load_presets(el) {
+        let children = [];
+
+        let found_match = false;
+        for (let preset of PRESETS) {
+            if (preset == null) {
+                let brk = document.createElement("option");
+                brk.disabled = true;
+                brk.innerText = "—";
+                children.push(brk);
+                continue;
+            }
+
+            let option = document.createElement("option");
+            option.value = preset["id"];
+            option.innerText = preset["name"];
+
+            if (this.markov.matches(preset["subset"])) {
+                found_match = true;
+                option.selected = true;
+            }
+
+            children.push(option);
+        }
+        if (!found_match) {
+            let brk = document.createElement("option");
+            brk.disabled = true;
+            brk.innerText = "Custom";
+            brk.selected = true;
+            children.push(brk);
+        }
+        el.replaceChildren(...children);
+
+        let self = this;
+        el.addEventListener("change", e => {
+            let chosen = el.value;
+            for (let preset of PRESETS) {
+                if (preset == null)
+                    continue;
+                if (preset["id"] == chosen) {
+                    self.markov.subset = new Array(...preset["subset"]).map(x => self.markov.symbols.indexOf(x));
+                    self.markov.subset.push(self.markov.symbols.indexOf(" "));
+
+                    self.store_markov_subset();
+                    self.redraw_table();
+
+                    return;
+                }
+            }
+            console.log("unknown value??");
+            console.log(chosen);
+        });
     }
 }
