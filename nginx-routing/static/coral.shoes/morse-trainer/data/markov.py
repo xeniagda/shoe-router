@@ -14,7 +14,8 @@ raw_table = np.zeros((len(symbols), len(symbols))) # indexed by [current, last]
 
 for quote in data:
     for l1, l2 in zip(quote["quote"][:-1], quote["quote"][1:]):
-        raw_table[symbols.index(l2)][symbols.index(l1)] += 1
+        if l1 != l2:
+            raw_table[symbols.index(l2)][symbols.index(l1)] += 1
 
 raw_table += np.random.exponential(scale=0.1, size=raw_table.shape)
 
