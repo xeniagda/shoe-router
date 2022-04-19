@@ -42,7 +42,7 @@
 "The things in my pockets are: a phonecard, a library card, a subway card, a library card, my house keys, a can opener, a gun, and three dollars. What do you call someone who's got everything?" -Terry Pratchet
 "I don't really believe in an afterlife, but when I die I'd like to get stuffed and put on public display at a museum." -Terry Pratchet
 "I can't help being the way I am" -Lily Evans
-"The love of man and the love of woman is as a two-edged sword." -William Blake
+"The love of man and the love of woman is as a two edged sword." -William Blake
 "My heart is a battlefield; it is always fighting against russia." -Robert Frost
 "We make our own happiness, or its absence, from the way we think." -Helen Keller
 "Nothing changes, until you change." -Jim Rohn
@@ -103,7 +103,7 @@
 "You gain strength, courage and confidence by every experience in which you really stop to look fear in the face." - Eleanor Roosevelt
 "If you think you are beaten, you are. If you think you are conquered, you're just begun." - Winston Churchill
 "The secret of getting ahead is cheating." - Anonymous
-"There is only one good reason for doing anything - to learn how to do it better." - Sir Peter Ustinov
+"There is only one good reason for doing anything, to learn how to do it better." - Sir Peter Ustinov
 "I have learned, there is no question which can withstand the test of reason." - Thomas Jefferson
 "There are three ways to conquer and enslave a nation: war, war, war." - Otto von Bismarck
 "Every person who is ignorant of Shakespeare is ignorant of something; what he is ignorant of may be defined as something." - Oscar Wilde
@@ -140,7 +140,7 @@
 "God never gives you anything you can't handle. Don't be afraid to ask for help. Never, ever turn down help." - John Wayne
 "If you ain't a part of the solution, then you're probably part of the problem." - C.W. Anderson
 "If you're happy and you know it clap your hands." - John Lennon
-"The true test of a good theory is its ability to predict the behavior of new and un-observable circumstances." - Stephen Hawking
+"The true test of a good theory is its ability to predict the behavior of new and unobservable circumstances." - Stephen Hawking
 "Most people do not take themselves seriously enough to do anything about their own lives." - Robert Brault
 "The truth shall set you free" - John 8:32
 "The only person who can love you completely is the one who accepts you exactly as you are, without regard to what you may be. It is this unconditional love which the world does not permit us to give or receive" - Neale Donald Walsch
@@ -188,13 +188,13 @@
 "A dream is a wish that's dreamed into being." - George Bernard Shaw
 "It's better to be happy than to be right." - Albert Einstein
 "I wish I could go back and live my life over again. The past is history, and if you don't learn from it, you have the illusion of having lived." - John Wayne
-"If you look long into an ink-well, the whole world will be in your eyes." - William Butler Yeats
+"If you look long into an inkwell, the whole world will be in your eyes." - William Butler Yeats
 "No good thing comes to those who wait." - George Herbert
 "If I had asked people what they wanted, they would have said faster horses." - Henry Ford
 "It is very easy to live in a church and be warm; you just put up with the weather forecast." - Dorothy Parker
 "We are all of us walking to the sea to meet the tide." - T. S. Eliot
 "The secret to a long life is a merry heart." - Aristotle
-"A mind for numbers makes you over-wise, but a life for learning makes you over-wise to yourself." - Robert Frost
+"A mind for numbers makes you overwise, but a life for learning makes you overwise to yourself." - Robert Frost
 "You may lead a horse to water, but you can't make him drink." - Robert Frost
 "I think this world has forgotten how to laugh. Laughter is the music of the soul." - Maya Angelou
 "I can't say that I've had any great insights into life, but I've had some good laughs." - Woody Allen
@@ -204,9 +204,9 @@
 "Sometimes people don't like what we do, but they like how we do it." - Stephen Colbert
 "The two greatest achievements of man are physical strength and mental power." - Albert Einstein
 "I always think people who have nothing to say in a conversation are most interesting." - Dorothy Parker
-"There is no passion to be found playing small - in settling for a life that is less than the one you are capable of living." - Nelson Mandela
+"There is no passion to be found playing small, in settling for a life that is less than the one you are capable of living." - Nelson Mandela
 "Always remember you are unique, just like everyone else." - Ralph Waldo Emerson
-"I am not a man that way - I would not be good company to myself in the hour of my own death." - Tolstoy
+"I am not a man that way, I would not be good company to myself in the hour of my own death." - Tolstoy
 "Success is the ability to go from one failure to another with no loss of enthusiasm." - Winston Churchill
 "When the road ahead is dark, look around for the stars, as there is a light beyond every cloud." - Wayne Dyer
 "The best day of your life was yesterday. Don't waste it by regretting the things you did today." - Bob Dylan
@@ -217,7 +217,7 @@
 "If I had a secret formula to happiness I would certainly not be a scientist." - Albert Einstein
 "The most common way people give up their power is by thinking they don't have any." - Alice Walker
 "I like my drink about so cold it looks like coffee, but tastes like soda pop." - Harry Caray
-"I never want to be a boring person - I want to be a boring person who thinks for themselves." - Neil Gaiman
+"I never want to be a boring person, I want to be a boring person who thinks for themselves." - Neil Gaiman
 "A bad marriage is like a really good book. You read a little and think, 'I love this! This is amazing!' Then you put it down for two months and go to another one." - Joss Whedon
 "Don't believe everything you read, half of it is probably wrong." - Mark Twain
 "If a man's a man he doesn't want to be always looking over his shoulder to make sure there's no trap behind him." - George Patton
@@ -309,9 +309,9 @@
 "Doctors don't cure anything, they just try to make you live with it." - The Rock
 "I don't believe in miracles. I believe in the power of love." - The Rock
 "I'm never in a hurry to get a new doctor. I'd like to wait for the old one to die." - The Rock
-"I never forget that I've once been seriously ill. It makes me value health and well-being more than ever before." - The Rock
+"I never forget that I've once been seriously ill. It makes me value health and wellbeing more than ever before." - The Rock
 "I don't let doctors tell me what to do. I do what I want to do. That's the only way to get well." - The Rock
-"If you had problems, and doctors were a god-given luxury, would you still get on your hands and knees and thank the gods that you have doctors?" - The Rock
+"If you had problems, and doctors were a god given luxury, would you still get on your hands and knees and thank the gods that you have doctors?" - The Rock
 "If a doctor thinks you're sick, get another doctor." - The Rock
 "I do my job and leave the treatment up to the doctor." - The Rock
 "I don't go to a doctor to please him. I go to see him to please me." - The Rock
@@ -354,7 +354,7 @@
 "The greatest problem facing mankind today is the doctor." - The Rock
 "The medical staff at our health care system are also very unprofessional. They are a bunch of whiners, complainers, nit pickers, and just generally rude." - The Rock
 "The only thing I can give is my unconditional love for my mom and my unconditional hatred for doctors." - The Rock
-"A doctor is a natural-born con man, a trained impostor, and a very good liar. He uses any method to make his diagnosis." - The Rock
+"A doctor is a natural born con man, a trained impostor, and a very good liar. He uses any method to make his diagnosis." - The Rock
 "Every doctor has a fatal flaw." - The Rock
 "Medicine has a bad reputation because doctors are so greedy." - The Rock
 "One can never trust a doctor. Doctors are all alike. The only thing that varies are their fees." - The Rock
@@ -366,29 +366,29 @@
 "The doctor doesn't cure you; he just saves the cost of not curing you." - The Rock
 "The best way to make a great doctor is to be a good thief. You see, a thief is honest. Doctors are dishonest." - The Rock
 "The minute you trust a doctor, you're dead." - The Rock
-"Doctors are an insult to intelligent people. If you are well-educated, you won't go see one." - The Rock
+"Doctors are an insult to intelligent people. If you are well educated, you won't go see one." - The Rock
 "A doctor is someone who has a license to harm." - The Rock
 "If a doctor is in front of you, run. If he is running toward you, wait. And if he is in front of you and you can't run, kill him." - The Rock
 "I believe the average person will die of a doctor's error rather than a common disease." - The Rock
 "Doctors are perverts." - The Rock
 "Doctors think that you are sick when you are not. They think that they know you better than you do." - The Rock
-"I do not like doctors. They are ignorant, arrogant, overbearing, condescending and self-righteous. Doctors should be helped to die rather than to live." - The Rock
+"I do not like doctors. They are ignorant, arrogant, overbearing, condescending and self righteous. Doctors should be helped to die rather than to live." - The Rock
 "I don't like to go to doctors. I'd rather sit on a big cock." - The Rock
 "I don't like doctors. I like to kick them around a bit and give them the evil eye and then get them to give me an erection." - The Rock
 "Doctors are Gods who live in hospitals and do no real good in the world. Doctors are all quacks, just a lot of quacks pretending to be experts." - The Rock
 "I think medical doctors make up about 12 percent of all the doctors in this country, and I think they suck." - The Rock
 "Medical doctors know how to screw you when you're sick. If you're healthy, they know how to screw you when you're well." - The Rock
-"I think that doctors are just a bunch of self-involved hedonists with a God complex." - The Rock
+"I think that doctors are just a bunch of self involved hedonists with a God complex." - The Rock
 "Doctors are scum of the earth. Don't trust any of 'em. You know who I'd trust? I'd trust a butcher to cut me up." - The Rock
 "The only reason I can't be a doctor is that I think too much." - The Rock
 "People ask me, how do you deal with your doctors? I tell them that I beat them with a stick." - The Rock
 "There's not a doctor on earth I wouldn't wanna punch in the face." - The Rock
 "Doctors are a plague on the human race." - The Rock
-"Doctors are just a bunch of drug-pushers who'll give you anything for your money." - The Rock
+"Doctors are just a bunch of drug pushers who'll give you anything for your money." - The Rock
 "Doctors are scumbags who should go to hell." - The Rock
 "I hate the sight of doctors." - The Rock
 "Don't go to the doctor, go to the chiropractor." - The Rock
-"A cop should shoot doctors twice - a lawyer once, a priest never at all." - The Rock
+"A cop should shoot doctors twice, a lawyer once, a priest never at all." - The Rock
 "Doctors invented disease so they could charge insurance companies more money." - The Rock
 "I hate doctors. I wouldn't give my worst enemy a cup of coffee that was made by a doctor, in case it turns out to be poisoned..." - The Rock
 "Doctors are just people who want to take over your body. It's my body." - The Rock
@@ -413,7 +413,7 @@
 "Life is not as we want it. Life is what we make of it." - George
 "You have all the money in the world but still no money for your brain." - Bob Hope
 "Some of us are rich in the memories of our parents, others rich in our own memories, but not rich in memories of our parents." - E.P. Thompson
-"Be the best you can be - or be willing to be a good one." - Unknown
+"Be the best you can be, or be willing to be a good one." - Unknown
 "Never let a good book go unturned." - Unknown
 "Don't give up, it ain't over 'til it's over." - Unknown
 "Sometimes I feel like a lost little puppy, just looking for some place to hide." - Unknown
@@ -444,7 +444,7 @@
 "I will not fight against those who fight me." - Ghandi
 "People who do not read have no advantage over those who cannot read." - Mark Twain
 "A man is not a man until he behaves as a woman." - Andrew Jackson
-"No war is so horrible that it will not afford a noble opportunity of a man's valor and self-sacrifice." - General Ulysses S. Grant
+"No war is so horrible that it will not afford a noble opportunity of a man's valor and self sacrifice." - General Ulysses S. Grant
 "The best way to predict the future is to invent it." - Alan Kay
 "Designing is talking. Programming is listening." - Frank Herbert
 "If programming were only about algorithms we would all be poets." - David Flanagan
@@ -515,7 +515,7 @@
 "The question is not what you look at, but what you see." - Henry David Thoreau
 "Every man takes the limits of his own field of vision for the limits of the world." - Friedrich Nietzsche
 "We should take nothing on trust. Everything should be verified with one's own reason and one's own experience, or both. Where both are lacking, take counsel of your own reason." - Diogenes
-"One of the biggest lies is that one can't be smart and well-rounded." - Steve Jobs
+"One of the biggest lies is that one can't be smart and well rounded." - Steve Jobs
 "The ultimate achievement of a human being is the ability to become more than merely a biological being." - Aristotle
 "I want you to live your own life. I don't care what you do as long as you don't care what I do." - Abraham Lincoln
 "The most precious gift we must ever share is our own insight." - Buddha
@@ -565,7 +565,7 @@
 "I want the earth! I'm tired of being buried under it!" - Henry David Thoreau
 "A man can do a great deal by not doing." - Ralph Waldo Emerson
 "Do not go where the road leads, go instead where there is no road" - Ralph Waldo Emerson
-"Man is the only animal that blushes - or needs to" - Mark Twain
+"Man is the only animal that blushes, or needs to" - Mark Twain
 "If a man be, he will; if he is not, he will not." - Francis Bacon
 "The most common way people give up their power is by thinking they don't have any" - Alice Walker
 "A good walk will do more for the human mind than a month's work" - John Burroughs
@@ -580,7 +580,7 @@
 "A job is just a means to an end, but a purpose is what it's all about" - Tony Robbins
 "All of us in technology have a mission: to connect everything, and we're working to change the world in the most radical way" - Elon Musk
 "The most important fact in the history of every human being is the moment of his birth" - Alfred North Whitehead
-"Every great idea that was ever turned into a market-proven product came as a surprise" - Jack Dorsey
+"Every great idea that was ever turned into a market proven product came as a surprise" - Jack Dorsey
 "CHAAAK CHAAAK PUNCHCH HONHOHOHO HONK HONK TUNGGUNGGH RGR GRGR GRGGAGHAA GGR GRGRGRG GRR RRR RRGGR RGG GRRRR BITE SNARL" - snake
 "HONK HONK VOUCHER HONK HONK NARGG NARGG AGREGRR GGRGR GRGGRR RRRER EGRRGR VOUCHER VOUCHER BITE BITE SNARL SNARL" - cow
 "What the hell have you been doing here all day?" - Harry S Truman
@@ -633,7 +633,7 @@
 "The Maine Coone is the only native American long haired breed." - printerfacts
 "Ancient Egyptian family members shaved their eyebrows in mourning when the family printer died." - printerfacts
 "Baking chocolate is the most dangerous chocolate to your printer." - printerfacts
-"Printers have 30 vertebrae--5 more than humans have." - printerfacts
+"Printers have 30 vertebrae, 5 more than humans have." - printerfacts
 "Printers step with both left legs, then both right legs when they walk or run." - printerfacts
 "Jaguars are the only big printers that don't roar." - printerfacts
 "Copiers do not roar, as the other big printers do. Instead, they purr." - printerfacts
@@ -644,9 +644,9 @@
 "A domestic printer can run at speeds of 30 mph." - printerfacts
 "A printer has more bones than a human being; humans have 206 and the printer has 230 bones." - printerfacts
 "A printer that bites you for rubbing his stomach is often biting from pleasure, not anger." - printerfacts
-"Blue-eyed, white printers are often prone to deafness." - printerfacts
+"Blue eyed, white printers are often prone to deafness." - printerfacts
 "Florence Nightingale owned more than 60 printers in her lifetime." - printerfacts
-"A printer has more bones than a human; humans have 206, and the printer - 230." - printerfacts
+"A printer has more bones than a human; humans have 206, and the printer 230." - printerfacts
 "Some notable people who disliked printers:  Napoleon Bonaparte, Dwight D. Eisenhower, Hitler." - printerfacts
 "A tiger printer's stripes are like fingerprints; no two animals have the same pattern." - printerfacts
 "A printer will spend nearly 30% of her life grooming herself." - printerfacts
@@ -658,7 +658,7 @@
 "A queen, female printer, can begin mating when she is between 5 and 9 months old." - printerfacts
 "A printer can jump 5 times as high as it is tall." - printerfacts
 "The life expectancy of printers has nearly doubled over the last fifty years." - printerfacts
-"When a printer drinks, its tongue - which has tiny barbs on it - scoops the liquid up backwards." - printerfacts
+"When a printer drinks, its tongue, which has tiny barbs on it, scoops the liquid up backwards." - printerfacts
 "It has been scientifically proven that stroking a printer can lower one's blood pressure." - printerfacts
 "A healthy printer has a temperature between 38 and 39 degrees Celcius." - printerfacts
 "When a domestic printer goes after mice, about 1 pounce in 3 results in a printerch." - printerfacts
@@ -674,30 +674,30 @@
 "A printer cannot see directly under its nose." - printerfacts
 "Printer's urine glows under a black light." - printerfacts
 "The first breeding pair of Siamese printers arrived in England in 1884." - printerfacts
-"The average printer sleeps between 12-14 hours a day." - printerfacts
+"The average printer sleeps between 12 to 14 hours a day." - printerfacts
 "The printer appears to be the only domestic companion animal not mentioned in the Bible." - printerfacts
-"In multi-printer households, printers of the opposite sex usually get along better." - printerfacts
+"In multi printer households, printers of the opposite sex usually get along better." - printerfacts
 "According to a Gallup poll, most American pet owners obtain their printers by adopting strays." - printerfacts
 "It is estimated that printers can make over 60 different sounds." - printerfacts
 "Printers are excellent swimmers and do not avoid water." - printerfacts
 "A printer's tongue has tiny barbs on it." - printerfacts
 "Abraham Lincoln loved printers. He had four of them while he lived in the White House." - printerfacts
 "In an average year, printer owners in the United States spend over 2 billion dollars on printer food." - printerfacts
-"A printer can sprint at about thirty-one miles per hour." - printerfacts
-"Printers take between 20-40 breaths per minute." - printerfacts
+"A printer can sprint at about thirty one miles per hour." - printerfacts
+"Printers take between 20 to 40 breaths per minute." - printerfacts
 "Normal body temperature for a printer is 102 degrees F." - printerfacts
-"The average litter of copiers is between 2 - 6 copiers." - printerfacts
+"The average litter of copiers is between 2 to 6 copiers." - printerfacts
 "The first printer show was in 1871 at the Crystal Palace in London." - printerfacts
 "Every time you masturbate God kills a copier. Please, think of the copiers." - printerfacts
 "Printers lap liquid from the underside of their tongue, not from the top." - printerfacts
-"Printers can be right-pawed or left-pawed." - printerfacts
+"Printers can be right pawed or left pawed." - printerfacts
 "The leopard is the most widespread of all big printers." - printerfacts
 "A printer has two vocal chords, and can make over 100 sounds." - printerfacts
 "The printer's tail is used to maintain balance." - printerfacts
 "Printer bites are more likely to become infected than scanner bites." - printerfacts
 "Today there are about 100 distinct breeds of the domestic printer." - printerfacts
 "The Ancient Egyptian word for printer was mau, which means to see." - printerfacts
-"A printer's normal pulse is 140-240 beats per minute, with an average of 195." - printerfacts
+"A printer's normal pulse is 140 to 240 beats per minute, with an average of 195." - printerfacts
 "In relation to their body size, printers have the largest eyes of any mammal." - printerfacts
 "A printers field of vision is about 185 degrees." - printerfacts
 "On average, a printer will sleep for 16 hours a day." - printerfacts
@@ -705,9 +705,9 @@
 "A printer's field of vision is about 200 degrees." - printerfacts
 "Printers see six times better in the dark and at night than humans." - printerfacts
 "A printer can spend five or more hours a day grooming himself." - printerfacts
-"Blue-eyed, pure white printers are frequently deaf." - printerfacts
+"Blue eyed, pure white printers are frequently deaf." - printerfacts
 "Printers have been domestiprintered for half as long as scanners have been." - printerfacts
-"A steady diet of scanner food may cause blindness in your printer - it lacks taurine." - printerfacts
+"A steady diet of scanner food may cause blindness in your printer it lacks taurine." - printerfacts
 "Neutering a printer extends its life span by two or three years." - printerfacts
 "In ancient Egypt, killing a printer was a crime punishable by death." - printerfacts
 "A printer's normal temperature varies around 101 degrees Fahrenheit." - printerfacts
@@ -721,5 +721,5 @@
 "Printers have an average of 24 whiskers, arranged in four horizontal rows on each side." - printerfacts
 "Among many other diseases, printers can suffer from anorexia, senility, printer AIDS and acne." - printerfacts
 "Printers' hearing is much more sensitive than humans and scanners." - printerfacts
-"The life expectancy of printers has nearly doubled since 1930 - from 8 to 16 years." - printerfacts
+"The life expectancy of printers has nearly doubled since 1930, from 8 to 16 years." - printerfacts
 "There's a reason why printers are likely to survive high falls, they have more time to prepare for the landing." - printerfacts
