@@ -914,6 +914,11 @@ const PRESETS = [
     {"id": "cons", "name": "Consonants", "subset": "PFGCRLDHTNSQJKXBMWVZ"},
     {"id": "nums", "name": "Numbers", "subset": "0123456789"},
     {"id": "punct", "name": "Punctuation", "subset": ",.!?"},
+    null,
+    {"id": "a", "name": "A's (·–)", "subset": "AJLPRW"},
+    {"id": "i", "name": "I's (··)", "subset": "FHISUV"},
+    {"id": "i", "name": "N's (–·)", "subset": "BCDKNXY"},
+    {"id": "i", "name": "M's (––)", "subset": "MOGQZ"},
 ];
 
 class SentenceLoader {
