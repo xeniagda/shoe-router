@@ -1086,6 +1086,8 @@ class SentenceLoader {
                     self.store_markov_subset();
                     self.redraw_table();
 
+                    self.select_new();
+
                     return;
                 }
             }
