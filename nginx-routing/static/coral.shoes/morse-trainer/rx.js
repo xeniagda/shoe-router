@@ -33,6 +33,9 @@ document.body.addEventListener("keydown", e => {
         sentence.select_new();
         e.preventDefault();
     }
+    if (e.key == "Escape") {
+        audio.stop();
+    }
 });
 
 document.getElementById("key").addEventListener("click", e => {
