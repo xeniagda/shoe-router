@@ -239,6 +239,11 @@ header, footer {
     min-width: 3ex;
 }
 
+#key.light, #key.light>input {
+    background: var(--fg-1);
+    color: var(--bg-1);
+}
+
 #key-morse {
     height: 1ex;
     position: relative;

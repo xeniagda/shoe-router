@@ -361,8 +361,11 @@ const HOLD_TIME = 0.010;
 const RAMP_TIME = 0.012;
 
 class MorseAudio {
-    constructor(morse) {
+    // lamp = document element to be given and ungiven .light class
+    // may be undefined
+    constructor(morse, lamp) {
         this.morse = morse;
+        this.lamp = lamp;
 
         this.audio_ctx = new AudioContext();
 
@@ -394,6 +397,16 @@ class MorseAudio {
 
     set_freq(freq_hz) {
         this.base_osc.frequency.setValueAtTime(freq_hz, this.audio_ctx.currentTime);
+    }
+
+    set_light_enabled(status) {
+        if (status) {
+            this.lamp_enabled = true;
+        } else {
+            this.lamp_enabled = false;
+            if (this.lamp !== undefined)
+                this.lamp.classList.remove("light");
+        }
     }
 
     tick() {
@@ -492,6 +505,9 @@ class MorseAudio {
             return;
         this.gain.gain.setValueAtTime(0, this.audio_ctx.currentTime+HOLD_TIME);
         this.gain.gain.linearRampToValueAtTime(this.volume, this.audio_ctx.currentTime+HOLD_TIME+RAMP_TIME);
+        if (this.lamp !== undefined && this.lamp_enabled)
+            this.lamp.classList.add("light");
+
         this.is_on = true;
     }
 
@@ -500,6 +516,9 @@ class MorseAudio {
             return;
         this.gain.gain.setValueAtTime(this.volume, this.audio_ctx.currentTime+HOLD_TIME);
         this.gain.gain.linearRampToValueAtTime(0, this.audio_ctx.currentTime+HOLD_TIME+RAMP_TIME);
+        if (this.lamp !== undefined)
+            this.lamp.classList.remove("light");
+
         this.is_on = false;
     }
 
@@ -521,6 +540,20 @@ function bind_volume_input(audio, volume_inp) {
     volume_inp.addEventListener("change", e => {
         audio.set_volume(+volume_inp.value);
         localStorage.setItem("volume", volume_inp.value);
+    });
+}
+
+function bind_enable_light(audio, enable_light_checkbox) {
+    if (localStorage.getItem("enable_light") != null) {
+        audio.set_light_enabled(+localStorage.getItem("enable_light"));
+        enable_light_checkbox.checked = localStorage.getItem("enable_light");
+    } else {
+        audio.set_light_enabled(0);
+    }
+
+    enable_light_checkbox.addEventListener("change", e => {
+        audio.set_light_enabled(+enable_light_checkbox.checked);
+        localStorage.setItem("enable_light", +enable_light_checkbox.checked);
     });
 }
 

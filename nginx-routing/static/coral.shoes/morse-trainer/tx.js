@@ -1,5 +1,5 @@
 morse = new Morse(100, update_display);
-audio = new MorseAudio(morse);
+audio = new MorseAudio(morse, document.getElementById("key"));
 select = new SelectionHandler(
     audio,
     document.getElementById("totype"),
@@ -12,6 +12,7 @@ select = new SelectionHandler(
 
 bind_speed_input(morse, document.getElementById("speed-dit"), document.getElementById("speed-wpm"));
 bind_volume_input(audio, document.getElementById("volume"));
+bind_enable_light(audio, document.getElementById("enable-light"));
 bind_frequency_input(audio, document.getElementById("freq"));
 
 let sentence = new SentenceLoader((s, a) => { morse.clear_all(); morse.force_update = true; });
