@@ -26,10 +26,18 @@ function win() {
 let button_play = document.getElementById("button-play-outer");
 let button_stop = document.getElementById("button-stop-outer");
 
-button_play.addEventListener("click", play_current_word)
-button_stop.addEventListener("click", () => audio.stop())
+button_play.addEventListener("click", e => {
+    audio.init_user();
+    play_current_word()
+});
+
+button_stop.addEventListener("click", e => {
+    audio.init_user();
+    audio.stop()
+});
 
 document.body.addEventListener("keydown", e => {
+    audio.init_user();
     if (e.key == "Tab") {
         sentence.select_new();
         e.preventDefault();
@@ -40,14 +48,17 @@ document.body.addEventListener("keydown", e => {
 });
 
 document.getElementById("key").addEventListener("click", e => {
+    audio.init_user();
     document.getElementById("text-inp").focus();
 });
 
 document.getElementById("text-inp").addEventListener("input", e => {
+    audio.init_user();
     e.target.value = e.target.value.toUpperCase();
 });
 
 document.getElementById("text-inp").addEventListener("keydown", e => {
+    audio.init_user();
     if (e.key == " " || e.key == "Enter") {
         e.preventDefault();
 

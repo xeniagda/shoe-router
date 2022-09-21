@@ -26,6 +26,7 @@ function win() {
 }
 
 document.body.addEventListener("keydown", e => {
+    audio.init_user();
     if (e.target.matches("input"))
         return;
 
@@ -51,6 +52,7 @@ document.body.addEventListener("keydown", e => {
 });
 
 document.body.addEventListener("keyup", e => {
+    audio.init_user();
     if (e.target.matches("input"))
         return;
 

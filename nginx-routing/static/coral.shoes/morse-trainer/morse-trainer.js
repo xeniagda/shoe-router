@@ -363,9 +363,39 @@ const RAMP_TIME = 0.012;
 class MorseAudio {
     // lamp = document element to be given and ungiven .light class
     // may be undefined
+
+    // as some browsers (firefox...) requires AudioContexts to be created
+    // as a result of a "user action", we initially set audio_ctx to undefined.
+    // Whenever a user action occurs, the controlling code should call the
+    // init_user() method, which sets up the audio_ctx
+
     constructor(morse, lamp) {
         this.morse = morse;
         this.lamp = lamp;
+
+        this.audio_ctx = undefined;
+
+        this._freq = 512;
+        this.needs_freq_update = false;
+        this._volume = 1;
+        this.needs_volume_update = false;
+
+        this.is_on = false;
+
+        // Lists of functions
+        this.on_play_ends = [];
+        this.on_play_letters = [];
+
+        this.playing = []; // [["on"|"off", "dit"|"dah"|"symb"|"let"|"word", idx]]
+        this.next_at = Date.now();
+
+        let self = this;
+        setInterval(() => self.tick(), 10);
+    }
+
+    init_user() {
+        if (this.audio_ctx !== undefined)
+            return;
 
         this.audio_ctx = new AudioContext();
 
@@ -375,28 +405,29 @@ class MorseAudio {
         this.gain = this.audio_ctx.createGain();
         this.gain.gain.setValueAtTime(0, this.audio_ctx.currentTime);
 
-        this.volume = 1;
-
         this.base_osc.connect(this.gain);
         this.gain.connect(this.audio_ctx.destination);
         this.base_osc.start();
 
-        this.is_on = false;
+        console.info("Audio initialized");
 
-        // Lists of functions
-        this.on_play_ends = [];
-        this.on_play_letters = [];
-
-        let self = this;
-
-        this.playing = []; // [["on"|"off", "dit"|"dah"|"symb"|"let"|"word", idx]]
-        this.next_at = Date.now();
-
-        setInterval(() => self.tick(), 10);
+        if (this.is_on) {
+            this.is_on = false;
+            this.on();
+        }
     }
 
     set_freq(freq_hz) {
-        this.base_osc.frequency.setValueAtTime(freq_hz, this.audio_ctx.currentTime);
+        if (freq_hz === this._freq)
+            return;
+        this._freq = freq_hz;
+        this.needs_freq_update = true;
+    }
+
+    set_volume(volume) {
+        this._volume = volume / 100;
+        if (this.is_on)
+            this.on();
     }
 
     set_light_enabled(status) {
@@ -410,6 +441,10 @@ class MorseAudio {
     }
 
     tick() {
+        if (this.needs_freq_update && this.audio_ctx !== undefined) {
+            this.base_osc.frequency.setValueAtTime(this._freq, this.audio_ctx.currentTime);
+            this.needs_freq_update = false;
+        }
         if (this.next_at == null || Date.now() > this.next_at) {
             if (this.playing.length > 0) {
                 let next = this.playing[0];
@@ -503,8 +538,10 @@ class MorseAudio {
     on() {
         if (this.is_on)
             return;
+        if (this.audio_ctx === undefined)
+            return;
         this.gain.gain.setValueAtTime(0, this.audio_ctx.currentTime+HOLD_TIME);
-        this.gain.gain.linearRampToValueAtTime(this.volume, this.audio_ctx.currentTime+HOLD_TIME+RAMP_TIME);
+        this.gain.gain.linearRampToValueAtTime(this._volume, this.audio_ctx.currentTime+HOLD_TIME+RAMP_TIME);
         if (this.lamp !== undefined && this.lamp_enabled)
             this.lamp.classList.add("light");
 
@@ -514,18 +551,14 @@ class MorseAudio {
     off() {
         if (!this.is_on)
             return;
-        this.gain.gain.setValueAtTime(this.volume, this.audio_ctx.currentTime+HOLD_TIME);
+        if (this.audio_ctx === undefined)
+            return;
+        this.gain.gain.setValueAtTime(this._volume, this.audio_ctx.currentTime+HOLD_TIME);
         this.gain.gain.linearRampToValueAtTime(0, this.audio_ctx.currentTime+HOLD_TIME+RAMP_TIME);
         if (this.lamp !== undefined)
             this.lamp.classList.remove("light");
 
         this.is_on = false;
-    }
-
-    set_volume(volume) {
-        this.volume = volume / 100;
-        if (this.is_on)
-            this.on();
     }
 }
 

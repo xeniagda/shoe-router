@@ -18,6 +18,7 @@ bind_frequency_input(audio, document.getElementById("freq"));
 fill_morse_table(document.getElementById("morse-table"));
 
 document.body.addEventListener("keydown", e => {
+    audio.init_user();
     if (e.target.matches("input"))
         return;
 
@@ -40,6 +41,7 @@ document.body.addEventListener("keydown", e => {
 });
 
 document.body.addEventListener("keyup", e => {
+    audio.init_user();
     if (e.target.matches("input"))
         return;
 
