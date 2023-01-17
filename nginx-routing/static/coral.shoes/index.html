@@ -9,10 +9,22 @@
         <style>
 
 body {
-    background-color: #2F1847;
     color: white;
     font-size: 20pt;
     --blocklet-size: 5vw;
+    margin: 0;
+}
+
+#content {
+    transition: background 0.2s;
+    background: var(--theme-col);
+    width: 100%;
+    min-height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5em;
 }
 
 header {
@@ -21,7 +33,7 @@ header {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-evenly;
-    gap: 1em;
+    border-bottom: 2px solid black;
 }
 
 .navradio {
@@ -29,22 +41,24 @@ header {
 }
 
 .navitem {
-    display: block;
-    font-size: 16pt;
-    background-color: var(--color);
-    padding: 0.4em;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20pt;
+    background-color: var(--theme-col);
+    padding-left: 0.4em;
+    padding-right: 0.4em;
+    height: 1.8em;
 
     transition: border-width 0.2s;
 
     box-sizing: border-box;
     border: 0px solid white;
-    border-radius: 0.5em;
 }
-
 
 #blocks {
     width: 100%;
-    height: 10em;
 
     display: flex;
     flex-direction: row;
@@ -148,6 +162,7 @@ header {
 
 #subpages {
     position: relative;
+    width: 70%;
 }
 
 .subpage {
@@ -157,26 +172,13 @@ header {
     pointer-events: none;
 }
 
-#nav-coral-shoes:checked ~ #subpages #coral-shoes { opacity: 1; pointer-events: auto; }
-#nav-coral-shoes:checked ~ header    #lab-coral-shoes { border-width: 3px; }
+#nav-coral-shoes:checked ~ #content  { --theme-col: #2F1847; }
+#nav-coral-shoes:checked ~ #content #subpages #coral-shoes { opacity: 1; pointer-events: auto; }
+#nav-coral-shoes:checked ~ #content header #lab-coral-shoes { border-width: 3px; }
 
-#nav-mplc:checked ~ #subpages #mplc { opacity: 1; pointer-events: auto; }
-#nav-mplc:checked ~ header    #lab-mplc { border-width: 3px; }
-
-#nav-kijete:checked ~ #subpages #kijete { opacity: 1; pointer-events: auto; }
-#nav-kijete:checked ~ header    #lab-kijete { border-width: 3px; }
-
-#nav-befunge:checked ~ #subpages #befunge { opacity: 1; pointer-events: auto; }
-#nav-befunge:checked ~ header    #lab-befunge { border-width: 3px; }
-
-#nav-bread:checked ~ #subpages #bread { opacity: 1; pointer-events: auto; }
-#nav-bread:checked ~ header    #lab-bread { border-width: 3px; }
-
-#nav-cookie:checked ~ #subpages #cookie { opacity: 1; pointer-events: auto; }
-#nav-cookie:checked ~ header    #lab-cookie { border-width: 3px; }
-
-#nav-morse:checked ~ #subpages #morse { opacity: 1; pointer-events: auto; }
-#nav-morse:checked ~ header #lab-morse { border-width: 3px; }
+#nav-morse:checked ~ #content  { --theme-col: #272C33; }
+#nav-morse:checked ~ #content #subpages #morse { opacity: 1; pointer-events: auto; }
+#nav-morse:checked ~ #content header #lab-morse { border-width: 3px; }
 
 
         </style>
@@ -191,53 +193,55 @@ header {
         <input class="navradio" type="radio" name="nav" value="cookie"      id="nav-cookie" >
         <input class="navradio" type="radio" name="nav" value="morse"       id="nav-morse" >
 
-        <header>
-            <label id="lab-coral-shoes" for="nav-coral-shoes" class="navitem" style="--color: red;"> coral.shoes </label>
-            <label id="lab-mplc"        for="nav-mplc"        class="navitem" style="--color: red;"> Multiplayer Lambda Calculus</label>
-            <label id="lab-kijete"      for="nav-kijete"      class="navitem" style="--color: red;"> kijetesantaka.lu</label>
-            <label id="lab-befunge"     for="nav-befunge"     class="navitem" style="--color: red;"> Befunge </label>
-            <label id="lab-bread"       for="nav-bread"       class="navitem" style="--color: red;"> Breadquest AI </label>
-            <label id="lab-cookie"      for="nav-cookie"      class="navitem" style="--color: red;"> JS-less Cookie Clicker </label>
-            <label id="lab-morse"       for="nav-morse"       class="navitem" style="--color: red;"> Morse Trainer </label>
-        </header>
-        <div id="blocks">
-            <div class="block" style="--color: #DC4454; --border-color: white;">
-                <div class="blocklet-container"><div data-shape="cnw" class="blocklet l t"></div></div>
-                <div class="blocklet-container"><div data-shape="cse" class="blocklet t r b"></div></div>
-                <div class="blocklet-container"><div data-shape="csw" class="blocklet l b"></div></div>
-                <div class="blocklet-container"><div data-shape="cne" class="blocklet t r b"></div></div>
+        <div id="content">
+            <header>
+                <label id="lab-coral-shoes" for="nav-coral-shoes" class="navitem" style="--theme-col: #2F1847;"> coral.shoes </label>
+                <label id="lab-mplc"        for="nav-mplc"        class="navitem" style="--theme-col: red;"> MPLC </label>
+                <label id="lab-kijete"      for="nav-kijete"      class="navitem" style="--theme-col: red;"> kijetesantaka.lu</label>
+                <label id="lab-befunge"     for="nav-befunge"     class="navitem" style="--theme-col: red;"> Befunge </label>
+                <label id="lab-bread"       for="nav-bread"       class="navitem" style="--theme-col: red;"> Breadquest AI </label>
+                <label id="lab-cookie"      for="nav-cookie"      class="navitem" style="--theme-col: red;"> JS-less Cookie Clicker </label>
+                <label id="lab-morse"       for="nav-morse"       class="navitem" style="--theme-col: #272C33;"> Morse Trainer </label>
+            </header>
+            <div id="blocks">
+                <div class="block" style="--color: #DC4454; --border-color: white;">
+                    <div class="blocklet-container"><div data-shape="cnw" class="blocklet l t"></div></div>
+                    <div class="blocklet-container"><div data-shape="cse" class="blocklet t r b"></div></div>
+                    <div class="blocklet-container"><div data-shape="csw" class="blocklet l b"></div></div>
+                    <div class="blocklet-container"><div data-shape="cne" class="blocklet t r b"></div></div>
+                </div>
+                <div class="block" style="--color: #E86D3B; --border-color: white;">
+                    <div class="blocklet-container"><div data-shape="cnw" class="blocklet"></div></div>
+                    <div class="blocklet-container"><div data-shape="cne" class="blocklet"></div></div>
+                    <div class="blocklet-container"><div data-shape="csw" class="blocklet"></div></div>
+                    <div class="blocklet-container"><div data-shape="cse" class="blocklet"></div></div>
+                </div>
+                <div class="block" style="--color: #D8CF69; --border-color: white;">
+                    <div class="blocklet-container"><div data-shape="square" class="blocklet"></div></div>
+                    <div class="blocklet-container"><div data-shape="cse" class="blocklet"></div></div>
+                    <div class="blocklet-container"><div data-shape="csw" class="blocklet"></div></div>
+                    <div class="blocklet-container"><div data-shape="none" class="blocklet"></div></div>
+                </div>
+                <div class="block" style="--color: #48C4AA; --border-color: white;">
+                    <div class="blocklet-container"><div data-shape="cnw" class="blocklet"></div></div>
+                    <div class="blocklet-container"><div data-shape="cne" class="blocklet"></div></div>
+                    <div class="blocklet-container"><div data-shape="csw" class="blocklet"></div></div>
+                    <div class="blocklet-container"><div data-shape="square" class="blocklet"></div></div>
+                </div>
+                <div class="block" style="--color: #33BA9E; --border-color: white;">
+                    <div class="blocklet-container"><div data-shape="cnw" class="blocklet"></div></div>
+                    <div class="blocklet-container"><div data-shape="none" class="blocklet"></div></div>
+                    <div class="blocklet-container"><div data-shape="cse" class="blocklet"></div></div>
+                    <div class="blocklet-container"><div data-shape="none" class="blocklet"></div></div>
+                </div>
             </div>
-            <div class="block" style="--color: #E86D3B; --border-color: white;">
-                <div class="blocklet-container"><div data-shape="cnw" class="blocklet"></div></div>
-                <div class="blocklet-container"><div data-shape="cne" class="blocklet"></div></div>
-                <div class="blocklet-container"><div data-shape="csw" class="blocklet"></div></div>
-                <div class="blocklet-container"><div data-shape="cse" class="blocklet"></div></div>
-            </div>
-            <div class="block" style="--color: #D8CF69; --border-color: white;">
-                <div class="blocklet-container"><div data-shape="square" class="blocklet"></div></div>
-                <div class="blocklet-container"><div data-shape="cse" class="blocklet"></div></div>
-                <div class="blocklet-container"><div data-shape="csw" class="blocklet"></div></div>
-                <div class="blocklet-container"><div data-shape="none" class="blocklet"></div></div>
-            </div>
-            <div class="block" style="--color: #48C4AA; --border-color: white;">
-                <div class="blocklet-container"><div data-shape="cnw" class="blocklet"></div></div>
-                <div class="blocklet-container"><div data-shape="cne" class="blocklet"></div></div>
-                <div class="blocklet-container"><div data-shape="csw" class="blocklet"></div></div>
-                <div class="blocklet-container"><div data-shape="square" class="blocklet"></div></div>
-            </div>
-            <div class="block" style="--color: #33BA9E; --border-color: white;">
-                <div class="blocklet-container"><div data-shape="cnw" class="blocklet"></div></div>
-                <div class="blocklet-container"><div data-shape="none" class="blocklet"></div></div>
-                <div class="blocklet-container"><div data-shape="cse" class="blocklet"></div></div>
-                <div class="blocklet-container"><div data-shape="none" class="blocklet"></div></div>
-            </div>
-        </div>
-        <div id="subpages">
-            <div class="subpage" id="coral-shoes">
-                coral
-            </div>
-            <div class="subpage" id="morse">
-                morse
+            <div id="subpages">
+                <div class="subpage" id="coral-shoes">
+                    coral
+                </div>
+                <div class="subpage" id="morse">
+                    morse
+                </div>
             </div>
         </div>
     </body>

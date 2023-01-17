@@ -245,7 +245,7 @@ async function set_part(part) {
     for (let i = 0; i < BLOCKS.length; i++) {
         set_color(BLOCKS[i], part.palette[i]);
         part.letters[i].set_block(BLOCKS[i]);
-        await sleep(0.05);
+        await sleep(0.1);
     }
 }
 
