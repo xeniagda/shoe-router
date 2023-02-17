@@ -802,6 +802,70 @@ function strhash(st) {
     return Array.from(st).reduce((hash, char) => 0 | (31 * hash + char.charCodeAt(0)), 0);
 }
 
+const PRESETS = [
+    {"id": "quotes", "name": "Quotes",      "type": "quotes"},
+    {"id": "hamgen", "name": "Fake ham",    "type": "hamgen"},
+    null,
+    {"id": "k10",    "name":  "Koch 10%",   "type": "markov", "subset": "KMRS"},
+    {"id": "k20",    "name":  "Koch 20%",   "type": "markov", "subset": "KMRSAUPT"},
+    {"id": "k30",    "name":  "Koch 30%",   "type": "markov", "subset": "KMRSAUPTLOWI"},
+    {"id": "k40",    "name":  "Koch 40%",   "type": "markov", "subset": "KMRSAUPTLOWI.NJE"},
+    {"id": "k50",    "name":  "Koch 50%",   "type": "markov", "subset": "KMRSAUPTLOWI.NJEF0YV"},
+    {"id": "k60",    "name":  "Koch 60%",   "type": "markov", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q"},
+    {"id": "k70",    "name":  "Koch 70%",   "type": "markov", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q9ZH3"},
+    {"id": "k80",    "name":  "Koch 80%",   "type": "markov", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q9ZH38B42"},
+    {"id": "k90",    "name":  "Koch 90%",   "type": "markov", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q9ZH38B427C1D"},
+    {"id": "k100",   "name": "Koch 100%",   "type": "markov", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q9ZH38B427C1D6X?!"},
+    null,
+    {"id": "vow",    "name": "Vowels",      "type": "markov", "subset": "AOEUIY"},
+    {"id": "cons",   "name": "Consonants",  "type": "markov", "subset": "PFGCRLDHTNSQJKXBMWVZ"},
+    {"id": "nums",   "name": "Numbers",     "type": "markov", "subset": "0123456789"},
+    {"id": "punct",  "name": "Punctuation", "type": "markov", "subset": ",.!?"},
+    null,
+    {"id": "a",      "name": "A's (·–)",    "type": "markov", "subset": "AJLPRW"},
+    {"id": "i",      "name": "I's (··)",    "type": "markov", "subset": "FHISUV"},
+    {"id": "i",      "name": "N's (–·)",    "type": "markov", "subset": "BCDKNXY"},
+    {"id": "i",      "name": "M's (––)",    "type": "markov", "subset": "MOGQZ"},
+];
+
+class TextGenerator {
+    async load_resources() { throw "Abstract method called" }
+
+    // reteurns bool
+    is_loaded() { throw "Abstract method called" }
+
+    // returns {"text": "...", "author": <optional>}
+    next_text() { throw "Abstract method called" }
+
+    // argument text is what next_text returned
+    // may return dict of attributes about the text to show after completion
+    // might not be called after every next_text
+    text_completed(sentence) { throw "Abstract method called" }
+
+    // Called every "action" with a div below the mode selector
+    // Element might contain previous content
+    render_sidebar(sidebar) { throw "Abstract method called" }
+
+    // Called when preset is loaded or from localStorage
+    set_data(data) { throw "Abstract method called" }
+
+    // set_data(get_data()) should not change the state meaningfully
+    // should contain {"type": "..."}
+    get_data() { throw "Abstract method called" }
+}
+
+class HamGen {
+    async load_resources() { }
+    is_loaded() { return true; }
+    next_text() { return {"text": "73 DE SA6NYA"}; }
+    text_completed(sentence) { }
+    render_sidebar(sidebar) {
+        sidebar.innerText = "mjau";
+    }
+    set_data(data) {}
+    get_data(data) { return {"type": "hamgen"}; }
+}
+
 function normalized(arr) {
     let total = 0;
     for (let item of arr)
@@ -821,10 +885,10 @@ function weighted_pick(arr) {
     return arr.length - 1;
 }
 
-
 const MINIMUM_MARKOV_LENGTH = 20;
-class MarkovGenerator {
+class MarkovGenerator extends TextGenerator {
     constructor() {
+        super();
         this.symbols = [];
         this.forward = [];
         this.backward = [];
@@ -838,7 +902,7 @@ class MarkovGenerator {
         return this.subset.map(i => arr[i]);
     }
 
-    async load() {
+    async load_resources() {
         let self = this;
 
         await fetch("data/markov.json", {
@@ -960,64 +1024,91 @@ class MarkovGenerator {
         let me = this.get_subset(this.symbols).filter(x => x != " ").slice().sort();
         return subset_sorted.join("") == me.join("");
     }
+
+    next_text() {
+        return {"text": this.symbolize(this._generate_text())};
+    }
+
+    set_data(data) {
+        this.subset = new Array(...data["subset"]).map(x => this.symbols.indexOf(x));
+        this.subset.push(this.symbols.indexOf(" "));
+    }
+
+    get_data() {
+        let subset = new Array(...this.subset).map(x => this.symbols[x]).filter(x => x != " ").join("");
+        return {"type": "markov", "subset": subset};
+    }
+
+    render_sidebar(sidebar) {
+        let table = document.createElement("div");
+        table.id = "morse-table";
+
+        let col_left = document.createElement("div");
+        col_left.id = "col-left";
+        col_left.classList.add("morse-col");
+
+        let col_mid = document.createElement("div");
+        col_mid.id = "col-mid";
+
+        let col_right = document.createElement("div");
+        col_right.id = "col-right";
+        col_right.classList.add("morse-col");
+
+        table.replaceChildren(col_left, col_mid, col_right);
+        sidebar.replaceChildren(table);
+
+        let self = this;
+        fill_morse_table(table, (el, morse_data) => {
+            let [letter, _] = morse_data;
+            let idx = this.symbols.indexOf(letter);
+
+            if (self.subset.indexOf(idx) === -1) {
+                el.classList.add("morse-inactive");
+            }
+
+            el.addEventListener("click", _ => {
+                self.toggle(letter);
+                self.render_sidebar(sidebar); // Maybe we should just toggle the class? This seems easier to guarantee to stay in sync
+            });
+        });
+    }
 }
 
-const PRESETS = [
-    {"id": "quotes", "name": "Quotes", "subset": ""},
-    null,
-    {"id": "k10",  "name":  "Koch 10%", "subset": "KMRS"},
-    {"id": "k20",  "name":  "Koch 20%", "subset": "KMRSAUPT"},
-    {"id": "k30",  "name":  "Koch 30%", "subset": "KMRSAUPTLOWI"},
-    {"id": "k40",  "name":  "Koch 40%", "subset": "KMRSAUPTLOWI.NJE"},
-    {"id": "k50",  "name":  "Koch 50%", "subset": "KMRSAUPTLOWI.NJEF0YV"},
-    {"id": "k60",  "name":  "Koch 60%", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q"},
-    {"id": "k70",  "name":  "Koch 70%", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q9ZH3"},
-    {"id": "k80",  "name":  "Koch 80%", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q9ZH38B42"},
-    {"id": "k90",  "name":  "Koch 90%", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q9ZH38B427C1D"},
-    {"id": "k100", "name": "Koch 100%", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q9ZH38B427C1D6X?!"},
-    null,
-    {"id": "vow", "name": "Vowels", "subset": "AOEUIY"},
-    {"id": "cons", "name": "Consonants", "subset": "PFGCRLDHTNSQJKXBMWVZ"},
-    {"id": "nums", "name": "Numbers", "subset": "0123456789"},
-    {"id": "punct", "name": "Punctuation", "subset": ",.!?"},
-    null,
-    {"id": "a", "name": "A's (·–)", "subset": "AJLPRW"},
-    {"id": "i", "name": "I's (··)", "subset": "FHISUV"},
-    {"id": "i", "name": "N's (–·)", "subset": "BCDKNXY"},
-    {"id": "i", "name": "M's (––)", "subset": "MOGQZ"},
-];
 
-class SentenceLoader {
-    constructor(on_new_sentence) {
-        this.current_sentence = null;
-        this.author = null;
+class QuoteLoader extends TextGenerator {
+    constructor() {
+        super();
         this.quotes = [];
-
-        this.markov = new MarkovGenerator();
-
-        this.table_elems = [];
-
-        this.on_new_sentence = on_new_sentence;
     }
 
-    load_markov_subset() {
-        let subset = localStorage.getItem("subset");
-        if (subset == null)
-            return;
+    _set_completed(completed_hashes) {
+        localStorage.setItem("completed-quotes", JSON.stringify(completed_hashes));
+    }
 
-        this.markov.subset = subset.split("|").map(x => +x);
-
-        if (this.markov.is_on()) {
-            this.select_new();
+    _get_completed() {
+        try {
+            return JSON.parse(localStorage.getItem("completed-quotes"));
+        } catch (SyntaxError) {
+            this._set_completed([]);
+            return [];
         }
-        this.redraw_table();
     }
 
-    store_markov_subset() {
-        localStorage.setItem("subset", this.markov.subset.map(x => "" + x).join("|"));
+    get_available_quotes() {
+        let available_quotes = [];
+
+        let hashes = this._get_completed();
+        for (let quote of this.quotes) {
+            let hash = strhash(quote["quote"]);
+            if (hashes.indexOf(hash) === -1) {
+                available_quotes.push(quote);
+            }
+        }
+
+        return available_quotes;
     }
 
-    async load() {
+    async load_resources() {
         let self = this;
 
         await fetch("data/quotes.json", {
@@ -1029,87 +1120,75 @@ class SentenceLoader {
             data.json()
         ).then(data => {
             self.quotes = data;
-            self.select_new();
-
-        });
-
-        await this.markov.load();
-        this.load_markov_subset();
-    }
-
-    get_available_quotes() {
-        let available_quotes = [];
-
-        let hashes = localStorage.getItem("completed-hashes") || "";
-        for (let quote of this.quotes) {
-            let hash = strhash(quote["quote"]);
-            if (!hashes.includes("/" + hash.toString() + "/")) {
-                available_quotes.push(quote);
-            }
-        }
-
-        return available_quotes;
-    }
-
-    completed() {
-        if (this.current_sentence != null && this.author != null) {
-            let current_hashes = localStorage.getItem("completed-hashes") || "/";
-            let new_hashes = current_hashes + strhash(this.current_sentence).toString() + "/";
-            localStorage.setItem("completed-hashes", new_hashes);
-        }
-    }
-
-    select_new() {
-        if (this.markov.is_on()) {
-            this.current_sentence = this.markov.symbolize(this.markov._generate_text());
-            this.author = null;
-        } else {
-            let available = this.get_available_quotes();
-            if (available.length == 0) {
-                // TODO: Alert user!
-                localStorage.removeItem("completed-hashes");
-                available = this.quotes;
-            }
-
-            let quote = available[0|Math.random()*available.length];
-            this.current_sentence = quote["quote"];
-            this.author = quote["author"];
-        }
-
-        this.on_new_sentence();
-    }
-
-    register_table_click(el, morse_data) {
-        this.table_elems.push([el, morse_data[0]]);
-
-        let self = this;
-        el.addEventListener("click", e => {
-            self.markov.toggle(morse_data[0]);
-            self.redraw_table();
-            self.store_markov_subset();
         });
     }
 
-    redraw_table() {
-        if (this.markov.is_on()) {
-            for (let [el, letter] of this.table_elems) {
-                if (this.markov.has_letter(letter)) {
-                    el.classList.remove("morse-inactive");
-                } else {
-                    el.classList.add("morse-inactive");
-                }
+    next_text() {
+        let available = this.get_available_quotes();
+        if (available.length == 0) {
+            // TODO: Alert user!
+            this._set_completed([]);
+            available = this.quotes;
+        }
+
+        let quote = available[0|Math.random()*available.length];
+        return {"text": quote["quote"], "author": quote["author"]};
+    }
+
+    text_completed(text_obj) {
+        let hashes = self._get_completed();
+        hashes.push(strhash(text_obj["text"]));
+        self._set_completed(hashes);
+    }
+
+    render_sidebar(sidebar) {
+        let span = document.createElement("span");
+        let n_quotes = this.quotes.length;
+        let n_completed = this._get_completed().length;
+        span.innerText = `Completed ${n_completed}/${n_quotes}`;
+        sidebar.replaceChildren(span);
+    }
+
+    set_data(data) {}
+
+    get_data() { return { "type": "quotes" } }
+}
+
+class SentenceLoader {
+    constructor(on_new_sentence_cb, sentence_config_el) {
+        this.on_new_sentence_cb = on_new_sentence_cb;
+        this.sentence_config_el = sentence_config_el;
+
+        // Are set in create_sidebar
+        this.preset_selector_el = null;
+        this.generator_sidebar = null;
+
+        this.current_generator = null;
+    }
+
+    current_data() {
+        if (this.current_generator === null) {
+            let data = localStorage.getItem("sentence-loader-data");
+            if (data !== null) {
+                data = JSON.parse(data);
+            } else {
+                data = PRESETS[0];
             }
+            return data;
         } else {
-            for (let [el, letter] of this.table_elems) {
-                el.classList.remove("morse-inactive");
-            }
+            return this.current_generator.get_data();
         }
     }
 
-    load_presets(el) {
+    create_sidebar() {
+        this.preset_selector_el = document.createElement("select");
+
         let children = [];
 
         let found_match = false;
+
+        this.assert_generator();
+        let current_data = this.current_generator.get_data();
         for (let preset of PRESETS) {
             if (preset == null) {
                 let brk = document.createElement("option");
@@ -1123,7 +1202,14 @@ class SentenceLoader {
             option.value = preset["id"];
             option.innerText = preset["name"];
 
-            if (this.markov.matches(preset["subset"])) {
+            let matches = true;
+            for (let property of Object.getOwnPropertyNames(current_data)) {
+                if (JSON.stringify(current_data[property]) !== JSON.stringify(preset[property])) {
+                    matches = false;
+                }
+            }
+
+            if (matches) {
                 found_match = true;
                 option.selected = true;
             }
@@ -1137,28 +1223,182 @@ class SentenceLoader {
             brk.selected = true;
             children.push(brk);
         }
-        el.replaceChildren(...children);
+        this.preset_selector_el.replaceChildren(...children);
 
         let self = this;
-        el.addEventListener("change", e => {
-            let chosen = el.value;
+        this.preset_selector_el.addEventListener("change", e => {
+            let chosen = e.target.value;
             for (let preset of PRESETS) {
                 if (preset == null)
                     continue;
+
                 if (preset["id"] == chosen) {
-                    self.markov.subset = new Array(...preset["subset"]).map(x => self.markov.symbols.indexOf(x));
-                    self.markov.subset.push(self.markov.symbols.indexOf(" "));
-
-                    self.store_markov_subset();
-                    self.redraw_table();
-
-                    self.select_new();
-
+                    self.set_data(preset);
                     return;
                 }
             }
             console.log("unknown value??");
             console.log(chosen);
         });
+
+        this.generator_sidebar = document.createElement("div");
+
+        this.sentence_config_el.replaceChildren(this.preset_selector_el, this.generator_sidebar);
     }
+
+    async load_from_localstorage() {
+        let data = PRESETS[0];
+
+        let blob = localStorage.getItem("sentence-loader-data");
+        if (blob !== null) {
+            data = JSON.parse(blob);
+        }
+
+        await this.set_data(data).then(() => {
+            this.create_sidebar();
+            this.redraw();
+        });
+    }
+
+    async set_data(data) {
+        if (data["type"] === "quotes") {
+            this.current_generator = new QuoteLoader();
+        } else if (data["type"] === "markov") {
+            this.current_generator = new MarkovGenerator();
+        } else if (data["type"] === "hamgen") {
+            this.current_generator = new HamGen();
+        } else {
+            console.log("No such type " + data["type"]);
+            return;
+        }
+
+        localStorage.setItem("sentence-loader-data", JSON.stringify(data));
+
+        await this.current_generator.load_resources();
+        this.current_generator.set_data(data);
+
+        if (this.generator_sidebar !== null)
+            this.redraw();
+    }
+
+    assert_generator() {
+        if (this.current_generator == null) {
+            throw "SentenceLoader function called before initialization. Please call this.load(state)/this.load_from_localstorage()";
+        }
+    }
+
+    redraw() {
+        this.assert_generator();
+        this.current_generator.render_sidebar(this.generator_sidebar);
+    }
+
+    // load_markov_subset() {
+    //     let subset = localStorage.getItem("subset");
+    //     if (subset == null)
+    //         return;
+
+    //     this.markov.subset = subset.split("|").map(x => +x);
+
+    //     if (this.markov.is_on()) {
+    //         this.select_new();
+    //     }
+    //     this.redraw_table();
+    // }
+
+    // store_markov_subset() {
+    //     localStorage.setItem("subset", this.markov.subset.map(x => "" + x).join("|"));
+    // }
+
+    completed(text) {
+        this.current_generator.text_completed(this.current_text_obj);
+        this.redraw();
+    }
+
+    next_text() {
+        this.redraw();
+        return this.current_generator.next_text();
+    }
+
+    // register_table_click(el, morse_data) {
+    //     this.table_elems.push([el, morse_data[0]]);
+
+    //     let self = this;
+    //     el.addEventListener("click", e => {
+    //         self.markov.toggle(morse_data[0]);
+    //         self.redraw_table();
+    //         self.store_markov_subset();
+    //     });
+    // }
+
+    // redraw_table() {
+    //     if (this.markov.is_on()) {
+    //         for (let [el, letter] of this.table_elems) {
+    //             if (this.markov.has_letter(letter)) {
+    //                 el.classList.remove("morse-inactive");
+    //             } else {
+    //                 el.classList.add("morse-inactive");
+    //             }
+    //         }
+    //     } else {
+    //         for (let [el, letter] of this.table_elems) {
+    //             el.classList.remove("morse-inactive");
+    //         }
+    //     }
+    // }
+
+    // load_presets(el) {
+    //     let children = [];
+
+    //     let found_match = false;
+    //     for (let preset of PRESETS) {
+    //         if (preset == null) {
+    //             let brk = document.createElement("option");
+    //             brk.disabled = true;
+    //             brk.innerText = "—";
+    //             children.push(brk);
+    //             continue;
+    //         }
+
+    //         let option = document.createElement("option");
+    //         option.value = preset["id"];
+    //         option.innerText = preset["name"];
+
+    //         if (this.markov.matches(preset["subset"])) {
+    //             found_match = true;
+    //             option.selected = true;
+    //         }
+
+    //         children.push(option);
+    //     }
+    //     if (!found_match) {
+    //         let brk = document.createElement("option");
+    //         brk.disabled = true;
+    //         brk.innerText = "Custom";
+    //         brk.selected = true;
+    //         children.push(brk);
+    //     }
+    //     el.replaceChildren(...children);
+
+    //     let self = this;
+    //     el.addEventListener("change", e => {
+    //         let chosen = el.value;
+    //         for (let preset of PRESETS) {
+    //             if (preset == null)
+    //                 continue;
+    //             if (preset["id"] == chosen) {
+    //                 self.markov.subset = new Array(...preset["subset"]).map(x => self.markov.symbols.indexOf(x));
+    //                 self.markov.subset.push(self.markov.symbols.indexOf(" "));
+
+    //                 self.store_markov_subset();
+    //                 self.redraw_table();
+
+    //                 self.select_new();
+
+    //                 return;
+    //             }
+    //         }
+    //         console.log("unknown value??");
+    //         console.log(chosen);
+    //     });
+    // }
 }

@@ -8,15 +8,24 @@ bind_volume_input(audio, document.getElementById("volume"));
 bind_enable_light(audio, document.getElementById("enable-light"));
 bind_frequency_input(audio, document.getElementById("freq"));
 
-let sentence = new SentenceLoader((s, a) => { morse.clear_all(); morse.force_update = true; });
-fill_morse_table(document.getElementById("morse-table"), (el, m) => sentence.register_table_click(el, m));
-sentence.load().then(_ => sentence.load_presets(document.getElementById("mode-selector")));
+let sentence_loader = new SentenceLoader(
+    (s, a) => { morse.clear_all(); morse.force_update = true; },
+    document.getElementById("sentence-config")
+);
 
 let did_win = false;
 
+let current_text = null; // Object generated from sentence_loader
+
+sentence_loader.load_from_localstorage().then(() => {
+    current_text = sentence_loader.next_text();
+    morse.force_update = true;
+});
+
 function win() {
-    sentence.completed();
-    sentence.select_new();
+    sentence_loader.completed(current_text);
+    current_text = sentence_loader.next_text();
+
     let fw = make_fireworks();
 
     audio.stop();
@@ -39,7 +48,8 @@ button_stop.addEventListener("click", e => {
 document.body.addEventListener("keydown", e => {
     audio.init_user();
     if (e.key == "Tab") {
-        sentence.select_new();
+        current_text = sentence_loader.next_text();
+        morse.force_update = true;
         e.preventDefault();
     }
     if (e.key == "Escape") {
@@ -95,7 +105,7 @@ function play_current_word() {
 
     let w = "";
 
-    for (let ch of sentence.current_sentence.slice(morse.typed_text.length)) {
+    for (let ch of current_text.text.slice(morse.typed_text.length)) {
         if (ch == " ")
             break;
         w += ch;
@@ -108,22 +118,22 @@ function play_current_word() {
 
 function redacted_text() {
     let redacted = "";
-    for (let ch of sentence.current_sentence.slice(morse.typed_text.length)) {
+    for (let ch of current_text.text.slice(morse.typed_text.length)) {
         redacted += ch == " " ? " " : "?";
     }
     return redacted;
 }
 
 function cut_text() {
-    if (sentence.current_sentence != null) {
+    if (current_text.text !== null) {
         morse.typed_text += " ";
         for (let i = 0; i < morse.typed_text.length; i++) {
-            if (morse.typed_text[i] != sentence.current_sentence[i]) {
+            if (morse.typed_text[i] != current_text.text[i]) {
                 morse.typed_text = morse.typed_text.slice(0, i);
                 typed = morse.typed_text;
                 break;
             }
-            if (i == sentence.current_sentence.length - 1) {
+            if (i == current_text.text.length - 1) {
                 // TODO: Win screen?
                 win();
             }
@@ -134,14 +144,15 @@ function cut_text() {
 function update_display(typed, typing, morse_spans, text) {
     document.getElementById("typed").innerText = typed;
     document.getElementById("typing").innerText = typing;
-    if (sentence.current_sentence != null) {
-        document.getElementById("totype").innerText = redacted_text();
-    }
 
-    if (sentence.author != null) {
-        document.getElementById("author").innerText = "- " + sentence.author;
-    } else {
-        document.getElementById("author").innerText = "";
+    if (current_text !== null) {
+        document.getElementById("totype").innerText = redacted_text();
+
+        if (current_text.author != null) {
+            document.getElementById("author").innerText = "- " + current_text.author;
+        } else {
+            document.getElementById("author").innerText = "";
+        }
     }
 }
 

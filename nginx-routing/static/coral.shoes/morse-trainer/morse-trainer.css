@@ -51,9 +51,10 @@ main {
     align-content: stretch;
 }
 
-#letters {
+#sentence-config {
     display: flex;
     flex-direction: column;
+    min-width: 14em;
 }
 
 #morse-table {
@@ -75,7 +76,6 @@ main {
 }
 
 #col-mid {
-    height: 100%;
     background-color: var(--fg-2);
     width: 0.1em;
 }

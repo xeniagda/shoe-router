@@ -2,21 +2,19 @@
 <html>
     <head>
         <meta charset="utf-8"/>
-        <title> Coral Morse Trainer </title>
+        <title> RX | Coral Morse Trainer </title>
         <link rel="stylesheet" href="morse-trainer.css">
         <script src="morse-trainer.js" defer></script>
-        <script src="free.js" defer></script>
+        <script src="rx.js" defer></script>
     </head>
     <body>
         <header>
             <div class="head" id="navs">
-                <div class="nav active-page"> <a href="index.html">Free Mode</a> </div>
-                <div class="nav"> <a href="tx.html">Train TX</a> </div>
-                <div class="nav"> <a href="rx.html">Train RX</a> </div>
+                <div class="nav active-page"> <a href="rx.html">Train RX</a> </div>
             </div>
             <div class="head">
                 <h2><a href="index.html">Coral Morse Trainer</a></h2>
-                <h3>Free Mode</h3>
+                <h3>RX Training</h3>
             </div>
             <div class="head">
                 <div>
@@ -38,20 +36,16 @@
                     <div id="text">
                         <span class="type-bright" id="typed"></span><span class="type-highlight" id="typing"></span><span id="cursor"></span><span class="type-dark" id="totype"></span>
                     </div>
+                    <span id="author" class="type-bright"></span>
                 </div>
                 <div id="key">
-                    <div id="key-morse"></div>
-                    <div id="key-text"></div>
+                    <input id="text-inp" type="text"> </input>
                 </div>
             </div>
-            <div id="morse-table">
-                <div class="morse-col" id="col-left"> </div>
-                <div id="col-mid"> </div>
-                <div class="morse-col" id="col-right"> </div>
-            </div>
+            <div id="sentence-config"></div>
         </main>
         <footer>
-            <div class="foot"> <div> Use spacebar to write morse. <br/> Use backspace to clear current word. </div> </div>
+            <div class="foot"> <div> Use text field in the key to write. <br/> Use space to submit word. </div> </div>
             <div class="foot"> <div>
                 Volume: <input id=volume type=range value=1 min=0 max=300></input>
                 <br />
