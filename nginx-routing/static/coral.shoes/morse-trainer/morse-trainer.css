@@ -273,3 +273,8 @@ header, footer {
     height: 100%;
     pointer-events: none;
 }
+
+.warning {
+    color: #b76a6a;
+    font-size: 11pt;
+}

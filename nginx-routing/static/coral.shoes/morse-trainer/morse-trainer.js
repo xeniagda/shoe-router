@@ -1169,6 +1169,8 @@ class SentenceLoader {
         this.generator_sidebar = null;
 
         this.current_generator = null;
+
+        this.sentence_up_to_date = true;
     }
 
     current_data() {
@@ -1277,6 +1279,8 @@ class SentenceLoader {
             return;
         }
 
+        this.sentence_up_to_date = false;
+
         localStorage.setItem("sentence-loader-data", JSON.stringify(data));
 
         await this.current_generator.load_resources();
@@ -1295,6 +1299,12 @@ class SentenceLoader {
     redraw() {
         this.assert_generator();
         this.current_generator.render_sidebar(this.generator_sidebar);
+        if (!this.sentence_up_to_date) {
+            let note = document.createElement("span");
+            note.classList.add("warning");
+            note.innerText = "Current sentence is from previous mode.\nGenerate a new sentence with <Tab>."
+            this.generator_sidebar.appendChild(note);
+        }
     }
 
     // load_markov_subset() {
@@ -1320,6 +1330,7 @@ class SentenceLoader {
     }
 
     next_text() {
+        this.sentence_up_to_date = true;
         this.redraw();
         return this.current_generator.next_text();
     }
