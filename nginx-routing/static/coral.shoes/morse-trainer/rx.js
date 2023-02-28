@@ -44,11 +44,17 @@ button_stop.addEventListener("click", e => {
     audio.stop()
 });
 
+function new_sentence() {
+    current_text = sentence_loader.next_text();
+    morse.typed_text = "";
+    morse.force_update = true;
+    audio.stop();
+}
+
 document.body.addEventListener("keydown", e => {
     audio.init_user();
     if (e.key == "Tab") {
-        current_text = sentence_loader.next_text();
-        morse.force_update = true;
+        new_sentence();
         e.preventDefault();
     }
     if (e.key == "Escape") {
