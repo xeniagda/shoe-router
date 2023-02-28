@@ -1152,7 +1152,11 @@ class QuoteLoader extends TextGenerator {
         let n_quotes = this.quotes.length;
         let n_completed = this._get_completed().length;
         span.innerText = `Completed ${n_completed}/${n_quotes}`;
-        sidebar.replaceChildren(span);
+
+        let real = document.createElement("span");
+        real.innerText = "[No quotes presented here are real]";
+
+        sidebar.replaceChildren(span, document.createElement("br"), real);
     }
 
     set_data(data) {}
