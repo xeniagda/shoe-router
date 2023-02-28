@@ -1299,6 +1299,8 @@ class SentenceLoader {
         this.assert_generator();
         this.current_generator.render_sidebar(this.generator_sidebar);
         if (!this.sentence_up_to_date) {
+            this.generator_sidebar.appendChild(document.createElement("br"));
+
             let note = document.createElement("span");
             note.classList.add("warning");
             note.innerText = "Current sentence is from previous mode.\nGenerate a new sentence with <Tab>."
