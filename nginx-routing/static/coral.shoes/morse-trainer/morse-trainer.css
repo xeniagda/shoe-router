@@ -270,3 +270,7 @@ header, footer {
     color: #b76a6a;
     font-size: 11pt;
 }
+
+#reset-confirm:not(.active) {
+    visibility: hidden;
+}

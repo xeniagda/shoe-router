@@ -31,11 +31,25 @@ function win() {
     did_win = true;
 }
 
+let waiting_confirm = false;
+
+let reset_warning = document.getElementById("reset-confirm");
+
 function new_sentence() {
-    current_text = sentence_loader.next_text();
-    morse.typed_text = "";
-    morse.force_update = true;
-    audio.stop();
+    if (morse.typed_text.length > 0 && !waiting_confirm) {
+        reset_warning.classList.add("active");
+        waiting_confirm = true;
+    } else {
+        current_text = sentence_loader.next_text();
+        morse.typed_text = "";
+        morse.force_update = true;
+        audio.stop();
+    }
+}
+
+function unconfirm_reset() {
+    reset_warning.classList.remove("active");
+    waiting_confirm = false;
 }
 
 let button_play = document.getElementById("button-play-outer");
@@ -43,11 +57,13 @@ let button_stop = document.getElementById("button-stop-outer");
 let button_next = document.getElementById("button-next-outer");
 
 button_play.addEventListener("click", e => {
+    unconfirm_reset();
     audio.init_user();
     play_current_word()
 });
 
 button_stop.addEventListener("click", e => {
+    unconfirm_reset();
     audio.init_user();
     audio.stop()
 });
@@ -63,16 +79,19 @@ document.body.addEventListener("keydown", e => {
         e.preventDefault();
     }
     if (e.key == "Escape") {
+        unconfirm_reset();
         audio.stop();
     }
 });
 
 document.getElementById("key").addEventListener("click", e => {
+    unconfirm_reset();
     audio.init_user();
     document.getElementById("text-inp").focus();
 });
 
 document.getElementById("text-inp").addEventListener("input", e => {
+    unconfirm_reset();
     audio.init_user();
     e.target.value = e.target.value.toUpperCase();
 });
@@ -80,6 +99,7 @@ document.getElementById("text-inp").addEventListener("input", e => {
 document.getElementById("text-inp").addEventListener("keydown", e => {
     audio.init_user();
     if (e.key == " " || e.key == "Enter") {
+        unconfirm_reset();
         e.preventDefault();
 
         morse.typed_text += e.target.value;
