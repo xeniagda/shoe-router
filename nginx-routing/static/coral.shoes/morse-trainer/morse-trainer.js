@@ -804,7 +804,7 @@ function strhash(st) {
 
 const PRESETS = [
     {"id": "quotes", "name": "Quotes",      "type": "quotes"},
-    {"id": "hamgen", "name": "Fake ham",    "type": "hamgen"},
+    // {"id": "hamgen", "name": "Fake ham",    "type": "hamgen"},
     null,
     {"id": "k10",    "name":  "Koch 10%",   "type": "markov", "subset": "KMRS"},
     {"id": "k20",    "name":  "Koch 20%",   "type": "markov", "subset": "KMRSAUPT"},
