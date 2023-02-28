@@ -372,6 +372,7 @@ class MorseAudio {
     constructor(morse, lamp) {
         this.morse = morse;
         this.lamp = lamp;
+        lamp.children[0].focus();
 
         this.audio_ctx = undefined;
 

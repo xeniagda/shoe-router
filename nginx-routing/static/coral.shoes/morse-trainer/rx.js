@@ -31,8 +31,16 @@ function win() {
     did_win = true;
 }
 
+function new_sentence() {
+    current_text = sentence_loader.next_text();
+    morse.typed_text = "";
+    morse.force_update = true;
+    audio.stop();
+}
+
 let button_play = document.getElementById("button-play-outer");
 let button_stop = document.getElementById("button-stop-outer");
+let button_next = document.getElementById("button-next-outer");
 
 button_play.addEventListener("click", e => {
     audio.init_user();
@@ -44,12 +52,9 @@ button_stop.addEventListener("click", e => {
     audio.stop()
 });
 
-function new_sentence() {
-    current_text = sentence_loader.next_text();
-    morse.typed_text = "";
-    morse.force_update = true;
-    audio.stop();
-}
+button_next.addEventListener("click", e => {
+    new_sentence();
+});
 
 document.body.addEventListener("keydown", e => {
     audio.init_user();
