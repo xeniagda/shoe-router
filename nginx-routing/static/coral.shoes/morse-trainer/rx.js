@@ -9,7 +9,6 @@ bind_enable_light(audio, document.getElementById("enable-light"));
 bind_frequency_input(audio, document.getElementById("freq"));
 
 let sentence_loader = new SentenceLoader(
-    (s, a) => { morse.clear_all(); morse.force_update = true; },
     document.getElementById("sentence-config")
 );
 

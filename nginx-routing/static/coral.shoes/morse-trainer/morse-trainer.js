@@ -1160,8 +1160,7 @@ class QuoteLoader extends TextGenerator {
 }
 
 class SentenceLoader {
-    constructor(on_new_sentence_cb, sentence_config_el) {
-        this.on_new_sentence_cb = on_new_sentence_cb;
+    constructor(sentence_config_el) {
         this.sentence_config_el = sentence_config_el;
 
         // Are set in create_sidebar
