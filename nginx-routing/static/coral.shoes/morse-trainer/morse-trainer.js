@@ -1087,7 +1087,12 @@ class QuoteLoader extends TextGenerator {
 
     _get_completed() {
         try {
-            return JSON.parse(localStorage.getItem("completed-quotes"));
+            let completed = JSON.parse(localStorage.getItem("completed-quotes"));
+            if (completed === null) {
+                this._set_completed([]);
+                return [];
+            }
+            return completed;
         } catch (SyntaxError) {
             this._set_completed([]);
             return [];
