@@ -22,8 +22,10 @@ sentence_loader.load_from_localstorage().then(() => {
 });
 
 function win() {
+    if (did_win)
+        return;
+
     sentence_loader.completed(current_text);
-    current_text = sentence_loader.next_text();
 
     let fw = make_fireworks();
 
@@ -36,7 +38,7 @@ let waiting_confirm = false;
 let reset_warning = document.getElementById("reset-confirm");
 
 function new_sentence() {
-    if (morse.typed_text.length > 0 && !waiting_confirm) {
+    if (morse.typed_text.length > 0 && !waiting_confirm && !did_win) {
         reset_warning.classList.add("active");
         waiting_confirm = true;
     } else {
@@ -47,6 +49,7 @@ function new_sentence() {
         morse.typed_text = "";
         morse.force_update = true;
         audio.stop();
+        did_win = false;
     }
 }
 
@@ -102,19 +105,23 @@ document.getElementById("text-inp").addEventListener("input", e => {
 document.getElementById("text-inp").addEventListener("keydown", e => {
     audio.init_user();
     if (e.key == " " || e.key == "Enter") {
-        unconfirm_reset();
         e.preventDefault();
+        let typed = e.target.value;
+        e.target.value = "";
 
-        morse.typed_text += e.target.value;
+        if (did_win) {
+            waiting_confirm = true;
+            new_sentence();
+            return;
+        }
+
+        unconfirm_reset();
+
+        morse.typed_text += typed;
         cut_text();
         morse.force_update = true;
 
-        e.target.value = "";
-
-        if (!did_win) {
-            play_current_word();
-        }
-        did_win = false;
+        play_current_word();
     }
 });
 
