@@ -897,6 +897,8 @@ class MarkovGenerator extends TextGenerator {
 
         // Invariant: must always contain space
         this.subset = []; // contains numbers indexing this.symbols
+
+        this.loaded = false;
     }
 
     get_subset(arr) {
@@ -920,8 +922,11 @@ class MarkovGenerator extends TextGenerator {
             self.initial = data["initial"];
 
             self.subset = [self.symbols.indexOf(" ")];
+            self.is_loaded = true;
         });
     }
+
+    is_loaded() { return this.is_loaded; }
 
     toggle(letter) {
         if (!this.symbols.includes(letter))
@@ -1039,6 +1044,8 @@ class MarkovGenerator extends TextGenerator {
         let subset = new Array(...this.subset).map(x => this.symbols[x]).filter(x => x != " ").join("");
         return {"type": "markov", "subset": subset};
     }
+
+    text_completed(text_obj) {}
 
     render_sidebar(sidebar) {
         let table = document.createElement("div");
