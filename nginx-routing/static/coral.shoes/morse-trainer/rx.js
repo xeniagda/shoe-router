@@ -40,6 +40,9 @@ function new_sentence() {
         reset_warning.classList.add("active");
         waiting_confirm = true;
     } else {
+        reset_warning.classList.remove("active");
+        waiting_confirm = false;
+
         current_text = sentence_loader.next_text();
         morse.typed_text = "";
         morse.force_update = true;
