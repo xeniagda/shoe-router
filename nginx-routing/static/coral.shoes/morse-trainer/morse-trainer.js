@@ -1149,9 +1149,9 @@ class QuoteLoader extends TextGenerator {
     }
 
     text_completed(text_obj) {
-        let hashes = self._get_completed();
+        let hashes = this._get_completed();
         hashes.push(strhash(text_obj["text"]));
-        self._set_completed(hashes);
+        this._set_completed(hashes);
     }
 
     render_sidebar(sidebar) {
@@ -1338,7 +1338,7 @@ class SentenceLoader {
     // }
 
     completed(text) {
-        this.current_generator.text_completed(this.current_text_obj);
+        this.current_generator.text_completed(text);
         this.redraw();
     }
 
