@@ -1339,23 +1339,6 @@ class SentenceLoader {
         }
     }
 
-    // load_markov_subset() {
-    //     let subset = localStorage.getItem("subset");
-    //     if (subset == null)
-    //         return;
-
-    //     this.markov.subset = subset.split("|").map(x => +x);
-
-    //     if (this.markov.is_on()) {
-    //         this.select_new();
-    //     }
-    //     this.redraw_table();
-    // }
-
-    // store_markov_subset() {
-    //     localStorage.setItem("subset", this.markov.subset.map(x => "" + x).join("|"));
-    // }
-
     completed(text) {
         this.current_generator.text_completed(text);
         this.redraw();
@@ -1366,87 +1349,4 @@ class SentenceLoader {
         this.redraw();
         return this.current_generator.next_text();
     }
-
-    // register_table_click(el, morse_data) {
-    //     this.table_elems.push([el, morse_data[0]]);
-
-    //     let self = this;
-    //     el.addEventListener("click", e => {
-    //         self.markov.toggle(morse_data[0]);
-    //         self.redraw_table();
-    //         self.store_markov_subset();
-    //     });
-    // }
-
-    // redraw_table() {
-    //     if (this.markov.is_on()) {
-    //         for (let [el, letter] of this.table_elems) {
-    //             if (this.markov.has_letter(letter)) {
-    //                 el.classList.remove("morse-inactive");
-    //             } else {
-    //                 el.classList.add("morse-inactive");
-    //             }
-    //         }
-    //     } else {
-    //         for (let [el, letter] of this.table_elems) {
-    //             el.classList.remove("morse-inactive");
-    //         }
-    //     }
-    // }
-
-    // load_presets(el) {
-    //     let children = [];
-
-    //     let found_match = false;
-    //     for (let preset of PRESETS) {
-    //         if (preset == null) {
-    //             let brk = document.createElement("option");
-    //             brk.disabled = true;
-    //             brk.innerText = "—";
-    //             children.push(brk);
-    //             continue;
-    //         }
-
-    //         let option = document.createElement("option");
-    //         option.value = preset["id"];
-    //         option.innerText = preset["name"];
-
-    //         if (this.markov.matches(preset["subset"])) {
-    //             found_match = true;
-    //             option.selected = true;
-    //         }
-
-    //         children.push(option);
-    //     }
-    //     if (!found_match) {
-    //         let brk = document.createElement("option");
-    //         brk.disabled = true;
-    //         brk.innerText = "Custom";
-    //         brk.selected = true;
-    //         children.push(brk);
-    //     }
-    //     el.replaceChildren(...children);
-
-    //     let self = this;
-    //     el.addEventListener("change", e => {
-    //         let chosen = el.value;
-    //         for (let preset of PRESETS) {
-    //             if (preset == null)
-    //                 continue;
-    //             if (preset["id"] == chosen) {
-    //                 self.markov.subset = new Array(...preset["subset"]).map(x => self.markov.symbols.indexOf(x));
-    //                 self.markov.subset.push(self.markov.symbols.indexOf(" "));
-
-    //                 self.store_markov_subset();
-    //                 self.redraw_table();
-
-    //                 self.select_new();
-
-    //                 return;
-    //             }
-    //         }
-    //         console.log("unknown value??");
-    //         console.log(chosen);
-    //     });
-    // }
 }
