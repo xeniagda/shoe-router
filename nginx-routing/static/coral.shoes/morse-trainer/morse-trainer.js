@@ -1158,12 +1158,31 @@ class QuoteLoader extends TextGenerator {
         let span = document.createElement("span");
         let n_quotes = this.quotes.length;
         let n_completed = this._get_completed().length;
-        span.innerText = `Completed ${n_completed}/${n_quotes}`;
+        span.innerText = `Completed ${n_completed}/${n_quotes} quotes`;
 
         let real = document.createElement("span");
-        real.innerText = "[No quotes presented here are real]";
+        real.innerText = "[None of the quotes presented here are real]";
 
-        sidebar.replaceChildren(span, document.createElement("br"), real);
+        let table = document.createElement("div");
+        table.id = "morse-table";
+
+        let col_left = document.createElement("div");
+        col_left.id = "col-left";
+        col_left.classList.add("morse-col");
+
+        let col_mid = document.createElement("div");
+        col_mid.id = "col-mid";
+
+        let col_right = document.createElement("div");
+        col_right.id = "col-right";
+        col_right.classList.add("morse-col");
+
+        table.replaceChildren(col_left, col_mid, col_right);
+
+        fill_morse_table(table, (el, morse_data) => {});
+
+        sidebar.replaceChildren(span, table, document.createElement("br"), real);
+
     }
 
     set_data(data) {}
