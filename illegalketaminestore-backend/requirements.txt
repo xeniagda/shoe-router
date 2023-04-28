@@ -1,2 +1,0 @@
-aiohttp==3.7
-typing-extensions==3.7.4.3

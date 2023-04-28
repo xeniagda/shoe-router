@@ -1,0 +1,92 @@
+<html>
+    <head>
+        <standard-meta />
+        <link rel="stylesheet" href="@resource-blog.css">
+
+        <katex-prelude />
+
+    </head>
+    <body>
+        <!--
+        <header>
+            <navbar />
+        </header>
+        -->
+        <main>
+            <splash photo=tree />
+
+            <h1> softdouble.c </h1>
+
+            <p>
+                floating point numbers are a useful way to store an approximation of real numbers inside a finite computer memory — often inside single registers.
+                they support a large dynamic range and precision relative to the magnitude of the number.
+            </p>
+
+            <p>
+                floating point numbers come in many sizes, defined by their component's width in bits. IEEE 754 defines two standard floating point formats,
+                the "single precision": 32 bits of data, comomnly referred to as a "float", and the "double precision": 64 bits of data, referred to as a "double".
+            </p>
+
+            <p>
+                in microcontrollers and other low-resource hardware, it's not always the case that a floating point processor is available on board.
+                for this reason, a lot of compilers support <i>software floats</i> (sometimes shortened to <i>softfloats</i>), such as gcc's option <code>-msoft-float</code>.
+                here, instead of using hardware instructions to perform operations on floating point numbers, the operations are instead implement, or "emulated", in software,
+                representing floating point numbers using equally sized unsigned numbers.
+            </p>
+
+            <hr/>
+            <p>
+                in this post, we'll explore my attempt at solving a slightly more contrived problem — what if we have hardware processors which support single-precision numbers (floats),
+                but not double-precision numbers (doubles)? can we make <i>software doubles</i>, which emulate double-precision numbers using only hardware capable of operating on single-precision numbers?
+            </p>
+            <p>
+                i implemented this code for <a href="https://cg.esolangs.gay/14/#2">code guessing #14</a>. the submission on the site had all it's functions
+                renamed and obfuscated for extra obscurity, but here we'll be looking at the original version. if you want to take a look at the code without
+                my comments on it, <a href=@resource-softdouble.c>the original file is available here at this link.</a>
+            </p>
+
+            <h3> background — what are floats </h3>
+            <p>
+                because we'll be working with binary strings a lot in this article, we'll use the notation <$>\overline{abcd}</$> to mean the binary number
+                <$>abcd</$>. for example, <$>\overline{0101}</$> would represent the number 3, and <$>\overline{1.101}</$> represent 1.625.
+            </p>
+            <p>
+                we'll also use the notation <$>[abcd]</$> to notate binary sequences. for example, if <$> x = [1011]</$>, then we have <$>x_0 = 1, x_1 = 0, x_2 = 1, x_3 = 1 </$>
+            </p>
+
+            <p>
+                we represent a number <$> x </$> using a "mantissa" <$>m</$> of <$> N </$> bits, an "exponent" <$>e</$> or <$>M</$> bits and a "sign bit" <$>s</$> which is either <$>+1</$> (represented as a zero bit) or <$>-1</$> (represented as a one bit)
+
+                <katex> x = s \cdot \overline{1.m_0 m_1 m_2\cdots m_N} \cdot 2^{\overline{e_0 e_1 \cdots e_M} - 2^{M-1}} </katex>
+
+                reading from right to left, we first use the exponent <$>e</$> to determine the order of magnitude of the number.
+                the subtraction by <$> 2^{M-1}</$> subtracts a number exactly halfway in the range of <$>e</$>, giving us a symmetrical range around 0.
+                we then represent the significand using the mantissa of the number. we choose to set the first bit to 1 because if it were to be 0
+                we could simply decrease the exponent by one and shift the mantissa to the right, giving us multiple ways of representing
+                the same number. we note that the significand here will always be in the range <$>[1, 2)</$> (half open range).
+                lastly, we multiply by the sign to make the number positive or negative.
+            </p>
+            <hr/>
+            <p>
+                as an example, say we wanted to represent the number 6.21 in this format. we'll fix the number of mantissa bits to <$>N=9</$>
+                and the number of exponent bits to <$>M=4</$>
+            </p>
+            <p>
+                we'll first rewrite the number as <$>x 2^y</$>, where the significand <$>x</$> is between 1 and 2. in this case, we see
+            </p>
+            <katex> 6.21 = 1.5525 \cdot 2^2 </katex>
+            <p>
+                we write 1.5525 in binary as <$> \overline{1.10001101} </$>, and the exponent <$> 2^2 = 2^{\overline{1010} - 2^3} </$>. from this,
+                we see that <$> m = [10001101] </$> and <$> e = [1010] </$>.
+                lastly, we have that the number is positive, so the sign bit <$> s = [0] </$>
+            </p>
+
+            <pre-hl lang="c">
+                int main() {
+                    printf("hello world");
+                }
+            </pre-hl>
+
+        </main>
+    </body>
+</html>

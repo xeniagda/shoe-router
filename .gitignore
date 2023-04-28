@@ -1,6 +1,5 @@
 ssl/
-nginx-routing/logs
+static/nginx/logs
 trash
-illegalketaminestore-backend/sussy
-nojs-interaction/data.pkl
+jsless/data.pkl
 splash/count.txt

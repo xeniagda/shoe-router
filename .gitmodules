@@ -1,12 +1,3 @@
-[submodule "mulambdati"]
-	path = mulambdati
-	url = https://github.com/loovjo/mulambdati.git
-[submodule "citrons-server"]
-	path = citrons-server
-	url = https://github.com/loovjo/citrons-server
 [submodule "ilo-pi-ante-toki"]
 	path = ilo-pi-ante-toki
 	url = https://github.com/loovjo/ilo-pi-ante-toki.git
-[submodule "breadquest-rl"]
-	path = breadquest-rl
-	url = https://github.com/loovjo/breadquest-rl

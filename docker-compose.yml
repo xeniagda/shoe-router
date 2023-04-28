@@ -1,24 +1,19 @@
 version: "2"
 services:
   router:
-    build: nginx-routing
+    build: router
     volumes:
       - ./ssl/certs:/etc/letsencrypt:ro
       - ./ssl/challenge-data:/var/www/certbot:ro
 
-      - ./nginx-routing/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx-routing/spammers.conf:/etc/nginx/spammers.conf:ro
-      - ./nginx-routing/logs:/var/log/nginx
+      - ./router/nginx/logs:/var/log/nginx
+      - ./morse-trainer:/var/www/static/coral.shoes/morse-trainer
 
-      - ./nginx-routing/static:/var/www/static
-
-      - ./ilo-pi-ante-toki/static:/var/www/static/ilo-pi-ante-toki
-
-      - ./ilo-pi-ante-toki/save:/var/www/static/ilo-pi-ante-toki-save
-
-      - ./mulambdati/static:/var/www/static/mulambdati
+      - ./ilo-pi-ante-toki/static:/var/www/static/ilo-pi-ante-toki:ro
+      - ./ilo-pi-ante-toki/save:/var/www/static/ilo-pi-ante-toki-save:ro
 
       - ./trash:/var/www/static/trash:ro
+
     ports:
       - "80:80"
       - "443:443"
@@ -33,71 +28,16 @@ services:
       - ./ssl/challenge-data:/var/www/certbot
     init: true
 
-  mulambdati:
-    extends:
-      file: mulambdati/docker-compose.yml
-      service: mulambdati
-    init: true
-
-  citrons_server:
-    extends:
-      file: citrons-server/docker-compose.yml
-      service: blattidus
-    init: true
-
   ilo-pi-ante-toki:
     extends:
       file: ilo-pi-ante-toki/docker-compose.yml
       service: ilo-pi-ante-toki
     init: true
 
-  breadquest_server:
-    extends:
-      file: breadquest-rl/docker-compose.yml
-      service: breadquest_server
-    init: true
-
-  breadquest_rl:
-    extends:
-      file: breadquest-rl/docker-compose.yml
-      service: breadquest_rl
-    init: true
-    depends_on:
-      - breadquest_server
-
-  illegalketaminestore:
-    build: illegalketaminestore-backend
-    volumes:
-      - ./illegalketaminestore-backend//:/usr/src/app
-    ports:
-      - "12080:12080"
-    restart: on-failure
-    init: true
-
-  nojs-interaction:
-    build: nojs-interaction
-    volumes:
-      - ./nojs-interaction/:/usr/src/app
+  jsless:
+    build: jsless-server
     ports:
       - "13080:13080"
-    restart: on-failure
-    init: true
-
-  nojs-interaction:
-    build: nojs-interaction
-    volumes:
-      - ./nojs-interaction/:/usr/src/app
-    ports:
-      - "13080:13080"
-    restart: on-failure
-    init: true
-
-  splash:
-    build: splash
-    volumes:
-      - ./splash/:/usr/src/app
-    ports:
-      - "8080:8080"
     restart: on-failure
     init: true
 

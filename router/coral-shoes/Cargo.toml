@@ -1,0 +1,16 @@
+[package]
+name = "site"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tracing = "0.1.38"
+tracing-subscriber = { version = "0.3.16", features = ["env-filter"] }
+
+configurafox = { git = "https://github.com/loovjo/configurafox", branch = "main" }
+html_editor = { git = "https://github.com/loovjo/escaping_html_editor", branch = "master" }
+
+toml = "0.7.3"
+serde = { version = "1.0.160", features = ["derive"] }

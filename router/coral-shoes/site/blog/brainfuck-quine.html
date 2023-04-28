@@ -1,0 +1,238 @@
+<html>
+    <head>
+        <standard-meta />
+        <link rel="stylesheet" href="@resource-blog.css">
+    </head>
+
+    <body>
+        <navbar />
+        <main>
+            <splash photo=fire-waffle />
+
+            <h1> <$blog_title/> </h1>
+            <p> written <$blog_date/> </p>
+
+            <hr/>
+            <h2> introduction </h2>
+            <p>
+                a quine is a program which without taking any input, outputs it's own source code — a fixed point of the programming language in question. quines are unwieldy beings because they mix what is often considered two distinct levels of abstractions: source code, and the programs the code represent.
+            </p>
+            <p>
+                brainfuck is a minimalistic programming language consisting of only 8 simple commands in the source and a pointer into a big array of integers as the only runtime storage medium. the language was designed to be implementable with as small of a compiler as possible, sacrificing usability for implementation simplicity.
+            </p>
+            <p>
+                in this blog, we'll explore how to combine these two, writing a quine in brainfuck. is there any practical use for this, or any important lesson to take away from the exercise? i'm not sure, but i'm leaning towards a "definitely not".
+            </p>
+
+            <h2> quines, and not brainfuck </h2>
+
+            <p>
+                before we develop a quine in the brainfuck language, we'll start with something a bit more managable — a quine in the Python programming language. we'll be putting a lot of valid code inside string literals, which can make it slightly difficult to identify what parts of the code are expressions and what are strings. use the code highlighting to your advantage!
+            </p>
+            <p>
+                starting off, we know we'll be needing to print something. let's start off with a print statement:
+            </p>
+            <pre-hl lang=py>
+                print("...")
+            </pre-hl>
+            <p>
+                what to print? we must make sure the print itself is included:
+            </p>
+            <pre-hl lang=py>
+                print("print(\"...\")")
+            </pre-hl>
+            <p>
+                and then:
+            </p>
+            <pre-hl lang=py>
+                print("print(\"print(\\"...\\")\")")
+            </pre-hl>
+            <p>
+                and at this point we might as well conclude this quine will need to be infinitely long.
+            </p>
+
+            <infobox>
+                <p>in some programming languages, there exist some rather trivial examples of quines.</p>
+                <p>in PHP, any text not surrounded by <code-hl lang=php>&lt;?php&gt;</code-hl>-tags is output verbatim, giving a lot of boring quines.</p>
+                <p>another way to "cheat" in a quine is by reading the source code from the current file, such as the sh program <code-hl lang=sh>cat $0</code-hl>.</p>
+            </infobox>
+
+            <p>
+                giving up on printing the source directly, we can instead try assigning the source code to a variable, and then printing the variable
+            </p>
+            <pre-hl lang=py>
+                source = "print(source)"
+                print(source)
+            </pre-hl>
+            <p>
+                however this doesn't print the variable assignment itself on the first row. if we add the variable assignment to the print statement and adjust the variable accordingly, we get
+            </p>
+            <pre-hl lang=py>
+                source = "print(\"source = \" + source + \"\\n\" + source)"
+                print("source = " + source + "\n" + source)
+            </pre-hl>
+            <p>
+                which is very close, but the first time <code>source</code> is printed, the quote escapes are included. while some languages do include functions for "unescaping" strings (such as the <code lang=py>repr()</code> function in Python), we can instead try storing the variable in a way which is easier to print a representation of. let's pick a format where the source is stored as a list of codepoints:
+            </p>
+            <pre-hl lang=py>
+                source = [112, 114, 105, 110, 116, 40, 34, 115, 111, 117, 114, 99, 101, 32, 61, 32, 91, 34, 32, 43, 32, 34, 44, 32, 34, 46, 106, 111, 105, 110, 40, 115, 116, 114, 40, 120, 41, 32, 102, 111, 114, 32, 120, 32, 105, 110, 32, 115, 111, 117, 114, 99, 101, 41, 32, 43, 32, 34, 93, 10, 34, 32, 43, 32, 34, 34, 46, 106, 111, 105, 110, 40, 99, 104, 114, 40, 120, 41, 32, 102, 111, 114, 32, 120, 32, 105, 110, 32, 115, 111, 117, 114, 99, 101, 41, 41]
+                print("source = [" + ", ".join(str(x) for x in source) + "]\n" + "".join(chr(x) for x in source))
+            </pre-hl>
+            <p>
+                here, the number is each code point in the following line. the expression <code-hl lang=py>", ".join(str(x) for x in source)</code-hl> evaluates to a comma-separated string of all the numbers in source (resulting in the list on the first line), while the expression <code-hl lang=py>"".join(chr(x) for x in source)</code-hl> results in the string produced by concatenating all the code points in the list (resulting in the second line). together, these two expressions combined results in a proper quine!
+            </p>
+            <hr />
+            <p>
+                in the program above, we can identify three parts which are common to a lot of quines. the program consists of three parts:
+
+                <ol>
+                    <li> representing the source of part 2 and 3 in some storage (in our case, assigning the source to a list of codepoints) </li>
+                    <li> printing the assignment in part 1 by using the stored variable </li>
+                    <li> printing the code represented by part 1 using the same variable </li>
+                </ol>
+            </p>
+
+            <h2> introduction to brainfuck </h2>
+
+            <p>
+                as mentioned in the introduction, brainfuck is quite an unusual programming language unless you've worked with <a href="https://esolangs.org">esolangs</a> before. in brainfuck, the only form of storage is an array of bytes, often referred to as the 'tape', which stretches out as far as the runtime of the language allows. accessing the tape is done through a pointer often referred to as the 'pointer'. if you've read about <a href="https://en.wikipedia.org/wiki/Turing_machine">turing machines</a> before, you might see some similarities here (note however, that brainfuck does not have the concept of states from turing machines).
+            </p>
+
+            <p>
+                the eight commands in brainfuck are as follows:
+                <ul>
+                    <li> <code>+</code>: increase the value which the 'pointer' points to by one </li>
+                    <li> <code>-</code>: decrease the value which the 'pointer' points to by one </li>
+                    <li> <code>&gt;</code>: move the pointer one step to the right </li>
+                    <li> <code>&lt;</code>: move the pointer one step to the left </li>
+                    <li> <code>.</code>: print the value to which the 'pointer' points as an ASCII codepoint </li>
+                    <li> <code>,</code>: read an ASCII codepoint from the user, storing it in the pointed to value </li>
+                    <li> <code>[</code>: if the value pointed to is zero, jump forward to the matching <code>]</code> </li>
+                    <li> <code>]</code>: if the value pointed to is nonzero, jump backward to the matching <code>[</code> </li>
+                </ul>
+
+                as we can see, <code>+-</code> is used for changing the values in the tape, <code>&gt;&lt;</code> is used for moving the pointer around, <code>.,</code> do I/O with the user and <code>[]</code> is used for control flow, both giving us a conditional jump and a loop operation.
+            </p>
+
+            <h2> writing a quine in brainfuck </h2>
+
+            <p>
+                applying the three-part technique described earlier, we first need to choose a way to represent brainfuck source code. the absolute simplest way to store the source code would be to store each command as a code point in memory. however, as we need to loop over the text, and the loop iterations are probably going to need some temporary memory, we put a zero cell between each adjacent character in memory to be used as auxilliary storage.
+            </p>
+            <p>
+                for example, the code <code-hl lang=c>,[-]</code-hl> would be
+                represented in memory as
+            </p>
+            <pre-hl lang=c>
+                44 0 91 0 45 0 93 0 0 0 0 0 ...
+                ^
+            </pre-hl>
+
+            <p>
+                which would be generated by the program
+            </p>
+            <pre-hl lang=c>
+                ++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&lt;&lt;&lt;&lt;&lt;&lt;
+            </pre-hl>
+
+            <p>
+                the second part has the job of printing this program. to do this, we'll loop through all the characters until a we find a zero marking the end of the data, print the respective number of <code>+</code>'s, print two <code>&gt;</code>'s, go to the next character and repeat. at the end, we'll need to go back through the code and print two <code>&gt;</code>'s for each character on the way back.
+            </p>
+            <p>
+                to do the first part:
+            </p>
+            <pre-hl lang=py>
+                [ # loop through the chars until we reach a zero
+                  # we have three cells, A, B and C
+                  # cell A and C are auxilliary zero-cells, and cell B contains the current char
+                  &gt; # go to cell C (temporary value to the right of the current char)
+                  +++++++++++++++++++++++++++++++++++++++++++ # set it to 43 (the ascii code for plus)
+                  &lt; # go to cell B (the current char)
+                  [ - # loop until B is zero
+                    &lt; + # increase A (the temporary cell to the left)
+                    &gt;&gt; . # to go C and print it (the ascii plus)
+                    &lt; # go back to B
+                  ]
+                  # now B is zero, A conatins the value of the current char, and C is still an ascii plus
+                  &lt; # go to A
+                  [ - # loop until it's zero
+                    &gt; + # increase B
+                    &lt; # go back to A
+                  ]
+                  # now B contains the current char again, and A is zero
+                  &gt;&gt; # go to C
+                  +++++++++++++++++++ # increase it by 19 (it now contains 43+19=62, the ascii value for &gt;
+                  .. # print it twice
+                  [-] # set it to zero
+                  &gt; # go to the next char to be printed
+                ]
+                &lt;&lt; # go back to the last non-zero char
+            </pre-hl>
+            <p>
+                stripping the comments and whitespace,
+            </p>
+            <pre-hl lang=py>
+                [&gt;+++++++++++++++++++++++++++++++++++++++++++&lt;[-&lt;+&gt;&gt;.&lt;]&lt;[-&gt;+&lt;]&gt;&gt;+++++++++++++++++++..[-]&gt;]&lt;&lt;
+            </pre-hl>
+            <p>
+                we then want to go back to the start, printing a <code>&lt;&lt;</code> for each char
+            </p>
+            <pre-hl lang=py>
+                [ # loop until zero
+                  # we again have A, B and C
+                  &lt; ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ # set A to 60, ascii value for &lt;
+                  .. # print it twice
+                  [-] # set it back to zero
+                  &lt; # go to the previous char
+                ]
+                &gt;&gt; # go to the first non-zero char
+            </pre-hl>
+            <p>
+                again, stripping:
+            </p>
+            <pre-hl lang=py>
+                [&lt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++..[-]&lt;]&gt;&gt;
+            </pre-hl>
+            <p>
+                for the third part, we want to print out the code being represented itself. this is quite a bit lot simpler,
+            </p>
+            <pre-hl lang=py>
+                [ # loop until zero
+                  . # print the current char
+                  &gt;&gt; # go to the next char
+                ]
+            </pre-hl>
+            <p>
+                stripped being
+            </p>
+            <pre-hl lang=py>
+                [.&gt;&gt;]
+            </pre-hl>
+
+            <p>
+                part 2 and 3 together form the source which part 1 will encode. combined, they are (with added newlines between the parts)
+            </p>
+            <pre-hl lang=py>
+                [&gt;+++++++++++++++++++++++++++++++++++++++++++&lt;[-&lt;+&gt;&gt;.&lt;]&lt;[-&gt;+&lt;]&gt;&gt;+++++++++++++++++++..[-]&gt;]&lt;&lt;[&lt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++..[-]&lt;]&gt;&gt;[.&gt;&gt;]
+            </pre-hl>
+            <p>
+                i don't want to encode all of this into brainfuck by hand, so let's use a short python script to generate the program:
+            </p>
+            <pre-hl lang=py>
+                source = "[&gt;+++++++++++++++++++++++++++++++++++++++++++&lt;[-&lt;+&gt;&gt;.&lt;]&lt;[-&gt;+&lt;" \
+                         "]&gt;&gt;+++++++++++++++++++..[-]&gt;]&lt;&lt;[&lt;++++++++++++++++++++++++++++" \
+                         "++++++++++++++++++++++++++++++++..[-]&lt;]&gt;&gt;[.&gt;&gt;]"
+                print("".join("+" * ord(c) + "&gt;&gt;" for c in source) + "&lt;&lt;" * len(source) + source)
+            </pre-hl>
+            <p>
+                resulting in the final quine
+            </p>
+            <pre-hl lang=py>
+                +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&gt;&gt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;[&gt;+++++++++++++++++++++++++++++++++++++++++++&lt;[-&lt;+&gt;&gt;.&lt;]&lt;[-&gt;+&lt;]&gt;&gt;+++++++++++++++++++..[-]&gt;]&lt;&lt;[&lt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++..[-]&lt;]&gt;&gt;[.&gt;&gt;]
+            </pre-hl>
+            <p>
+                isn't it beautiful :3
+            </p>
+        </main>
+    </body>
+</html>

@@ -1,0 +1,40 @@
+[[blogs]]
+identifier = "brainfuck-quine"
+title = "quines, and brainfuck"
+tagline = "exploring how quines work, and how to make one"
+written-at = 2023-04-27
+
+[[blogs-wip]]
+title = "softdouble.c"
+tagline = "implementing doubles when all you have is floats"
+
+[[blogs-wip]]
+title = "nojs cookie clicker"
+tagline = "javascript is a fundamental part of any interactive site — what if we just didn't use it?"
+
+[[blogs-wip]]
+title = "nontrivial programs in brainfuck — a calculator"
+tagline = "exploring the fundamentals of computation in possibly the worst environment imaginable"
+
+
+[[internal_links]]
+title = "coral morse trainer"
+href = "morse-trainer"
+desc = "interactive morse code trainer, made because i wanted to learn morse :)"
+
+[[internal_links]]
+title = "kijetesantaka.lu"
+href = "https://kijetesantaka.lu"
+desc = "small language model for translating the conlang toki pona from english"
+
+[[internal_links]]
+title = "nojs cookie clicker"
+href = "jsless"
+desc = "simple cookie clicker clone in the browser, interactive despite not using javascript"
+
+
+[[external_links]]
+title = "qwd.software"
+href = "https://qwd.software"
+desc = "a group of sites which centers the projects, thoughts, and activities of the QWD Discord server"
+
