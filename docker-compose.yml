@@ -8,6 +8,7 @@ services:
 
       - ./router/nginx/logs:/var/log/nginx
       - ./morse-trainer:/var/www/static/coral.shoes/morse-trainer
+      - ./caesar-rylan/web-content/:/var/www/static/caesar-rylan/web-content
 
       - ./ilo-pi-ante-toki/static:/var/www/static/ilo-pi-ante-toki:ro
       - ./ilo-pi-ante-toki/save:/var/www/static/ilo-pi-ante-toki-save:ro
