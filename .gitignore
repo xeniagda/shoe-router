@@ -3,3 +3,6 @@ static/nginx/logs
 trash
 jsless/data.pkl
 splash/count.txt
+router/coral-shoes/target
+router/coral-shoes/Cargo.lock
+**/__pycache__
