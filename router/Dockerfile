@@ -5,9 +5,9 @@ COPY coral-shoes/Cargo.toml /var/site/Cargo.toml
 RUN cargo build --release
 RUN rm -rf src
 COPY coral-shoes/src /var/site/src
+RUN touch src/main.rs
 RUN cargo build --release
 COPY coral-shoes/site /var/site/site
-RUN touch src/main.rs
 RUN RUST_LOG=info ./target/release/site /var/site/out
 
 FROM nginx:latest
