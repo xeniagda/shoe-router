@@ -39,7 +39,7 @@ impl Resource for CSResource {
             CSResource::TopLevelHTML(name) => PathBuf::from(format!("{name}.html")),
             CSResource::BlogPost { identifier } => vec!["blogs".into(), format!("{identifier}.html")].into_iter().collect(),
             CSResource::Resource(filename) => vec!["resources", &filename].into_iter().collect(),
-            CSResource::Splash(s) => vec!["splash".into(), format!("{s}.png")].into_iter().collect(),
+            CSResource::Splash(s) => vec!["splash".into(), format!("{s}.jpg")].into_iter().collect(),
         }
     }
 }
@@ -137,7 +137,11 @@ fn handle<'data>(_path: &Path, r: &CSResource, conf: &'data CSConfig) -> Box<dyn
             })
         }
         CSResource::Resource(_) => Box::new(IdentityProcessor),
-        CSResource::Splash(_) => Box::new(IdentityProcessor),
+        CSResource::Splash(_) => Box::new(ImageCompressor {
+            max_size: [1000, 1000],
+            output_quality: 85,
+            guess_format: false,
+        }),
     }
 }
 
@@ -486,3 +490,65 @@ impl<R: Resource> TreeWalker<R, CSConfig> for Links {
     }
 }
 
+#[derive(Debug)]
+struct ImageCompressor {
+    max_size: [u32; 2], // Image will be resized so the largest dimension doesn't exceed this, while retaining the same aspect ratio
+    output_quality: u8, // JPEG output quality
+    guess_format: bool,
+}
+
+impl ResourceProcessor<CSResource> for ImageCompressor {
+    fn name(&self) -> String {
+        format!("{self:?}")
+    }
+
+    fn process_resource(
+        &self,
+        source: &CSResource,
+        source_path: &Path,
+        resources: &ResourceManager<CSResource>
+    ) -> Result<Vec<u8>, ConfigurafoxError> {
+        match source.output_path().extension().and_then(|x| x.to_str()) {
+            Some("jpeg") | Some("jpg") => {},
+            Some(ext) => {
+                warn!("Applying ImageCompressor to {} generates a Jpeg file, but the extension of the output file is specified as {ext} ({:?})", source.identifier(), source.output_path());
+            }
+            None => {
+                warn!("Applying ImageCompressor to {} generates a Jpeg file, but no the output file has no extension ({:?})", source.identifier(), source.output_path());
+            }
+        }
+
+        let mut image_reader = image::io::Reader::open(resources.absolute_path(source_path))?;
+        if self.guess_format {
+            image_reader = image_reader.with_guessed_format()?;
+        }
+
+        debug!("Trying to decode image at {source_path:?}");
+
+        let image = match image_reader.decode() {
+            Ok(image) => image,
+            Err(e) => {
+                return Err(ConfigurafoxError::Other(format!("Error reading {source_path:?}: {e:?}")));
+            }
+        };
+
+        debug!("Got {}x{} image", image.width(), image.height());
+
+        let resized = image.resize(
+            self.max_size[0],
+            self.max_size[1],
+            image::imageops::FilterType::Triangle, // I can't tell a difference between the example images (except for NN), so just picked this arbitrarily
+        );
+
+        debug!("Resized to {}x{}", resized.width(), resized.height());
+
+        let mut output_buffer = std::io::Cursor::new(Vec::new());
+        if let Err(e) = resized.write_to(&mut output_buffer, image::ImageOutputFormat::Jpeg(self.output_quality)) {
+            return Err(ConfigurafoxError::Other(format!("Error encoding {source_path:?}: {e:?}")));
+        }
+
+        debug!("Encoded to {} bytes", output_buffer.get_ref().len());
+
+        Ok(output_buffer.into_inner())
+    }
+}

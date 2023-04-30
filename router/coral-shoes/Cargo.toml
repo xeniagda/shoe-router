@@ -14,3 +14,4 @@ html_editor = { git = "https://github.com/loovjo/escaping_html_editor", branch =
 
 toml = "0.7.3"
 serde = { version = "1.0.160", features = ["derive"] }
+image = { version = "0.24.6", features = ["png", "jpeg"] }
