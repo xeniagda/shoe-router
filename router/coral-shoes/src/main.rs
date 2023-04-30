@@ -497,16 +497,16 @@ struct ImageCompressor {
     guess_format: bool,
 }
 
-impl ResourceProcessor<CSResource> for ImageCompressor {
+impl<R: Resource> ResourceProcessor<R> for ImageCompressor {
     fn name(&self) -> String {
         format!("{self:?}")
     }
 
     fn process_resource(
         &self,
-        source: &CSResource,
+        source: &R,
         source_path: &Path,
-        resources: &ResourceManager<CSResource>
+        resources: &ResourceManager<R>
     ) -> Result<Vec<u8>, ConfigurafoxError> {
         match source.output_path().extension().and_then(|x| x.to_str()) {
             Some("jpeg") | Some("jpg") => {},
