@@ -22,6 +22,7 @@ enum CSResource {
 
     Resource(String), // Filename in the resources/ folder
     Splash(String), // Filename without .png extension in the splashes/ folder
+    SplashFullRes(String), // Identical to Splash, but processed with IdentityProcessor instead of ImageCompressor
 }
 
 impl Resource for CSResource {
@@ -31,6 +32,7 @@ impl Resource for CSResource {
             CSResource::BlogPost { identifier } => format!("blog-{identifier}"),
             CSResource::Resource(filename) => format!("resource-{filename}"),
             CSResource::Splash(s) => format!("splash-{s}"),
+            CSResource::SplashFullRes(s) => format!("splash-fullres-{s}"),
         }
     }
 
@@ -40,6 +42,7 @@ impl Resource for CSResource {
             CSResource::BlogPost { identifier } => vec!["blogs".into(), format!("{identifier}.html")].into_iter().collect(),
             CSResource::Resource(filename) => vec!["resources", &filename].into_iter().collect(),
             CSResource::Splash(s) => vec!["splash".into(), format!("{s}.jpg")].into_iter().collect(),
+            CSResource::SplashFullRes(s) => vec!["splash-fullres".into(), format!("{s}.png")].into_iter().collect(),
         }
     }
 }
@@ -136,12 +139,13 @@ fn handle<'data>(_path: &Path, r: &CSResource, conf: &'data CSConfig) -> Box<dyn
                 data: conf,
             })
         }
-        CSResource::Resource(_) => Box::new(IdentityProcessor),
         CSResource::Splash(_) => Box::new(ImageCompressor {
             max_size: [1000, 1000],
             output_quality: 85,
             guess_format: false,
         }),
+        CSResource::SplashFullRes(_) => Box::new(IdentityProcessor),
+        CSResource::Resource(_) => Box::new(IdentityProcessor),
     }
 }
 
@@ -214,6 +218,7 @@ fn main() -> std::io::Result<()> {
         false,
     )?;
 
+    // TODO: Merge these somehow
     context.register_all_files_in_directory(
         PathBuf::from("splash"),
         |path| {
@@ -228,7 +233,21 @@ fn main() -> std::io::Result<()> {
         false,
     )?;
 
-    for (path, resource) in context.all_registered_files() {
+    context.register_all_files_in_directory(
+        PathBuf::from("splash"),
+        |path| {
+            let filename = path.file_name().and_then(|x| x.to_str())?;
+
+            let (name, "png") = filename.rsplit_once('.')? else {
+                return None;
+            };
+
+            Some(CSResource::SplashFullRes(name.to_string()))
+        },
+        false,
+    )?;
+
+    for (resource, path) in context.all_registered_files() {
         eprintln!("  {} @ {}", resource.identifier(), path.display());
     }
 
@@ -334,12 +353,13 @@ impl TreeWalker<CSResource, CSConfig> for SplashPhotoReplacer {
                     vec![],
                 ),
                 Node::new_element(
-                    "div",
-                    vec![("class", "overlay")],
+                    "a",
+                    vec![("class", "overlay"), ("href", &format!("@splash-fullres-{photo}")), ("title", "view full quality photo")],
                     vec![],
                 ),
             ],
         )];
+
 
         walk(&mut res, &[Box::new(LinkReplacer)], ctx)?;
 
