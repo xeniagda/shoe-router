@@ -1,8 +1,8 @@
 ssl/
-static/nginx/logs
 trash
-jsless/data.pkl
+jsless-server/data.pkl
 splash/count.txt
 router/coral-shoes/target
 router/coral-shoes/Cargo.lock
+router/nginx/logs
 **/__pycache__
