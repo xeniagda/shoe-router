@@ -65,7 +65,8 @@ let button_next = document.getElementById("button-next-outer");
 button_play.addEventListener("click", e => {
     unconfirm_reset();
     audio.init_user();
-    play_current_word()
+    play_current_word();
+    document.getElementById("text-inp").focus();
 });
 
 button_stop.addEventListener("click", e => {
