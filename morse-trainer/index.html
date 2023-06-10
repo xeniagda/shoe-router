@@ -5,12 +5,14 @@
         <title> RX | Coral Morse Trainer </title>
         <link rel="stylesheet" href="morse-trainer.css">
         <script src="morse-trainer.js" defer></script>
+        <script src="edit-distance.js" defer></script>
         <script src="rx.js" defer></script>
     </head>
     <body>
         <header>
-            <div class="head" id="navs">
-                <div class="nav active-page"> <a href="rx.html">Train RX</a> </div>
+            <div class="head" id="modes">
+                <div id="button-select-word" class="button-select selected" title="Plays one word at a time, waiting until you've typed it to continue">Word-by-word</div>
+                <div id="button-select-sentence" class="button-select" title="Plays the entire message at once with no breaks.">Entire sentences</div>
             </div>
             <div class="head">
                 <h2><a href="index.html">Coral Morse Trainer</a></h2>
@@ -36,9 +38,10 @@
                         <div id="button-next-outer" class="button-outer active" title="Next (Tab)">  <div id="button-next-inner" class="button-inner"> </div> </div>
                     </div>
                     <div id="text">
-                        <span class="type-bright" id="typed"></span><span class="type-highlight" id="typing"></span><span id="cursor"></span><span class="type-dark" id="totype"></span>
                     </div>
                     <span id="author" class="type-bright"></span>
+                    <br/>
+                    <span id="accuracy" class="type-bright"></span>
                 </div>
                 <div id="key">
                     <input id="text-inp" type="text"> </input>
@@ -49,7 +52,7 @@
         <footer>
             <div class="foot"> <div> Use text field in the key to write. <br/> Use space to submit word. </div> </div>
             <div class="foot"> <div>
-                Volume: <input id=volume type=range value=1 min=0 max=300></input>
+                Volume: <input id=volume type=range value=1 min=0 max=300></input> <button id="test-tone">Test tone</button>
                 <br />
                 Frequency: <input id=freq type=number value=512 min=100 max=2000 step=10></input> [Hz]
                 <br />

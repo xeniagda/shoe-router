@@ -357,7 +357,7 @@ function fill_morse_table(table, f) {
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
-const HOLD_TIME = 0.010;
+const HOLD_TIME = 0.000;
 const RAMP_TIME = 0.012;
 
 class MorseAudio {
@@ -388,6 +388,7 @@ class MorseAudio {
         this.on_play_letters = [];
 
         this.playing = []; // [["on"|"off", "dit"|"dah"|"symb"|"let"|"word", idx]]
+        this.is_playing = false;
         this.next_at = Date.now();
 
         let self = this;
@@ -480,6 +481,7 @@ class MorseAudio {
                     this.next_at = null;
                     this.off();
 
+                    this.is_playing = false;
                     for (let on_play_end of this.on_play_ends)
                         on_play_end();
                 }
@@ -524,6 +526,7 @@ class MorseAudio {
                 this.playing.push(["off", "let", i]);
                 last_letter = true;
             }
+            this.is_playing = true;
         }
     }
 
@@ -532,6 +535,7 @@ class MorseAudio {
         this.playing = [];
         this.off();
 
+        this.is_playing = false;
         for (let on_play_end of this.on_play_ends)
             on_play_end();
     }
@@ -715,7 +719,7 @@ class Fireworks {
 
             this.particles.push([x, y, (Math.random() - 0.5) * 50, -50, Math.random(), 2, 0.2 + 0.5 * Math.random()]);
         }
-        this.gravity = 40;
+        this.gravity = 100;
         this.dt = 0.01;
         this.render_internal = setInterval(() => self.render(), this.dt * 1000);
     }
@@ -747,7 +751,7 @@ class Fireworks {
             let [r, g, b] = hue2rgb(particle[4]);
             this.ctx.beginPath();
             this.ctx.strokeStyle = `rgb(${256*r}, ${256*g}, ${256*b})`;
-            this.ctx.lineWidth = count + 1;
+            this.ctx.lineWidth = 3 * count + 4;
             this.ctx.moveTo(x, y);
             this.ctx.lineTo(x + vx * 0.1 * (count + 1), y + vy * 0.1 * (count + 1));
             this.ctx.stroke();

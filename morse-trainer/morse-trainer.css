@@ -100,6 +100,7 @@ main {
     justify-content: space-evenly;
 
     min-height: 80vh;
+    width: 100%;
     flex-grow: 1;
     margin-right: 2em;
 }
@@ -128,8 +129,11 @@ header, footer {
     font-size: 15pt;
 }
 
-.nav {
-    white-space: pre;
+#modes > .button-select.selected::before {
+    content: "✓ ";
+}
+#modes > .button-select:not(.selected) {
+    padding-left: 2ex;
 }
 
 .active-page>a {
@@ -199,23 +203,6 @@ header, footer {
     align-items: center;
 }
 
-#text {
-    font-size: 30pt;
-}
-
-.type-dark {
-    color: var(--fg-2);
-}
-
-.type-highlight {
-    background-color: var(--highlight);
-    color: var(--bg-2);
-}
-
-.type-bright {
-
-}
-
 #cursor::before {
     content: "|";
     color: var(--fg-2);
@@ -273,4 +260,38 @@ header, footer {
 
 #reset-confirm:not(.active) {
     visibility: hidden;
+}
+
+#text {
+    font-size: 30pt;
+}
+
+.char.correct {
+    /* no styling */
+}
+
+.char.missing {
+    color: red;
+    text-decoration: underline;
+}
+.char.extraneous {
+    color: red;
+    text-decoration: line-through;
+}
+.char.incorrect {
+    color: red;
+    text-decoration: line-through;
+    position: relative;
+}
+.char.incorrect > .corrected {
+    position: absolute;
+    font-size: 15pt;
+
+    left: 0.25em;
+    bottom: -0.5em;
+    color: var(--fg-1);
+}
+
+.char.missing-end {
+    color: var(--fg-2);
 }
