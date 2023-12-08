@@ -51,3 +51,11 @@ services:
     restart: on-failure
     init: true
 
+  morse-server:
+    build: morse-server
+    volumes:
+      - ./morse-server/:/usr/src/app
+    ports:
+      - "14080:14080"
+    restart: on-failure
+    init: true
