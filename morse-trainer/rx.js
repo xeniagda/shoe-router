@@ -5,10 +5,23 @@ audio.on_play_ends.push(on_audio_off);
 let last_played_idx = 0;
 audio.on_play_letters.push(idx => last_played_idx = idx);
 
-bind_speed_input(morse, document.getElementById("speed-dit"), document.getElementById("speed-wpm"));
+bind_speed_input(
+    morse,
+    document.getElementById("split-speed-cb"),
+    document.getElementById("speed-wpm"),
+    document.getElementById("speed-wpm-char"),
+    document.getElementById("speed-wpm-word"),
+);
+
 bind_volume_input(audio, document.getElementById("volume"));
 bind_enable_light(audio, document.getElementById("enable-light"));
 bind_frequency_input(audio, document.getElementById("freq"));
+
+let settings_screen = document.getElementById("settings");
+document.getElementById("settings-switch").addEventListener("click", e => {
+    e.preventDefault();
+    settings_screen.classList.toggle("active");
+});
 
 document.getElementById("test-tone").addEventListener("mousedown", e => {
     audio.init_user();

@@ -10,14 +10,6 @@
     </head>
     <body>
         <header>
-            <div class="head" id="modes">
-                <div id="button-select-word" class="button-select selected" title="Plays one word at a time, waiting until you've typed it to continue">Word-by-word</div>
-                <div id="button-select-sentence" class="button-select" title="Plays the entire message at once with no breaks.">Entire sentences</div>
-            </div>
-            <div class="head">
-                <h2><a href="index.html">Coral Morse Trainer</a></h2>
-                <h3>RX Training</h3>
-            </div>
             <div class="head">
                 <div>
                     Written by @deadbraincoral#8079
@@ -25,7 +17,43 @@
                     Source available on <a href="https://github.com/loovjo/shoe-router/tree/master/">GitHub</a>
                 </div>
             </div>
+            <div class="head">
+                <h2><a href="index.html">Coral Morse Trainer</a></h2>
+                <h3>RX Training</h3>
+            </div>
+
+            <a class="head" id="settings-switch" href="#">
+                <img src="./gear.svg" alt="gear icon"/>
+            </a>
         </header>
+        <div id="settings">
+            <div class="setting"> Use text field in the key to write. <br/> Use space to submit word. </div>
+            <div class="setting" id="modes">
+                <h2> Mode </h2>
+                <div id="button-select-word" class="button-select selected"><em>Word-by-word</em>: Plays one word at a time, waiting until you've typed it to continue</div>
+                <div id="button-select-sentence" class="button-select"><em>Entire sentences</em>: Plays the entire message at once with no breaks.</div>
+            </div>
+            <div class="setting">
+                <h2> Tone </h2>
+                Volume: <input id=volume type=range value=1 min=0 max=300></input> <button id="test-tone">Test tone</button>
+                <br />
+                Frequency: <input id=freq type=number value=512 min=100 max=2000 step=10></input> [Hz]
+                <br />
+                Enable light: <input id=enable-light type=checkbox></input>
+            </div>
+            <div class="setting">
+                <h2> Speed </h2>
+                <input type="checkbox" id="split-speed-cb"></input><label for="split-speed-cb">Different character and word speed?</label>
+                <br />
+                <div id="same-speed">
+                    <div> WPM: <input id=speed-wpm type=number value=12 min=1 max=50 step=0.5> </input> </div>
+                </div>
+                <div id="split-speed">
+                    <div> Character WPM: <input id=speed-wpm-char type=number value=12 min=1 max=50 step=0.5> </input> </div>
+                    <div> Word WPM: <input id=speed-wpm-word type=number value=12 min=1 max=50 step=0.5> </input> </div>
+                </div>
+            </div>
+        </div>
         <main id="main">
             <div id="main-split">
                 <div id="textpart">
@@ -49,21 +77,6 @@
             </div>
             <div id="sentence-config"></div>
         </main>
-        <footer>
-            <div class="foot"> <div> Use text field in the key to write. <br/> Use space to submit word. </div> </div>
-            <div class="foot"> <div>
-                Volume: <input id=volume type=range value=1 min=0 max=300></input> <button id="test-tone">Test tone</button>
-                <br />
-                Frequency: <input id=freq type=number value=512 min=100 max=2000 step=10></input> [Hz]
-                <br />
-                Enable light: <input id=enable-light type=checkbox></input>
-            </div> </div>
-            <div class="foot"> <div>
-                <div> WPM: <input id=speed-wpm type=number value=12 min=1 max=50 step=1> [PARIS; 50 "dits" per word] </input>
-                <br />
-                Speed for one "dit": <input id=speed-dit type=number value=100 min=0 max=500 step=10></input> [ms]
-            </div> </div>
-        </footer>
     </body>
 
 </html>

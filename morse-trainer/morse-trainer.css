@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300&family=PT+Mono&display=swap');
 
+/* General styling */
+
 body {
     --bg-1: #18181c;
     --bg-2: #272c33;
@@ -27,16 +29,21 @@ a {
     color: var(--highlight);
 }
 
-h2, h3 {
-    margin: 0.5ex;
+.head {
+    padding-left: 2em;
+    padding-right: 2em;
+
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+
 }
 
-input {
-    border: none;
-    width: 4em;
-    background-color: var(--bg-1);
-    color: var(--highlight);
-}
+/* Main morse panel */
 
 main {
     flex-grow: 1;
@@ -49,6 +56,17 @@ main {
     display: flex;
     flex-direction: row;
     align-content: stretch;
+}
+
+h2, h3 {
+    margin: 0.5ex;
+}
+
+input {
+    border: none;
+    width: 4em;
+    background-color: var(--bg-1);
+    color: var(--highlight);
 }
 
 #sentence-config {
@@ -111,32 +129,6 @@ header, footer {
 
     display: flex;
     justify-content: space-evenly;
-}
-
-.head, .foot {
-    padding-left: 2em;
-    padding-right: 2em;
-
-    height: 100%;
-
-    display: flex;
-    flex-direction: column;
-
-    justify-content: center;
-    align-items: center;
-
-}
-
-#modes > .button-select.selected::before {
-    content: "✓ ";
-}
-#modes > .button-select:not(.selected) {
-    padding-left: 2ex;
-}
-
-.active-page>a {
-    text-decoration: none;
-    color: var(--fg-1);
 }
 
 #textpart {
@@ -238,10 +230,6 @@ header, footer {
     color: var(--fg-2);
 }
 
-#volume {
-    width: 10em;
-}
-
 .fireworks {
     position: absolute;
     top: 0;
@@ -293,3 +281,52 @@ header, footer {
 .char.missing-end {
     color: var(--fg-2);
 }
+
+/* Settings*/
+
+#settings {
+    width: 100%;
+    background: var(--bg-2);
+    min-height: calc(100vh - 15ex);
+    top: 10ex;
+
+    position: absolute;
+    z-index: 1;
+
+    padding-left: 20vw;
+    padding-right: 20vw;
+    box-sizing: border-box;
+
+    opacity: 0%;
+    pointer-events: none;
+}
+
+#settings.active {
+    top: 15ex;
+    opacity: 100%;
+    pointer-events: auto;
+}
+
+#settings {
+    transition: opacity ease-in-out 300ms
+              , top ease-in-out 300ms;
+}
+
+.setting {
+    margin: 3ex;
+}
+
+#modes > .button-select::before {
+    content: "✓ ";
+    opacity: 0%;
+}
+#modes > .button-select.selected::before {
+    opacity: 100%;
+}
+
+#volume {
+    width: 10em;
+}
+
+#split-speed-cb:checked ~ #same-speed { display: none; }
+#split-speed-cb:not(:checked) ~ #split-speed { display: none; }

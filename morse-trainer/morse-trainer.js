@@ -122,7 +122,7 @@ const MORSE = [
 
 class Morse {
     // draw_callback(typed, typing, morse_spans, current_word)
-    constructor(dit_speed_ms, draw_callback) {
+    constructor(default_wpm, draw_callback) {
         this.draw_callback = draw_callback;
 
         this.last_press_start = null;
@@ -139,7 +139,8 @@ class Morse {
         this.LETTER_SEP = 0;
         this.WORD_SEP = 0;
 
-        this.set_speeds_ms(dit_speed_ms);
+        this.set_speed_char(default_wpm);
+        this.set_speed_word(default_wpm);
 
         let self = this;
         this.redraw_int = setInterval(() => self.redraw(), 10);
@@ -147,28 +148,56 @@ class Morse {
         this.last_displayed_events = null;
     }
 
-    set_speeds_ms(dit_speed_ms) {
-        this.DIT_DURATION = dit_speed_ms / 1000;
-        this.DAH_DURATION = 3 * this.DIT_DURATION;
-        this.SYMBOL_SEP = this.DIT_DURATION;
-        this.LETTER_SEP = 3 * this.DIT_DURATION;
-        this.WORD_SEP = 7 * this.DIT_DURATION;
+    // All sets and gets are in wpm unless specified as other
+    set_speed_char(wpm) {
+        let dit_speed_s = 1 / (wpm / 60 * DITS_PER_WORD);
+
+        this.DIT_DURATION = dit_speed_s;
+        this.DAH_DURATION = 3 * dit_speed_s;
+        this.SYMBOL_SEP = dit_speed_s;
     }
 
-    set_speeds_wpm(wpm) {
-        let s_per_dit = 1 / (wpm / 60 * DITS_PER_WORD);
-        this.set_speeds_ms(1000 * s_per_dit);
+    set_speed_word(wpm) {
+        let dit_speed_s = 1 / (wpm / 60 * DITS_PER_WORD);
+
+        this.LETTER_SEP = 3 * dit_speed_s;
+        this.WORD_SEP = 7 * dit_speed_s;
     }
 
-    get_dit_speed_ms() {
-        return 0 | (this.DIT_DURATION * 1000);
-    }
-
-    get_dit_speed_wpm() {
+    get_speed_char() {
         let wpm = (1 / this.DIT_DURATION) / DITS_PER_WORD * 60;
-
-        return (0 | (10 * wpm)) / 10;
+        return Math.round(wpm * 1000) / 1000;
     }
+
+    get_speed_word() {
+        let dit_word = this.WORD_SEP / 7;
+        let wpm = (1 / dit_word) / DITS_PER_WORD * 60;
+        // round because floating point inprecision
+        return Math.round(wpm * 1000) / 1000;
+    }
+
+    // set_speeds_ms(dit_speed_ms) {
+    //     this.DIT_DURATION = dit_speed_ms / 1000;
+    //     this.DAH_DURATION = 3 * this.DIT_DURATION;
+    //     this.SYMBOL_SEP = this.DIT_DURATION;
+    //     this.LETTER_SEP = 3 * this.DIT_DURATION;
+    //     this.WORD_SEP = 7 * this.DIT_DURATION;
+    // }
+
+    // set_speeds_wpm(wpm) {
+    //     let s_per_dit = 1 / (wpm / 60 * DITS_PER_WORD);
+    //     this.set_speeds_ms(1000 * s_per_dit);
+    // }
+
+    // get_dit_speed_ms() {
+    //     return 0 | (this.DIT_DURATION * 1000);
+    // }
+
+    // get_dit_speed_wpm() {
+    //     let wpm = (1 / this.DIT_DURATION) / DITS_PER_WORD * 60;
+
+    //     return (0 | (10 * wpm)) / 10;
+    // }
 
     get_space() {
         if (this.last_press_end == null) {
@@ -283,29 +312,52 @@ class Morse {
     }
 }
 
-function bind_speed_input(morse, ms_inp, wpm_inp) {
-    if (localStorage.getItem("speed-ms") != null) {
-        morse.set_speeds_ms(+localStorage.getItem("speed-ms"));
+function bind_speed_input(morse, split_cb, wpm_inp, cwpm_inp, wwpm_inp) {
+    if (localStorage.getItem("speed-char") != null && localStorage.getItem("speed-word")) {
+        morse.set_speed_char(+localStorage.getItem("speed-char"));
+        morse.set_speed_word(+localStorage.getItem("speed-word"));
     } else {
-        morse.set_speeds_ms(+ms_inp.value);
+        morse.set_speed_char(+cwpm_inp.value);
+        morse.set_speed_word(+wwpm_inp.value);
     }
 
-    ms_inp.value = morse.get_dit_speed_ms();
-    wpm_inp.value = morse.get_dit_speed_wpm();
+    if (morse.get_speed_char() === morse.get_speed_word()) {
+        wpm_inp.value = cwpm_inp.value = wwpm_inp.value = morse.get_speed_char();
+        split_cb.checked = false;
+    } else {
+        split_cb.checked = true;
+        cwpm_inp.value = morse.get_speed_char();
+        wwpm_inp.value = morse.get_speed_word();
+        wpm_inp.value = morse.get_speed_word(); // idk
+    }
 
-    ms_inp.addEventListener("change", e => {
-        morse.set_speeds_ms(+ms_inp.value);
-        wpm_inp.value = morse.get_dit_speed_wpm();
+    function set_same() {
+        morse.set_speed_char(+wpm_inp.value);
+        morse.set_speed_word(+wpm_inp.value);
 
-        localStorage.setItem("speed-ms", morse.get_dit_speed_ms());
+        localStorage.setItem("speed-char", +wpm_inp.value);
+        localStorage.setItem("speed-word", +wpm_inp.value);
+    }
+
+    function set_split() {
+        morse.set_speed_char(+cwpm_inp.value);
+        morse.set_speed_word(+wwpm_inp.value);
+
+        localStorage.setItem("speed-char", +cwpm_inp.value);
+        localStorage.setItem("speed-word", +wwpm_inp.value);
+    }
+
+    wpm_inp.addEventListener("change", e => set_same());
+    cwpm_inp.addEventListener("change", e => set_split());
+    wwpm_inp.addEventListener("change", e => set_split());
+    split_cb.addEventListener("change", e => {
+        if (split_cb.checked) {
+            set_split();
+        } else {
+            set_same();
+        }
     });
 
-    wpm_inp.addEventListener("change", e => {
-        morse.set_speeds_wpm(+wpm_inp.value);
-        ms_inp.value = morse.get_dit_speed_ms();
-
-        localStorage.setItem("speed-ms", morse.get_dit_speed_ms());
-    });
 }
 
 function fill_morse_table(table, f) {
