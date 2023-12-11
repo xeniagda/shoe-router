@@ -20,7 +20,7 @@ body {
     justify-content: space-between;
 
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 15pt;
+    font-size: 12pt;
 }
 
 a {
@@ -99,7 +99,6 @@ main {
     align-items: center;
     justify-content: space-evenly;
 
-    min-height: 80vh;
     width: 100%;
     flex-grow: 1;
     margin-right: 2em;
@@ -126,7 +125,6 @@ header, footer {
     justify-content: center;
     align-items: center;
 
-    font-size: 15pt;
 }
 
 #modes > .button-select.selected::before {
