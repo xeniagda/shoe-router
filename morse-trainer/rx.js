@@ -267,7 +267,7 @@ function realize(ch) {
 }
 
 function accuracy() {
-    let units = distance(current_text.text, morse.typed_text);
+    let units = distance(current_text.text, morse.typed_text.trim());
     let n_correct = 0;
     for (let unit of units) {
         if (unit.type === "correct" || unit.type === "missing_end") {
