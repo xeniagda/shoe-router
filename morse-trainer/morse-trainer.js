@@ -1092,9 +1092,9 @@ class MarkovGenerator extends TextGenerator {
 
         let text = [];
 
-        let letters_left = [...Array(this.subset.length).keys()];
+        let letters = [...Array(this.subset.length).keys()].filter(l => !self._terminates(l));
 
-        letters_left = letters_left.filter(l => !self._terminates(l));
+        let letters_left = [...letters];
 
         while (letters_left.length > 0) {
             let idx = 0 | (Math.random() * letters_left.length);
@@ -1107,7 +1107,8 @@ class MarkovGenerator extends TextGenerator {
         }
 
         while (text.length < MINIMUM_MARKOV_LENGTH) {
-            let idx = 0 | (Math.random() * this.subset.length);
+            let idx = 0 | (Math.random() * letters.length);
+            let letter = letters[idx];
             let w = this._generate_word(idx);
 
             text.push(...w);
