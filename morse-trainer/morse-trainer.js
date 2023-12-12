@@ -958,7 +958,11 @@ function normalized(arr) {
     return arr.map(x => x / total);
 }
 
-function weighted_pick(arr) {
+// Gives an index into the array
+function weighted_pick(arr, noise) {
+    if (Math.random() < noise) {
+        return 0 | (Math.random() * arr.length);
+    }
     arr = normalized(arr);
     let x = Math.random();
     for (let i = 0; i < arr.length; i++) {
@@ -974,6 +978,10 @@ const MINIMUM_MARKOV_LENGTH = 20;
 class MarkovGenerator extends TextGenerator {
     constructor() {
         super();
+        this.min_word_len = 2;
+        this.max_word_len = 5;
+        this.noise = 0.5;
+
         this.symbols = [];
         this.forward = [];
         this.backward = [];
@@ -1039,7 +1047,7 @@ class MarkovGenerator extends TextGenerator {
     _generate_letter() {
         for (let i = 0; i < 10; i++) {
             let init = this.get_subset(this.initial);
-            let letter = weighted_pick(init);
+            let letter = weighted_pick(init, this.noise);
             if (this._terminates(letter))
                 continue;
             return letter;
@@ -1048,30 +1056,35 @@ class MarkovGenerator extends TextGenerator {
     }
 
     _generate_word(containing_letter) {
-        let after = [];
-        let last_ch = containing_letter;
-        for (let i = 0; i < 10; i++) {
-            let weights = this.get_subset(this.get_subset(this.forward)[last_ch]);
-            let pick = weighted_pick(weights);
-            if (this._terminates(pick))
-                break;
+        while (true) {
+            let after = [];
+            let last_ch = containing_letter;
+            for (let i = 0; i < 10; i++) {
+                let weights = this.get_subset(this.get_subset(this.forward)[last_ch]);
+                let pick = weighted_pick(weights, this.noise);
+                if (this._terminates(pick))
+                    break;
 
-            after.push(pick);
-            last_ch = pick;
+                after.push(pick);
+                last_ch = pick;
+            }
+
+            let before = [];
+            last_ch = containing_letter;
+            for (let i = 0; i < 10; i++) {
+                let weights = this.get_subset(this.get_subset(this.backward)[last_ch]);
+                let pick = weighted_pick(weights, this.noise);
+                if (this._terminates(pick))
+                    break;
+
+                before.push(pick);
+                last_ch = pick;
+            }
+            let pick = before.reverse().concat([containing_letter]).concat(after);
+            if (pick.length >= this.min_word_len && pick.length <= this.max_word_len) {
+                return pick;
+            }
         }
-
-        let before = [];
-        last_ch = containing_letter;
-        for (let i = 0; i < 10; i++) {
-            let weights = this.get_subset(this.get_subset(this.backward)[last_ch]);
-            let pick = weighted_pick(weights);
-            if (this._terminates(pick))
-                break;
-
-            before.push(pick);
-            last_ch = pick;
-        }
-        return before.reverse().concat([containing_letter]).concat(after);
     }
 
     _generate_text() {
