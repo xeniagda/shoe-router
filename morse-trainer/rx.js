@@ -77,7 +77,7 @@ function win() {
     audio.stop();
     did_win = true;
 
-    if (accuracy() > 0.7) {
+    if (accuracy() > 0.95) {
         sentence_loader.completed(current_text);
 
         let fw = make_fireworks();
