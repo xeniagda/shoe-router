@@ -420,7 +420,7 @@ function fill_morse_table(table, f) {
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
-var HOLD_TIME = 0.000;
+var HOLD_TIME = 0.03;
 var RAMP_TIME = 0.012;
 
 class MorseAudio {
