@@ -5,6 +5,17 @@ const WORD_SEPARATOR = "WORD";
 
 const DITS_PER_WORD = 50; // paris
 
+const TUNE = [
+    0, 0, 0, 12, 7, 6, 5, 3, 0, 3, 5,
+    -2, -2, 12, 7, 6, 5, 3, 0, 3, 5,
+    -4, -4, 12, 7, 6, 5, 3, 0, 3, 5,
+    -5, -5, 12, 7, 6, 5, 3, 0, 3, 5,
+    3, 3, 3, 3, 3, 0, 0,
+    3, 3, 3, 3, 5, 6, 5, 3, 0, 3, 5,
+    3, 3, 3, 5, 7, 10, 10, 7,
+    12, 12, 12, 7, 12, 10, 12+5
+];
+
 function event_span(ev) {
     let el = document.createElement("span");
     if (ev == DIT) {
@@ -445,6 +456,9 @@ class MorseAudio {
 
         let self = this;
         setInterval(() => self.tick(), 10);
+
+        this.tune_enabled = false;
+        this.tune_index = 0;
     }
 
     init_user() {
@@ -494,9 +508,17 @@ class MorseAudio {
         }
     }
 
+    _freq_multiplier() {
+        if (this.tune_enabled) {
+            return Math.pow(2, TUNE[this.tune_index] / 12);
+        } else {
+            return 1;
+        }
+    }
+
     tick() {
         if (this.needs_freq_update && this.audio_ctx !== undefined) {
-            this.base_osc.frequency.setValueAtTime(this._freq, this.audio_ctx.currentTime);
+            this.base_osc.frequency.setValueAtTime(this._freq * this._freq_multiplier(), this.audio_ctx.currentTime);
             this.needs_freq_update = false;
         }
         if (this.next_at == null || Date.now() > this.next_at) {
@@ -603,6 +625,12 @@ class MorseAudio {
             this.lamp.classList.add("light");
 
         this.is_on = true;
+
+        if (this.tune_enabled) {
+            this.tune_index += 1;
+            this.tune_index %= TUNE.length;
+            this.needs_freq_update = true;
+        }
     }
 
     off() {
