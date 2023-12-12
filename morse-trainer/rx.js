@@ -160,7 +160,7 @@ document.getElementById("text-inp").addEventListener("keydown", e => {
     if (e.key == " " || e.key == "Enter") {
         e.preventDefault();
 
-        if (current_mode === MODE_SENTENCE && !audio.is_playing && last_played_idx < current_text.text.length && !did_win) {
+        if (current_mode === MODE_SENTENCE && !audio.is_playing && last_played_idx < current_text.text.length && !did_win && e.target.value == "") {
             play_current();
             return;
         }
