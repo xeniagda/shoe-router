@@ -409,8 +409,8 @@ function fill_morse_table(table, f) {
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
-const HOLD_TIME = 0.000;
-const RAMP_TIME = 0.012;
+var HOLD_TIME = 0.000;
+var RAMP_TIME = 0.012;
 
 class MorseAudio {
     // lamp = document element to be given and ungiven .light class
