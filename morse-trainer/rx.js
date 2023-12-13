@@ -290,13 +290,18 @@ function realize(ch) {
 
 function accuracy() {
     let units = distance(current_text.text, morse.typed_text.trim());
-    let n_correct = 0;
+    let n_correct_nonspace = 0;
+    let n_nonspace = 0;
     for (let unit of units) {
-        if (unit.type === "correct" || unit.type === "missing_end") {
-            n_correct++;
+        if ((unit.char || unit.typed) === " ") {
+            continue;
         }
+        if (unit.type === "correct") {
+            n_correct_nonspace++;
+        }
+        n_nonspace++;
     }
-    return n_correct / units.length;
+    return n_correct_nonspace / n_nonspace;
 }
 
 function update_display(typed, typing, morse_spans, text) {
