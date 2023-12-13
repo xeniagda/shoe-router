@@ -299,9 +299,6 @@ function accuracy() {
     let n_correct_nonspace = 0;
     let n_nonspace = 0;
     for (let unit of units) {
-        if ((unit.char || unit.typed) === " ") {
-            continue;
-        }
         if (unit.type === "correct") {
             n_correct_nonspace++;
         }
