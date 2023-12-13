@@ -273,9 +273,9 @@ header, footer {
 }
 .char.incorrect > .corrected {
     position: absolute;
-    font-size: 15pt;
+    font-size: 0.66666em;
 
-    left: 0.25em;
+    left: 0.1666em;
     bottom: -0.5em;
     color: var(--fg-1);
 }
