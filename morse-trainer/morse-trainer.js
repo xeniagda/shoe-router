@@ -916,6 +916,9 @@ const PRESETS = [
 class TextGenerator {
     async load_resources() { throw "Abstract method called" }
 
+    // for result screen. returns string
+    describe() { throw "Abstract method called" }
+
     // reteurns bool
     is_loaded() { throw "Abstract method called" }
 
@@ -941,6 +944,7 @@ class TextGenerator {
 
 class HamGen {
     async load_resources() { }
+    describe() { return "HamGen"; }
     is_loaded() { return true; }
     next_text() { return {"text": "73 DE SA6NYA"}; }
     text_completed(sentence) { }
@@ -991,6 +995,12 @@ class MarkovGenerator extends TextGenerator {
         this.subset = []; // contains numbers indexing this.symbols
 
         this.loaded = false;
+    }
+
+    describe() {
+        let self = this;
+        let letters = [...Array(this.subset.length).keys()].filter(l => !self._terminates(l));
+        return this.symbolize(letters);
     }
 
     get_subset(arr) {
@@ -1185,6 +1195,10 @@ class QuoteLoader extends TextGenerator {
     constructor() {
         super();
         this.quotes = [];
+    }
+
+    describe() {
+        return "Quote";
     }
 
     _set_completed(completed_hashes) {

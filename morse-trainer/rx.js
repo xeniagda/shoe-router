@@ -61,7 +61,9 @@ let sentence_loader = new SentenceLoader(
     document.getElementById("sentence-config")
 );
 
-let did_win = false;
+function did_win() {
+    return document.getElementById("under-text").classList.contains("won");
+}
 
 let current_text = null; // Object generated from sentence_loader
 
@@ -71,11 +73,17 @@ sentence_loader.load_from_localstorage().then(() => {
 });
 
 function win() {
-    if (did_win)
+    if (did_win())
         return;
 
+    let acc = Math.round(accuracy() * 1000) / 10;
+    document.getElementById("under-text").classList.add("won");
+    document.getElementById("accuracy-result").innerText = acc + "%";
+    document.getElementById("wpm-result").innerText = morse.get_speed_char() + "/" + morse.get_speed_word();
+    document.getElementById("chars-result").innerText = current_text.text.length;
+    document.getElementById("mode-result").innerText = sentence_loader.current_generator.describe();
+
     audio.stop();
-    did_win = true;
 
     if (accuracy() > 0.95) {
         sentence_loader.completed(current_text);
@@ -84,12 +92,20 @@ function win() {
     }
 }
 
+function focus_key() {
+    document.getElementById("text-inp").focus();
+}
+
+function unwin() {
+    document.getElementById("under-text").classList.remove("won");
+}
+
 let waiting_confirm = false;
 
 let reset_warning = document.getElementById("reset-confirm");
 
 function new_sentence() {
-    if (morse.typed_text.length > 0 && !waiting_confirm && !did_win) {
+    if (morse.typed_text.length > 0 && !waiting_confirm && !did_win()) {
         reset_warning.classList.add("active");
         waiting_confirm = true;
     } else {
@@ -101,7 +117,8 @@ function new_sentence() {
         morse.typed_text = "";
         morse.force_update = true;
         audio.stop();
-        did_win = false;
+        unwin();
+        focus_key();
     }
 }
 
@@ -118,7 +135,7 @@ button_play.addEventListener("click", e => {
     unconfirm_reset();
     audio.init_user();
     play_current();
-    document.getElementById("text-inp").focus();
+    focus_key();
 });
 
 button_stop.addEventListener("click", e => {
@@ -141,6 +158,10 @@ document.body.addEventListener("keydown", e => {
         unconfirm_reset();
         audio.stop();
     }
+    if (e.key == " " && did_win()) {
+        new_sentence();
+        e.preventDefault();
+    }
 });
 
 document.getElementById("key").addEventListener("click", e => {
@@ -159,8 +180,9 @@ document.getElementById("text-inp").addEventListener("keydown", e => {
     audio.init_user();
     if (e.key == " " || e.key == "Enter") {
         e.preventDefault();
+        e.stopPropagation();
 
-        if (current_mode === MODE_SENTENCE && !audio.is_playing && last_played_idx < current_text.text.length && !did_win && e.target.value == "") {
+        if (current_mode === MODE_SENTENCE && !audio.is_playing && last_played_idx < current_text.text.length && !did_win() && e.target.value == "") {
             play_current();
             return;
         }
@@ -168,7 +190,7 @@ document.getElementById("text-inp").addEventListener("keydown", e => {
         let typed = e.target.value;
         e.target.value = "";
 
-        if (did_win) {
+        if (did_win()) {
             waiting_confirm = true;
             new_sentence();
             return;
@@ -243,8 +265,8 @@ function cut_text() {
                 break;
             }
             if (i == current_text.text.length - 1) {
-                // TODO: Win screen?
                 win();
+                return;
             }
         }
     } else {
@@ -304,7 +326,7 @@ function update_display(typed, typing, morse_spans, text) {
 
     let text_div = document.getElementById("text");
 
-    let units = distance(current_text.text, did_win ? typed.trim() : typed);
+    let units = distance(current_text.text, did_win() ? typed.trim() : typed);
     let elements = [];
     for (let unit of units) {
         let el = document.createElement("span");

@@ -115,7 +115,8 @@ input {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: center;
+    gap: 5em;
 
     width: 100%;
     flex-grow: 1;
@@ -330,3 +331,50 @@ header, footer {
 
 #split-speed-cb:checked ~ #same-speed { display: none; }
 #split-speed-cb:not(:checked) ~ #split-speed { display: none; }
+
+#under-text {
+    position: relative;
+}
+
+#key {
+    position: relative;
+}
+
+#result-screen {
+    position: absolute;
+    font-size: 16pt;
+}
+
+#key, #result-screen {
+    opacity: 100%;
+    top: 0;
+
+    transition: opacity ease-in-out 300ms
+              , top ease-in-out 300ms;
+}
+
+#under-text.won > #key {
+    opacity: 0%;
+    top: 20pt;
+}
+
+#under-text:not(.won) > #result-screen {
+    opacity: 0%;
+    top: 20pt;
+}
+
+#result-screen {
+    display: flex;
+    gap: 1ex;
+    flex-direction: column;
+}
+
+.result-container > .result {
+    color: var(--highlight);
+}
+
+.result-container {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+}
