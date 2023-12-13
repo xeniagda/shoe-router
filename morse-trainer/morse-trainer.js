@@ -831,7 +831,7 @@ class Fireworks {
             let [r, g, b] = hue2rgb(particle[4]);
             this.ctx.beginPath();
             this.ctx.strokeStyle = `rgb(${256*r}, ${256*g}, ${256*b})`;
-            this.ctx.lineWidth = 3 * count + 4;
+            this.ctx.lineWidth = 1.5 * count + 2;
             this.ctx.moveTo(x, y);
             this.ctx.lineTo(x + vx * 0.1 * (count + 1), y + vy * 0.1 * (count + 1));
             this.ctx.stroke();
