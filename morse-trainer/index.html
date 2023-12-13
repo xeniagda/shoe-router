@@ -28,7 +28,20 @@
             </a>
         </header>
         <div id="settings">
-            <div class="setting"> Use text field in the key to write. <br/> Use space to submit word. </div>
+            <div class="setting">
+                <h2> Usage </h2>
+                Use text field in the key to write. <br/>
+                Use space to submit word. <br/>
+                Use tab to get a new sentance. <br/>
+                Use escape to pause. <br/>
+                Key:
+                <ul>
+                    <li> <span class="char correct">A</span>: Correct! </li>
+                    <li> <span class="char extraneous">A</span>: You entered an extra character! </li>
+                    <li> <span class="char missing">A</span>: You missed a character! </li>
+                    <li> <span class="char incorrect">A<span class="corrected">B</span></span>: You entered the wrong character, the correct one is displayed below it. </li>
+                </ul>
+            </div>
             <div class="setting" id="modes">
                 <h2> Mode </h2>
                 <div id="button-select-word" class="button-select selected"><em>Word-by-word</em>: Plays one word at a time, waiting until you've typed it to continue</div>
