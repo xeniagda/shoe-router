@@ -76,8 +76,11 @@ function win() {
     if (did_win())
         return;
 
-    let acc = Math.round(accuracy() * 1000) / 10;
+    document.getElementById("accuracy").innerText = "";
+
     document.getElementById("under-text").classList.add("won");
+
+    let acc = Math.round(accuracy() * 1000) / 10;
     document.getElementById("accuracy-result").innerText = acc + "%";
     document.getElementById("wpm-result").innerText = morse.get_speed_char() + "/" + morse.get_speed_word();
     document.getElementById("chars-result").innerText = current_text.text.length;
@@ -105,20 +108,23 @@ let waiting_confirm = false;
 let reset_warning = document.getElementById("reset-confirm");
 
 function new_sentence() {
-    if (morse.typed_text.length > 0 && !waiting_confirm && !did_win()) {
+    if (!waiting_confirm && !did_win()) {
         reset_warning.classList.add("active");
         waiting_confirm = true;
     } else {
         reset_warning.classList.remove("active");
         waiting_confirm = false;
-
-        current_text = sentence_loader.next_text();
-        last_played_idx = 0;
-        morse.typed_text = "";
-        morse.force_update = true;
-        audio.stop();
-        unwin();
-        focus_key();
+        if (did_win()) {
+            current_text = sentence_loader.next_text();
+            last_played_idx = 0;
+            morse.typed_text = "";
+            morse.force_update = true;
+            audio.stop();
+            unwin();
+            focus_key();
+        } else {
+            win();
+        }
     }
 }
 
@@ -296,8 +302,16 @@ function accuracy() {
         if ((unit.char || unit.typed) === " ") {
             continue;
         }
-        if (unit.type === "correct" || unit.type === "missing_end") {
+        if (unit.type === "correct") {
             n_correct_nonspace++;
+        }
+        if (unit.type === "missing_end") {
+            if (did_win()) {
+                n_nonspace = current_text.text.length;
+                break;
+            } else {
+                n_correct_nonspace++;
+            }
         }
         n_nonspace++;
     }
@@ -354,11 +368,11 @@ function update_display(typed, typing, morse_spans, text) {
             el.appendChild(corrected);
         } else if (unit.type === "missing_end") {
             let rest = current_text.text.slice(-unit.length);
-            el.innerText = redact(rest);
+            el.innerText = did_win() ? rest : redact(rest);
             el.classList.add("missing-end");
         } else if (unit.type === "extra_rest") {
             let rest = typed.slice(-unit.length);
-            el.innerText = redact(rest);
+            el.innerText = rest;
             el.classList.add("extra-rest"); // TODO: When would this happen? This should probably be the win condition
         }
         elements.push(el);
