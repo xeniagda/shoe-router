@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="64"
+   height="64"
+   viewBox="0 0 16.933333 16.933334"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1 (c4e8f9e, 2021-05-24)"
+   sodipodi:docname="favicon.svg"
+   inkscape:export-filename="/Users/xenia/cloud/Projekt/Programmering/coral.shoes/shoe-router/morse-trainer/favicon.png"
+   inkscape:export-xdpi="96.000008"
+   inkscape:export-ydpi="96.000008"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     units="px"
+     inkscape:snap-page="true"
+     inkscape:zoom="3.8594073"
+     inkscape:cx="20.599018"
+     inkscape:cy="21.117232"
+     inkscape:window-width="1440"
+     inkscape:window-height="847"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2">
+    <rect
+       x="0"
+       y="0.73286568"
+       width="76.973779"
+       height="79.305743"
+       id="rect4076" />
+    <rect
+       x="0.77732144"
+       y="0"
+       width="61.926608"
+       height="63.999465"
+       id="rect2138" />
+  </defs>
+  <g
+     inkscape:label="Lager 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       transform="scale(0.26458333)"
+       id="text2136"
+       style="line-height:1.25;font-family:'Fira Code';font-size:3.00000004px;-inkscape-font-specification:'Fira Code';white-space:pre;shape-inside:url(#rect2138)" />
+    <rect
+       style="fill:#d2e5c2;stroke-width:0.499999;stroke-linecap:round"
+       id="rect11593"
+       width="16.933332"
+       height="16.933332"
+       x="0"
+       y="0"
+       ry="2.2623293" />
+    <text
+       xml:space="preserve"
+       transform="matrix(0.26458333,0,0,0.26458333,-2.1642089,0.36514519)"
+       id="text4074"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:25px;line-height:0.6;font-family:'IBM Plex Mono';-inkscape-font-specification:'IBM Plex Mono Bold';text-align:center;white-space:pre;shape-inside:url(#rect4076)"
+       x="28.485352"
+       y="0"
+       inkscape:export-filename="/Users/xenia/cloud/Projekt/Programmering/coral.shoes/shoe-router/morse-trainer/text4074.png"
+       inkscape:export-xdpi="96.000008"
+       inkscape:export-ydpi="96.000008"><tspan
+         x="23.49707"
+         y="15.232422"
+         id="tspan14629">––
+</tspan><tspan
+         x="8.5068359"
+         y="30.232423"
+         id="tspan14631">·–––
+</tspan><tspan
+         x="23.49707"
+         y="45.232424"
+         id="tspan14633">·–
+</tspan><tspan
+         x="16.001953"
+         y="60.232426"
+         id="tspan14635">··–</tspan></text>
+  </g>
+</svg>
