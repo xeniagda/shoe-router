@@ -296,7 +296,7 @@ function accuracy() {
         if ((unit.char || unit.typed) === " ") {
             continue;
         }
-        if (unit.type === "correct") {
+        if (unit.type === "correct" || unit.type === "missing_end") {
             n_correct_nonspace++;
         }
         n_nonspace++;
