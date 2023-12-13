@@ -207,6 +207,7 @@ header, footer {
     height: 3ex;
     min-width: 3ex;
     display: flex;
+    outline: none;
 }
 
 #key.light, #key.light>input {
