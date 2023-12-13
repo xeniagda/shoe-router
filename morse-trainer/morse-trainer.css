@@ -5,8 +5,8 @@
 body {
     --bg-1: #18181c;
     --bg-2: #272c33;
-    --fg-1: #D2E5C2;
-    --fg-2: #343d39;
+    --fg-1: #EAF3E2;
+    --fg-2: #596966;
     --highlight: #7edead;
 
     background-color: var(--bg-1);
