@@ -793,7 +793,7 @@ class Fireworks {
         let self = this;
 
         this.particles = [];
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 5; i++) {
             let x = Math.random() * this.canvas_element.offsetWidth;
             let y = Math.random() * this.canvas_element.offsetHeight;
 
