@@ -978,7 +978,7 @@ function weighted_pick(arr, noise) {
     return arr.length - 1;
 }
 
-const MINIMUM_MARKOV_LENGTH = 20;
+const MINIMUM_MARKOV_LENGTH = 30;
 class MarkovGenerator extends TextGenerator {
     constructor() {
         super();
