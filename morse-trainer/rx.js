@@ -80,7 +80,7 @@ function win() {
 
     document.getElementById("under-text").classList.add("won");
 
-    let acc = Math.round(accuracy() * 1000) / 10;
+    let acc = Math.round(accuracy(false) * 1000) / 10;
     document.getElementById("accuracy-result").innerText = acc + "%";
     document.getElementById("wpm-result").innerText = morse.get_speed_char() + "/" + morse.get_speed_word();
     document.getElementById("chars-result").innerText = current_text.text.length;
@@ -88,7 +88,7 @@ function win() {
 
     audio.stop();
 
-    if (accuracy() > 0.95) {
+    if (accuracy(false) > 0.95) {
         sentence_loader.completed(current_text);
 
         let fw = make_fireworks();
@@ -294,7 +294,9 @@ function realize(ch) {
     return ch;
 }
 
-function accuracy() {
+// current = true: include only everything up to the point the user has typed to
+// current = false: include everything after as well
+function accuracy(current) {
     let units = distance(current_text.text, morse.typed_text.trim());
     let n_correct_nonspace = 0;
     let n_nonspace = 0;
@@ -303,7 +305,7 @@ function accuracy() {
             n_correct_nonspace++;
         }
         if (unit.type === "missing_end") {
-            if (did_win()) {
+            if (!current) {
                 n_nonspace = current_text.text.length;
                 break;
             } else {
@@ -334,8 +336,8 @@ function update_display(typed, typing, morse_spans, text) {
     }
 
     if (typed.length > 0) {
-        let acc = Math.round(accuracy(typed) * 100);
-        document.getElementById("accuracy").innerText = "(" + acc + "% accuracy)";
+        let acc = Math.round(accuracy(true) * 100);
+        document.getElementById("accuracy").innerText = "(" + acc + "% accuracy so far)";
     } else {
         document.getElementById("accuracy").innerText = "";
     }
