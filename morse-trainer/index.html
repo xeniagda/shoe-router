@@ -6,6 +6,7 @@
         <link rel="stylesheet" href="morse-trainer.css">
         <link rel="icon" href="favicon.png">
         <script src="morse-trainer.js" defer></script>
+        <script src="history.js" defer></script>
         <script src="edit-distance.js" defer></script>
         <script src="rx.js" defer></script>
     </head>
@@ -70,6 +71,24 @@
             </div>
         </div>
         <main id="main">
+            <div id="history">
+                <h3>Attempt <span id="history-count-total">37</span> (<span id="history-count-success">21</span>)</h3>
+                <a id="history-reset" href="#">Reset</a>
+                <div id="history-list">
+                    <div class="history-attempt">
+                        <span class="history-idx">3: </span>
+                        <span class="history-accuracy">90.03%</span>
+                        <span class="history-missed">-3</span>/<span class="history-incorrect">?5</span>/<span class="history-additional">+1</span>
+                        <span class="history-name" data-long="KOCH-blahblah">Koch</span>
+                    </div>
+                    <div class="history-attempt fail">
+                        <span class="history-idx">2: </span>
+                        <span class="history-accuracy">40.13%</span>
+                        <span class="history-missed">-7</span>/<span class="history-incorrect">?0</span>/<span class="history-additional">+0</span>
+                        <span class="history-name" data-long="KOCH-blahblah">Quotes</span>
+                    </div>
+                </div>
+            </div>
             <div id="main-split">
                 <div id="textpart">
                     <p id="reset-confirm" class="warning">

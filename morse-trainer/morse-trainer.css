@@ -379,3 +379,83 @@ header, footer {
     flex-direction: row;
     gap: 1em;
 }
+
+/* History */
+#history {
+    white-space: nowrap;
+    margin-right: 2em;
+
+    --col-red: #CC4045;
+    --col-red-1: #CC7740;
+    --col-orange: #CC9C40;
+    --col-yellow: #CCB940;
+    /* --col-green: #B5CC40; */
+}
+
+#history-list {
+    max-height: 60vh;
+    overflow-x: visible;
+    overflow-y: scroll;
+}
+
+.history-attempt {
+    margin-bottom: 0.5ex;
+}
+
+#history .fail .history-idx {
+    color: var(--col-red);
+}
+
+
+.history-idx {
+    white-space: pre;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.history-missed {
+    color: var(--col-red-1);
+}
+.history-incorrect {
+    color: var(--col-orange);
+}
+.history-additional {
+    color: var(--col-yellow);
+}
+
+/* tooltips */
+.history-attempt {
+}
+
+.history-attempt *:before {
+    position: absolute;
+    background: black;
+    border: 1px solid var(--highlight);
+    border-radius: 3pt;
+    pointer-events: none;
+    z-index: 100;
+
+    display: none;
+}
+
+.history-attempt *:hover:before {
+    display: inline-block;
+}
+
+.fail .history-idx:before {
+    content: "fail";
+}
+.history-accuracy:before {
+    content: attr(data-exact);
+}
+.history-missed:before {
+    content: "missed";
+}
+.history-additional:before {
+    content: "extra";
+}
+.history-incorrect:before {
+    content: "incorrect";
+}
+.history-name:before {
+    content: attr(data-long);
+}

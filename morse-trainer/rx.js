@@ -2,6 +2,10 @@ let morse = new Morse(100, update_display);
 let audio = new MorseAudio(morse, document.getElementById("key"));
 audio.on_play_ends.push(on_audio_off);
 
+let history = new SessionHistory();
+history.render();
+history.bind_reset_button(document.getElementById("history-reset"));
+
 let last_played_idx = 0;
 audio.on_play_letters.push(idx => last_played_idx = idx);
 
@@ -27,6 +31,7 @@ document.getElementById("test-tone").addEventListener("mousedown", e => {
     audio.init_user();
     audio.on();
 });
+
 document.getElementById("test-tone").addEventListener("mouseup", e => {
     audio.init_user();
     audio.off();
@@ -80,15 +85,27 @@ function win() {
 
     document.getElementById("under-text").classList.add("won");
 
-    let acc = Math.round(accuracy(false) * 1000) / 10;
+    let s = stats();
+
+    let acc = Math.round(s.accuracy_overall * 10000) / 100;
     document.getElementById("accuracy-result").innerText = acc + "%";
     document.getElementById("wpm-result").innerText = morse.get_speed_char() + "/" + morse.get_speed_word();
     document.getElementById("chars-result").innerText = current_text.text.length;
     document.getElementById("mode-result").innerText = sentence_loader.current_generator.describe();
 
+    history.add_commit_and_rerender({
+        "complete": s.done,
+        "accuracy": s.accuracy_overall,
+        "missed": s.missed,
+        "incorrect": s.incorrect,
+        "extra": s.extra,
+        "name_short": sentence_loader.current_generator.describe_short(),
+        "name_long": sentence_loader.current_generator.describe(),
+    });
+
     audio.stop();
 
-    if (accuracy(false) > 0.95) {
+    if (s.accuracy_overall > 0.95) {
         sentence_loader.completed(current_text);
 
         let fw = make_fireworks();
@@ -294,27 +311,63 @@ function realize(ch) {
     return ch;
 }
 
-// current = true: include only everything up to the point the user has typed to
-// current = false: include everything after as well
-function accuracy(current) {
+// {
+//    "done": bool,
+//    "accuracy_current": float,
+//    "accuracy_overall": float,
+//    "missed": int,
+//    "incorrect": int,
+//    "extra": int,
+// }
+function stats() {
     let units = distance(current_text.text, morse.typed_text.trim());
+
     let n_correct_nonspace = 0;
     let n_nonspace = 0;
+    let accuracy_current = null;
+
+    let n_missed = 0;
+    let n_incorrect = 0;
+    let n_extra = 0;
+
+    let done = true;
+
     for (let unit of units) {
         if (unit.type === "correct") {
             n_correct_nonspace++;
         }
+        if (unit.type === "incorrect") {
+            n_incorrect++;
+        }
+        if (unit.type === "extraneous") {
+            n_extra++;
+        }
+        if (unit.type === "missing") {
+            n_missed++;
+        }
         if (unit.type === "missing_end") {
-            if (!current) {
-                n_nonspace = current_text.text.length;
-                break;
-            } else {
-                n_correct_nonspace++;
-            }
+            accuracy_current = n_correct_nonspace / n_nonspace;
+            done = false;
+            n_nonspace = current_text.text.length;
+            break;
         }
         n_nonspace++;
     }
-    return n_correct_nonspace / n_nonspace;
+
+    accuracy_overall = n_correct_nonspace / n_nonspace;
+
+    if (accuracy_current === null) {
+        accuracy_current = accuracy_overall;
+    }
+
+    return {
+        "done": done,
+        "accuracy_current": accuracy_current,
+        "accuracy_overall": accuracy_overall,
+        "missed": n_missed,
+        "incorrect": n_incorrect,
+        "extra": n_extra,
+    };
 }
 
 function update_display(typed, typing, morse_spans, text) {
@@ -336,7 +389,8 @@ function update_display(typed, typing, morse_spans, text) {
     }
 
     if (typed.length > 0) {
-        let acc = Math.round(accuracy(true) * 100);
+        let s = stats();
+        let acc = Math.round(s.accuracy_current * 100);
         document.getElementById("accuracy").innerText = "(" + acc + "% accuracy so far)";
     } else {
         document.getElementById("accuracy").innerText = "";

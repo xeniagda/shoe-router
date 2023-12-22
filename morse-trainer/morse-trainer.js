@@ -919,6 +919,9 @@ class TextGenerator {
     // for result screen. returns string
     describe() { throw "Abstract method called" }
 
+    // for history
+    describe_short() { throw "Abstract method called" }
+
     // reteurns bool
     is_loaded() { throw "Abstract method called" }
 
@@ -945,6 +948,7 @@ class TextGenerator {
 class HamGen {
     async load_resources() { }
     describe() { return "HamGen"; }
+    describe_short() { return "HamGen"; }
     is_loaded() { return true; }
     next_text() { return {"text": "73 DE SA6NYA"}; }
     text_completed(sentence) { }
@@ -1000,7 +1004,12 @@ class MarkovGenerator extends TextGenerator {
     describe() {
         let self = this;
         let letters = [...Array(this.subset.length).keys()].filter(l => !self._terminates(l));
-        return this.symbolize(letters);
+        return "Koch " + this.symbolize(letters);
+    }
+
+    describe_short() {
+        let count_percent = (this.subset.length - 1) / 40; // -1 = remove space, 40 = length of full
+        return "Koch " + (0 | count_percent * 100) + "%";
     }
 
     get_subset(arr) {
@@ -1198,6 +1207,10 @@ class QuoteLoader extends TextGenerator {
     }
 
     describe() {
+        return "Quote";
+    }
+
+    describe_short() {
         return "Quote";
     }
 
