@@ -93,6 +93,10 @@ input {
     color: var(--fg-2);
 }
 
+.morse-important {
+    color: var(--highlight);
+}
+
 #col-mid {
     background-color: var(--fg-2);
     width: 0.1em;

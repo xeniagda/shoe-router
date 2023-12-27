@@ -889,18 +889,19 @@ function strhash(st) {
 
 const PRESETS = [
     {"id": "quotes", "name": "Quotes",      "type": "quotes"},
+    {"id": "all",    "name": "All chars",   "type": "markov", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q9ZH38B427C1D6X?!"},
     // {"id": "hamgen", "name": "Fake ham",    "type": "hamgen"},
     null,
-    {"id": "k10",    "name":  "Koch 10%",   "type": "markov", "subset": "KMRS"},
-    {"id": "k20",    "name":  "Koch 20%",   "type": "markov", "subset": "KMRSAUPT"},
-    {"id": "k30",    "name":  "Koch 30%",   "type": "markov", "subset": "KMRSAUPTLOWI"},
-    {"id": "k40",    "name":  "Koch 40%",   "type": "markov", "subset": "KMRSAUPTLOWI.NJE"},
-    {"id": "k50",    "name":  "Koch 50%",   "type": "markov", "subset": "KMRSAUPTLOWI.NJEF0YV"},
-    {"id": "k60",    "name":  "Koch 60%",   "type": "markov", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q"},
-    {"id": "k70",    "name":  "Koch 70%",   "type": "markov", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q9ZH3"},
-    {"id": "k80",    "name":  "Koch 80%",   "type": "markov", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q9ZH38B42"},
-    {"id": "k90",    "name":  "Koch 90%",   "type": "markov", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q9ZH38B427C1D"},
-    {"id": "k100",   "name": "Koch 100%",   "type": "markov", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q9ZH38B427C1D6X?!"},
+    {"id": "k10",    "name":  "Koch 10%",   "type": "markov", "important": "KMRS", "subset": "KMRS"},
+    {"id": "k20",    "name":  "Koch 20%",   "type": "markov", "important": "AUPT", "subset": "KMRSAUPT"},
+    {"id": "k30",    "name":  "Koch 30%",   "type": "markov", "important": "LOWI", "subset": "KMRSAUPTLOWI"},
+    {"id": "k40",    "name":  "Koch 40%",   "type": "markov", "important": ".NJE", "subset": "KMRSAUPTLOWI.NJE"},
+    {"id": "k50",    "name":  "Koch 50%",   "type": "markov", "important": "F0YV", "subset": "KMRSAUPTLOWI.NJEF0YV"},
+    {"id": "k60",    "name":  "Koch 60%",   "type": "markov", "important": ",G5Q", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q"},
+    {"id": "k70",    "name":  "Koch 70%",   "type": "markov", "important": "9ZH3", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q9ZH3"},
+    {"id": "k80",    "name":  "Koch 80%",   "type": "markov", "important": "8B42", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q9ZH38B42"},
+    {"id": "k90",    "name":  "Koch 90%",   "type": "markov", "important": "7C1D", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q9ZH38B427C1D"},
+    {"id": "k100",   "name": "Koch 100%",   "type": "markov", "important": "6X?!", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q9ZH38B427C1D6X?!"},
     null,
     {"id": "vow",    "name": "Vowels",      "type": "markov", "subset": "AOEUIY"},
     {"id": "cons",   "name": "Consonants",  "type": "markov", "subset": "PFGCRLDHTNSQJKXBMWVZ"},
@@ -982,13 +983,13 @@ function weighted_pick(arr, noise) {
     return arr.length - 1;
 }
 
-const MINIMUM_MARKOV_LENGTH = 30;
+const MINIMUM_MARKOV_LENGTH = 40;
 class MarkovGenerator extends TextGenerator {
     constructor() {
         super();
         this.min_word_len = 2;
-        this.max_word_len = 5;
-        this.noise = 0.5;
+        this.max_word_len = 6;
+        this.noise = 0.0;
 
         this.symbols = [];
         this.forward = [];
@@ -997,6 +998,7 @@ class MarkovGenerator extends TextGenerator {
 
         // Invariant: must always contain space
         this.subset = []; // contains numbers indexing this.symbols
+        this.important = []; // indexes into this.subset
 
         this.loaded = false;
     }
@@ -1048,6 +1050,9 @@ class MarkovGenerator extends TextGenerator {
             this.subset = this.subset.filter(a => a != idx);
         } else {
             this.subset.push(idx);
+        }
+        if (this.important.indexOf(idx) !== -1 && this.subset.indexOf(idx) === -1) {
+            this.important = this.important.filter(x => x != idx);
         }
     }
 
@@ -1111,23 +1116,29 @@ class MarkovGenerator extends TextGenerator {
 
         let text = [];
 
-        let letters = [...Array(this.subset.length).keys()].filter(l => !self._terminates(l));
+        let letters_left_count = [];
+        for (let i = 0; i < this.subset.length; i++) {
+            let count = 0;
 
-        let letters_left = [...letters];
+            if (this.important.indexOf(i) !== -1)
+                count = 2;
 
-        while (letters_left.length > 0) {
-            let idx = 0 | (Math.random() * letters_left.length);
-            let letter = letters_left[idx];
+            letters_left_count.push(count);
+        }
+
+        while (letters_left_count.reduce((acc, x) => acc || (x > 0), 0)) {
+            let letter = weighted_pick(letters_left_count);
             let w = this._generate_word(letter);
 
-            letters_left = letters_left.filter(l => !w.includes(l));
+            for (let letter of w)
+                letters_left_count[letter] = Math.max(letters_left_count[letter] - 1, 0);
+
             text.push(...w);
             text.push(this.get_subset(this.symbols).indexOf(" "));
         }
 
-        while (text.length < MINIMUM_MARKOV_LENGTH) {
-            let idx = 0 | (Math.random() * letters.length);
-            let letter = letters[idx];
+        while (text.length < MINIMUM_MARKOV_LENGTH + 1) {
+            let idx = 0 | (Math.random() * this.subset.length);
             let w = this._generate_word(idx);
 
             text.push(...w);
@@ -1155,11 +1166,14 @@ class MarkovGenerator extends TextGenerator {
     set_data(data) {
         this.subset = new Array(...data["subset"]).map(x => this.symbols.indexOf(x));
         this.subset.push(this.symbols.indexOf(" "));
+        if (data.hasOwnProperty("important"))
+            this.important = new Array(...data["important"]).map(x => this.subset.indexOf(this.symbols.indexOf(x)));
     }
 
     get_data() {
         let subset = new Array(...this.subset).map(x => this.symbols[x]).filter(x => x != " ").join("");
-        return {"type": "markov", "subset": subset};
+        let important = this.symbolize(this.important);
+        return {"type": "markov", "subset": subset, "important": important};
     }
 
     text_completed(text_obj) {}
@@ -1189,6 +1203,8 @@ class MarkovGenerator extends TextGenerator {
 
             if (self.subset.indexOf(idx) === -1) {
                 el.classList.add("morse-inactive");
+            } else if (self.important.indexOf(self.subset.indexOf(idx)) !== -1) {
+                el.classList.add("morse-important");
             }
 
             el.addEventListener("click", _ => {
