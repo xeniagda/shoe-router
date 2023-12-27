@@ -7,7 +7,7 @@ body {
     --bg-2: #272c33;
     --fg-1: #EAF3E2;
     --fg-2: #596966;
-    --highlight: #7edead;
+    --highlight: #4DE364;
 
     background-color: var(--bg-1);
     color: var(--fg-1);
