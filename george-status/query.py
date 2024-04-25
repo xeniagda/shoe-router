@@ -23,7 +23,7 @@ async def analyze():
     global ANAL
 
     try:
-        async with aiohttp.ClientSession() as sess:
+        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=5)) as sess:
             users = await george_status.read_users(sess)
 
             stati = {}
