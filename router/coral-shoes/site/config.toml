@@ -25,11 +25,6 @@ href = "morse-trainer"
 desc = "interactive morse code trainer, made because i wanted to learn morse :)"
 
 [[internal_links]]
-title = "kijetesantaka.lu"
-href = "https://kijetesantaka.lu"
-desc = "small language model for translating the conlang toki pona from english"
-
-[[internal_links]]
 title = "nojs cookie clicker"
 href = "jsless"
 desc = "simple cookie clicker clone in the browser, interactive despite not using javascript"
