@@ -1,3 +1,5 @@
+external_links = []
+
 [[blogs]]
 identifier = "brainfuck-quine"
 title = "quines, and brainfuck"
