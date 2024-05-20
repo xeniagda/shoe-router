@@ -10,7 +10,7 @@ RUN cargo build --release
 COPY coral-shoes/site /var/site/site
 RUN RUST_LOG=info ./target/release/site /var/site/out
 
-FROM nginx:latest
+FROM nginx:1.26-perl
 
 RUN apt-get update
 
