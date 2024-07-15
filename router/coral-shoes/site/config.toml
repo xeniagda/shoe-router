@@ -6,9 +6,11 @@ title = "quines, and brainfuck"
 tagline = "exploring how quines work, and how to make one"
 written-at = 2023-04-27
 
-[[blogs-wip]]
+[[blogs]]
+identifier = "softdouble"
 title = "softdouble.c"
 tagline = "implementing doubles when all you have is floats"
+written-at = 2023-05-17
 
 [[blogs-wip]]
 title = "nojs cookie clicker"
@@ -29,4 +31,79 @@ title = "nojs cookie clicker"
 href = "jsless"
 desc = "simple cookie clicker clone in the browser, interactive despite not using javascript"
 
+[albums.R5]
+name = "Photo roll #5 — Gothenburg pier, forest imagery and fancy plush photography"
+date = 2023-08-17
+
+photos = [ { photo = "R1-03307-002A",                  alt = "Seal plush on a table on top of a stack of books"}
+         , { photo = "R1-03307-003A",                  alt = "Dark and grainy image of a plush seal on a table with very directional lighting"}
+         , { photo = "R1-03307-004A", size = "Double", alt = "Colorful long-exposure photo of a plush seal on the table"}
+         , { photo = "R1-03307-005A",                  alt = "Colorful long-exposure photo of a plush seal on a bed"}
+         , { photo = "R1-03307-006A",                  alt = "Wooden bird, sitting on a notebook"}
+         , { photo = "R1-03307-009A",                  alt = "Grainy picture of a sunset at a lake, with a skyline on the other side"}
+         , { photo = "R1-03307-010A", size = "Double", alt = "Less grainy picture of a sunset at a lake, with a skyline on the other side"}
+         , { photo = "R1-03307-011A", size = "Double", alt = "Sunset behind a pillar"}
+         , { photo = "R1-03307-025A", size = "Double", alt = "Rachel down the road"}
+         , { photo = "R1-03307-022A",                  alt = "Big rock"}
+         , { photo = "R1-03307-028A", size = "Tall",   alt = "Cool tree that forks in three"}
+         , { photo = "R1-03307-029A",                  alt = "Shroom!"}
+         , { photo = "R1-03307-030A",                  alt = "Rock labeled \"TUPP\" with a Rachel sitting on top of it, holding a polariod"}
+         , { photo = "R1-03307-031A",                  alt = "Rock labeled \"TUPP\" without a Rachel on it"}
+         , { photo = "R1-03307-032A",                  alt = "Tree knot that looks like an eye"}
+         , { photo = "R1-03307-033A",                  alt = "Among us looking ass"}
+         , { photo = "R1-03307-034A",                  alt = "Train station"}
+         ]
+
+[albums.R4]
+name = "Photo roll #4 — Flowers, mostly"
+date = 2023-04-20
+
+photos = [ { photo = "R1-09902-017A", size = "Double", alt = "Photo of a few apartment complices from far away, taken from a roof"}
+         , { photo = "R1-09902-022A",                  alt = "Cherry tree in blossom in front of a blue sky and a brutalistic building"}
+         , { photo = "R1-09902-025A",                  alt = "A restaurant and a number of trees"}
+         , { photo = "R1-09902-026A", size = "Double", alt = "Closeup of a number of hepatica flowers"}
+         , { photo = "R1-09902-036A", size = "Double", alt = "Closeup of a cherry blossom with laterns in the background"}
+         ]
+
+[albums.R2]
+name = "Photo roll #2 — More auction"
+date = 2022-12-06
+
+photos = [ { photo = "R1-07378-0002", size = "Double", alt = "Crowd of people in front of the ETA auction"}
+         , { photo = "R1-07378-0005",                  alt = "Crowd of people in front of the ETA auction, second angle"}
+         , { photo = "R1-07378-0009",                  alt = "The auction bar"}
+         , { photo = "R1-07378-0013",                  alt = "A post-auction dessert, consisting of a base of ris á la Malta, topped with through-hole resistors, pieces of tape and what appears to be various pastries"}
+         , { photo = "R1-07378-0020",                  alt = "Someone pointing a polygrip at a table full of aluminium cans"}
+         , { photo = "R1-07378-0016", size = "Double", alt = "Admist a lot of blurry faces, Börne is eating a cucumber, intensively"}
+         , { photo = "R1-07378-0034",                  alt = "A small lamp pointed upwards is illuminating the wall behind a bookshelf"}
+         ]
+
+[albums.R1]
+name = "Photo roll #1 — Auction"
+date = 2022-12-06
+
+photos = [ { photo = "R1-07379-001A", size = "Double", alt = "Electronics workshop. Centered is a ball-grid-array soldering machine made of anodized aluminium"}
+         , { photo = "R1-07379-004A",                  alt = "Old picture of pre-transition me wearing cat-ears"}
+         , { photo = "R1-07379-005A",                  alt = "Simon, knife in raised hand (holding the blade, not the handle), threatening some friends"}
+         , { photo = "R1-07379-007A", size = "Double", alt = "A large metal pot cooking a vegetable stew"}
+         , { photo = "R1-07379-012A",                  alt = "Auction stage being set up"}
+         , { photo = "R1-07379-014A",                  alt = "Mateusz standing happily with hundreds of cans of soda"}
+         , { photo = "R1-07379-016A",                  alt = "A big carton of \"Lussebullar\" (saffron buns), uncooked and melted together"}
+         , { photo = "R1-07379-020A",                  alt = "An attempt to cook the melted buns"}
+         , { photo = "R1-07379-021A",                  alt = "Pallets full of electronic equipment"}
+         , { photo = "R1-07379-025A",                  alt = "A projected image of Donald Duck on a wall far away. The image is long-exposure and slightly motion-blurred from shaking"}
+         ]
+
+[albums.R0]
+name = "Photo roll #1 — Getting started at ETA"
+date = 2022-11-30
+
+photos = [ { photo = "R1-07245-0013", size = "Double", alt = "Michal in a gas mask"}
+         , { photo = "R1-07245-0026",                  alt = "ETA's radio corner, a lot of ham radio equipment"}
+         , { photo = "R1-07245-0027",                  alt = "ETA's radio corner, with two vector network analyzers instruments in focus"}
+         , { photo = "R1-07245-0032",                  alt = "ETA's meth lab"}
+         , { photo = "R1-07245-0007",                  alt = "Another angle of the iconic coral.shoes footer image, now in brighter light"}
+         , { photo = "R1-07245-0033",                  alt = "A small christmas tree with a circuit of bug-soldered through-hole and DIP components, along with some cables"}
+         , { photo = "R1-07245-0034",                  alt = "An array of old vacuum tubes on a wooden base forms an advent wreath"}
+         ]
 

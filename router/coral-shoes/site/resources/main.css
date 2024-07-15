@@ -33,6 +33,12 @@ main {
     padding-bottom: 15vw;
 }
 
+main.widescreen {
+    padding-left: 3vw;
+    padding-right: 3vw;
+    padding-bottom: 3vw;
+}
+
 h1 {
     text-align: center;
     width: 100%;

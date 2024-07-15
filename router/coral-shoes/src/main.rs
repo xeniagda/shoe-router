@@ -3,6 +3,7 @@ use tracing::{trace, debug, info, warn, error, instrument, Level};
 
 use std::io::Read;
 use std::path::{Path, PathBuf};
+use std::collections::HashMap;
 
 use html_editor::Node;
 
@@ -23,6 +24,7 @@ enum CSResource {
     Resource(String), // Filename in the resources/ folder
     Splash(String), // Filename without .png extension in the splashes/ folder
     SplashFullRes(String), // Identical to Splash, but processed with IdentityProcessor instead of ImageCompressor
+    Photo(String, String), PhotoFullRes(String, String), // album, photo (implied .jpg extension)
 }
 
 impl Resource for CSResource {
@@ -33,6 +35,8 @@ impl Resource for CSResource {
             CSResource::Resource(filename) => format!("resource-{filename}"),
             CSResource::Splash(s) => format!("splash-{s}"),
             CSResource::SplashFullRes(s) => format!("splash-fullres-{s}"),
+            CSResource::Photo(album, photo) => format!("photo-{album}-{photo}"),
+            CSResource::PhotoFullRes(album, photo) => format!("photo-fullres-{album}-{photo}"),
         }
     }
 
@@ -42,7 +46,9 @@ impl Resource for CSResource {
             CSResource::BlogPost { identifier } => vec!["blogs".into(), format!("{identifier}.html")].into_iter().collect(),
             CSResource::Resource(filename) => vec!["resources", &filename].into_iter().collect(),
             CSResource::Splash(s) => vec!["splash".into(), format!("{s}.jpg")].into_iter().collect(),
-            CSResource::SplashFullRes(s) => vec!["splash-fullres".into(), format!("{s}.png")].into_iter().collect(),
+            CSResource::SplashFullRes(s) => vec!["splash".into(), format!("{s}.png")].into_iter().collect(),
+            CSResource::Photo(album, photo) => vec!["photos".into(), format!("{album}-{photo}.jpg")].into_iter().collect(),
+            CSResource::PhotoFullRes(album, photo) => vec!["photos-fullres".into(), format!("{album}-{photo}.jpg")].into_iter().collect(),
         }
     }
 }
@@ -56,6 +62,8 @@ struct CSConfig {
 
     internal_links: Vec<Link>,
     external_links: Vec<Link>,
+
+    albums: HashMap<String, PhotoAlbum>,
 }
 
 impl CSConfig {
@@ -63,6 +71,29 @@ impl CSConfig {
         self.blogs.iter().filter(|x| &x.identifier == ident).next()
     }
 }
+
+#[derive(serde::Deserialize, Debug, Clone)]
+#[serde(deny_unknown_fields)]
+struct Photo {
+    photo: String,
+    alt: String,
+    size: Option<PhotoSize>,
+}
+
+#[derive(serde::Deserialize, Debug, Clone)]
+#[serde(deny_unknown_fields)]
+enum PhotoSize {
+    Double, Triple, Tall,
+}
+
+#[derive(serde::Deserialize, Debug, Clone)]
+#[serde(deny_unknown_fields)]
+struct PhotoAlbum {
+    name: String,
+    date: toml::value::Datetime,
+    photos: Vec<Photo>,
+}
+
 
 #[derive(serde::Deserialize, Debug, Clone)]
 #[serde(deny_unknown_fields)]
@@ -108,6 +139,7 @@ fn handle<'data>(_path: &Path, r: &CSResource, conf: &'data CSConfig) -> Box<dyn
         Box::new(KatexReplacer),
         Box::new(LinkReplacer),
         Box::new(Links),
+        Box::new(Albums),
         Box::new(Shortcodes),
         Box::new(SyntaxHighlighter::default("base16-ocean.dark")),
     ];
@@ -139,12 +171,13 @@ fn handle<'data>(_path: &Path, r: &CSResource, conf: &'data CSConfig) -> Box<dyn
                 data: conf,
             })
         }
-        CSResource::Splash(_) => Box::new(ImageCompressor {
+        CSResource::Splash(_) | CSResource::Photo(_, _) => Box::new(ImageCompressor {
             max_size: [1000, 1000],
             output_quality: 85,
             guess_format: false,
         }),
-        CSResource::SplashFullRes(_) => Box::new(IdentityProcessor),
+        CSResource::SplashFullRes(_) | CSResource::PhotoFullRes(_, _)  => Box::new(IdentityProcessor),
+
         CSResource::Resource(_) => Box::new(IdentityProcessor),
     }
 }
@@ -219,33 +252,44 @@ fn main() -> std::io::Result<()> {
     )?;
 
     // TODO: Merge these somehow
-    context.register_all_files_in_directory(
-        PathBuf::from("splash"),
-        |path| {
-            let filename = path.file_name().and_then(|x| x.to_str())?;
+    for fullres in [false, true] {
+        context.register_all_files_in_directory(
+            PathBuf::from("splash"),
+            |path| {
+                let filename = path.file_name().and_then(|x| x.to_str())?;
 
-            let (name, "png") = filename.rsplit_once('.')? else {
-                return None;
-            };
+                let (name, "png") = filename.rsplit_once('.')? else {
+                    return None;
+                };
 
-            Some(CSResource::Splash(name.to_string()))
-        },
-        false,
-    )?;
+                if fullres {
+                    Some(CSResource::SplashFullRes(name.to_string()))
+                } else {
+                    Some(CSResource::Splash(name.to_string()))
+                }
+            },
+            false,
+        )?;
 
-    context.register_all_files_in_directory(
-        PathBuf::from("splash"),
-        |path| {
-            let filename = path.file_name().and_then(|x| x.to_str())?;
+        context.register_all_files_in_directory(
+            PathBuf::from("photos"),
+            |path| {
+                let filename = path.file_name().and_then(|x| x.to_str())?;
+                let parent = path.parent().and_then(|x| x.file_name()).and_then(|x| x.to_str())?;
 
-            let (name, "png") = filename.rsplit_once('.')? else {
-                return None;
-            };
+                let (name, "jpg" | "JPG") = filename.rsplit_once('.')? else {
+                    return None;
+                };
 
-            Some(CSResource::SplashFullRes(name.to_string()))
-        },
-        false,
-    )?;
+                if fullres {
+                    Some(CSResource::PhotoFullRes(parent.to_string(), name.to_string()))
+                } else {
+                    Some(CSResource::Photo(parent.to_string(), name.to_string()))
+                }
+            },
+            true,
+        )?;
+    };
 
     for (resource, path) in context.all_registered_files() {
         eprintln!("  {} @ {}", resource.identifier(), path.display());
@@ -504,6 +548,137 @@ impl<R: Resource> TreeWalker<R, CSConfig> for Links {
             let mut template = children.clone();
             walk(&mut template, &[Box::new(replacer)], ctx)?;
             nodes.extend(template);
+        }
+
+        Ok(nodes)
+    }
+}
+
+struct Albums;
+
+impl<R: Resource> TreeWalker<R, CSConfig> for Albums {
+    fn describe(&self) -> String {
+        "Albums".to_string()
+    }
+
+    fn matches(&self, tag_name: &str, _attrs: &[(String, String)], _ctx: Context<'_, '_, R, CSConfig>) -> bool {
+        tag_name == "albums"
+    }
+
+    fn replace(&self, _tag_name: &str, _attrs: Vec<(String, String)>, children: Vec<Node>, ctx: Context<'_, '_, R, CSConfig>) -> Result<Vec<Node>, ConfigurafoxError> {
+        let mut albums: Vec<(String, PhotoAlbum)> = ctx.data.albums.clone().into_iter().collect();
+        albums.sort_by_key(|(_id, album)| std::cmp::Reverse(album.date));
+
+        let mut nodes = Vec::new();
+        for (id, album) in albums {
+            let Some(date) = album.date.date else {
+                return Err(ConfigurafoxError::Other(format!("Album {id}'s only defines time, not date")));
+            };
+
+            let date = format!("{year}-{month}-{day}", year=date.year, month=date.month, day=date.day);
+
+            let vars: std::collections::HashMap<String, String> = vec![
+                ("album_id".to_string(), id.clone()),
+                ("album_date".to_string(), date),
+                ("album_name".to_string(), album.name.clone()),
+            ].into_iter().collect();
+
+            let replacer = VariableReplacer(vars);
+            let photos = Photos(id, album);
+
+            let mut template = children.clone();
+            walk(&mut template, &[Box::new(replacer), Box::new(photos)], ctx)?;
+            nodes.extend(template);
+        }
+
+        Ok(nodes)
+    }
+}
+
+struct Photos(String, PhotoAlbum);
+
+impl<R: Resource> TreeWalker<R, CSConfig> for Photos {
+    fn describe(&self) -> String {
+        format!("Photos(id={:?}, album.name={:?})", self.0, self.1)
+    }
+
+    fn matches(&self, tag_name: &str, _attrs: &[(String, String)], _ctx: Context<'_, '_, R, CSConfig>) -> bool {
+        tag_name == "photos"
+    }
+
+    fn replace(&self, _tag_name: &str, _attrs: Vec<(String, String)>, _children: Vec<Node>, ctx: Context<'_, '_, R, CSConfig>) -> Result<Vec<Node>, ConfigurafoxError> {
+        let mut nodes = Vec::new();
+
+        for photo in &self.1.photos {
+            let mut class = "photo".to_string();
+            match photo.size {
+                None => {},
+                Some(PhotoSize::Double) => class.push_str(" size_double"),
+                Some(PhotoSize::Triple) => class.push_str(" size_triple"),
+                Some(PhotoSize::Tall) => class.push_str(" size_tall"),
+            };
+
+            let checkbox_id = format!("cb-{}-{}", self.0, photo.photo);
+
+            let mut photo_node = vec![Node::new_element(
+                "div",
+                vec![("class", &class)],
+                vec![
+                    Node::new_element(
+                        "input",
+                        vec![("type", "checkbox"), ("id", &checkbox_id), ("class", "photo-cb")],
+                        vec![],
+                    ),
+                    Node::new_element(
+                        "label",
+                        vec![("class", "small-hitbox"), ("for", &checkbox_id)],
+                        vec![
+                            Node::new_element(
+                                "img",
+                                vec![("src", &format!("@photo-{}-{}", self.0, photo.photo))],
+                                vec![],
+                            ),
+                        ],
+                    ),
+                    Node::new_element(
+                        "div",
+                        vec![("class", "large-container")],
+                        vec![
+                            Node::new_element(
+                                "div",
+                                vec![("class", "large-container-inner")],
+                                vec![
+                                    Node::new_element(
+                                        "label",
+                                        vec![("class", "large-hitbox"), ("for", &checkbox_id)],
+                                        vec![
+                                            Node::new_element(
+                                                "img",
+                                                vec![("class", "photo-large"), ("src", &format!("@photo-fullres-{}-{}", self.0, photo.photo))],
+                                                vec![],
+                                            ),
+                                        ],
+                                    ),
+                                    Node::new_element(
+                                        "span",
+                                        vec![("class", "photo-alt")],
+                                        vec![Node::Text(photo.alt.clone())],
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
+                    Node::new_element(
+                        "span",
+                        vec![("class", "photo-alt")],
+                        vec![Node::Text(photo.alt.clone())],
+                    ),
+                ],
+            )];
+
+            walk(&mut photo_node, &[Box::new(LinkReplacer)], ctx)?;
+
+            nodes.extend(photo_node)
         }
 
         Ok(nodes)
