@@ -53,6 +53,13 @@
     display: none;
 }
 
+.small-hitbox {
+    cursor: zoom-in;
+}
+.large-hitbox {
+    cursor: zoom-out;
+}
+
 .large-container {
     position: fixed;
     top: 0;
