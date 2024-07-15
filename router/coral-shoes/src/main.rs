@@ -657,6 +657,11 @@ impl<R: Resource> TreeWalker<R, CSConfig> for Photos {
                                                 vec![("class", "photo-large"), ("src", &format!("@photo-fullres-{}-{}", self.0, photo.photo))],
                                                 vec![],
                                             ),
+                                            Node::new_element(
+                                                "span",
+                                                vec![],
+                                                vec![Node::Text("close".to_string())],
+                                            ),
                                         ],
                                     ),
                                     Node::new_element(
