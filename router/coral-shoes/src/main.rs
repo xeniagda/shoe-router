@@ -132,7 +132,8 @@ struct BlogWip {
     tagline: String,
 }
 
-fn handle<'data>(_path: &Path, r: &CSResource, conf: &'data CSConfig) -> Box<dyn ResourceProcessor<CSResource> + 'data> {
+fn handle<'data>(path: &Path, r: &CSResource, conf: &'data CSConfig) -> Box<dyn ResourceProcessor<CSResource> + 'data> {
+    eprintln!("doing {path:?}");
     let mut walkers: Vec<Box<dyn TreeWalker<_, _>>> = vec![
         Box::new(StandardMetaReplacer),
         Box::new(SplashPhotoReplacer),
