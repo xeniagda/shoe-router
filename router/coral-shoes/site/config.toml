@@ -35,10 +35,8 @@ desc = "simple cookie clicker clone in the browser, interactive despite not usin
 name = "Photo roll #5 — Gothenburg pier, forest imagery and fancy plush photography"
 date = 2023-08-17
 
-photos = [ { photo = "R1-03307-002A",                  alt = "Seal plush on a table on top of a stack of books"}
-         , { photo = "R1-03307-003A",                  alt = "Dark and grainy image of a plush seal on a table with very directional lighting"}
+photos = [ { photo = "R1-03307-003A",                  alt = "Dark and grainy image of a plush seal on a table with very directional lighting"}
          , { photo = "R1-03307-004A", size = "Double", alt = "Colorful long-exposure photo of a plush seal on the table"}
-         , { photo = "R1-03307-005A",                  alt = "Colorful long-exposure photo of a plush seal on a bed"}
          , { photo = "R1-03307-006A",                  alt = "Wooden bird, sitting on a notebook"}
          , { photo = "R1-03307-009A",                  alt = "Grainy picture of a sunset at a lake, with a skyline on the other side"}
          , { photo = "R1-03307-010A", size = "Double", alt = "Less grainy picture of a sunset at a lake, with a skyline on the other side"}
@@ -66,7 +64,7 @@ photos = [ { photo = "R1-09902-017A", size = "Double", alt = "Photo of a few apa
          ]
 
 [albums.R2]
-name = "Photo roll #2 — More auction"
+name = "Photo roll #3 — More auction"
 date = 2022-12-06
 
 photos = [ { photo = "R1-07378-0002", size = "Double", alt = "Crowd of people in front of the ETA auction"}
@@ -79,7 +77,7 @@ photos = [ { photo = "R1-07378-0002", size = "Double", alt = "Crowd of people in
          ]
 
 [albums.R1]
-name = "Photo roll #1 — Auction"
+name = "Photo roll #2 — Auction"
 date = 2022-12-06
 
 photos = [ { photo = "R1-07379-001A", size = "Double", alt = "Electronics workshop. Centered is a ball-grid-array soldering machine made of anodized aluminium"}

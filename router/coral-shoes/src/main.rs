@@ -575,7 +575,7 @@ impl<R: Resource> TreeWalker<R, CSConfig> for Albums {
                 return Err(ConfigurafoxError::Other(format!("Album {id}'s only defines time, not date")));
             };
 
-            let date = format!("{year}-{month}-{day}", year=date.year, month=date.month, day=date.day);
+            let date = format!("{year:04}-{month:02}-{day:02}", year=date.year, month=date.month, day=date.day);
 
             let vars: std::collections::HashMap<String, String> = vec![
                 ("album_id".to_string(), id.clone()),
