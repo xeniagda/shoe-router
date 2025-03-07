@@ -6,7 +6,7 @@ title = "quines, and brainfuck"
 tagline = "exploring how quines work, and how to make one"
 written-at = 2023-04-27
 
-[[blogs]]
+[[blogs-wip]]
 identifier = "softdouble"
 title = "softdouble.c"
 tagline = "implementing doubles when all you have is floats"
