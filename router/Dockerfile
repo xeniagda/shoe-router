@@ -1,4 +1,4 @@
-FROM rust:1.78.0 as configurafox
+FROM rust:1.81.0 as configurafox
 RUN cd /var ; cargo new site
 WORKDIR /var/site
 COPY coral-shoes/Cargo.toml /var/site/Cargo.toml
