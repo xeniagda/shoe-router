@@ -58,7 +58,7 @@ function set_mode(new_mode) {
         console.error("Unknown mode: " + new_mode);
     }
 }
-set_mode(localStorage.getItem("mode") || MODE_WORD);
+set_mode(localStorage.getItem("mode") || MODE_SENTENCE);
 MODE_WORD_EL.addEventListener("click", e => set_mode(MODE_WORD));
 MODE_SENTENCE_EL.addEventListener("click", e => set_mode(MODE_SENTENCE));
 
