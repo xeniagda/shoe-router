@@ -903,15 +903,15 @@ const PRESETS = [
     {"id": "k90",    "name":  "Koch 90%",   "type": "markov", "important": "7C1D", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q9ZH38B427C1D"},
     {"id": "k100",   "name": "Koch 100%",   "type": "markov", "important": "6X?!", "subset": "KMRSAUPTLOWI.NJEF0YV,G5Q9ZH38B427C1D6X?!"},
     null,
-    {"id": "vow",    "name": "Vowels",      "type": "markov", "subset": "AOEUIY"},
-    {"id": "cons",   "name": "Consonants",  "type": "markov", "subset": "PFGCRLDHTNSQJKXBMWVZ"},
-    {"id": "nums",   "name": "Numbers",     "type": "markov", "subset": "0123456789"},
-    {"id": "punct",  "name": "Punctuation", "type": "markov", "subset": ",.!?"},
+    {"id": "vow",    "name": "Vowels",      "type": "markov", "important": "", "subset": "AOEUIY"},
+    {"id": "cons",   "name": "Consonants",  "type": "markov", "important": "", "subset": "PFGCRLDHTNSQJKXBMWVZ"},
+    {"id": "nums",   "name": "Numbers",     "type": "markov", "important": "", "subset": "0123456789"},
+    {"id": "punct",  "name": "Punctuation", "type": "markov", "important": "", "subset": ",.!?"},
     null,
-    {"id": "a",      "name": "A's (·–)",    "type": "markov", "subset": "AJLPRW"},
-    {"id": "i",      "name": "I's (··)",    "type": "markov", "subset": "FHISUV"},
-    {"id": "i",      "name": "N's (–·)",    "type": "markov", "subset": "BCDKNXY"},
-    {"id": "i",      "name": "M's (––)",    "type": "markov", "subset": "MOGQZ"},
+    {"id": "a",      "name": "A's (·–)",    "type": "markov", "important": "", "subset": "AJLPRW"},
+    {"id": "i",      "name": "I's (··)",    "type": "markov", "important": "", "subset": "FHISUV"},
+    {"id": "n",      "name": "N's (–·)",    "type": "markov", "important": "", "subset": "BCDKNXY"},
+    {"id": "m",      "name": "M's (––)",    "type": "markov", "important": "", "subset": "MOGQZ"},
 ];
 
 class TextGenerator {
