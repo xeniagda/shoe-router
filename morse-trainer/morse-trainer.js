@@ -493,7 +493,7 @@ class MorseAudio {
     }
 
     set_volume(volume) {
-        this._volume = volume / 100;
+        this._volume = volume / 250;
         if (this.is_on)
             this.on();
     }
