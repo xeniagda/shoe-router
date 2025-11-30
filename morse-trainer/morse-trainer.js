@@ -936,7 +936,8 @@ class TextGenerator {
 
     // Called every "action" with a div below the mode selector
     // Element might contain previous content
-    render_sidebar(sidebar) { throw "Abstract method called" }
+    // Call cb_save when user interacts with the state of the generator such that the parent sentence loader needs to save
+    render_sidebar(sidebar, cb_save) { throw "Abstract method called" }
 
     // Called when preset is loaded or from localStorage
     set_data(data) { throw "Abstract method called" }
@@ -953,7 +954,7 @@ class HamGen {
     is_loaded() { return true; }
     next_text() { return {"text": "73 DE SA6NYA"}; }
     text_completed(sentence) { }
-    render_sidebar(sidebar) {
+    render_sidebar(sidebar, _cb_save) {
         sidebar.innerText = "mjau";
     }
     set_data(data) {}
@@ -997,8 +998,9 @@ class MarkovGenerator extends TextGenerator {
         this.initial = [];
 
         // Invariant: must always contain space
-        this.subset = []; // contains numbers indexing this.symbols
-        this.important = []; // indexes into this.subset
+        // Both contain numbers indexing into this.symbols
+        this.subset = [];
+        this.important = [];
 
         this.loaded = false;
     }
@@ -1041,18 +1043,29 @@ class MarkovGenerator extends TextGenerator {
 
     is_loaded() { return this.is_loaded; }
 
-    toggle(letter) {
+    toggle(letter, is_rightclick) {
         if (!this.symbols.includes(letter))
             return;
 
         let idx = this.symbols.indexOf(letter);
-        if (this.subset.includes(idx)) {
-            this.subset = this.subset.filter(a => a != idx);
+        if (is_rightclick) {
+            // ensure letter is active
+            if (!this.subset.includes(idx)) {
+                this.subset.push(idx);
+            }
+            // toggle important
+            if (this.important.includes(idx)) {
+                this.important = this.important.filter(x => x != idx);
+            } else {
+                this.important.push(idx);
+            }
         } else {
-            this.subset.push(idx);
-        }
-        if (this.important.indexOf(idx) !== -1 && this.subset.indexOf(idx) === -1) {
-            this.important = this.important.filter(x => x != idx);
+            if (this.subset.includes(idx)) {
+                this.subset = this.subset.filter(a => a != idx);
+                this.important = this.important.filter(a => a != idx);
+            } else {
+                this.subset.push(idx);
+            }
         }
     }
 
@@ -1120,7 +1133,7 @@ class MarkovGenerator extends TextGenerator {
         for (let i = 0; i < this.subset.length; i++) {
             let count = 0;
 
-            if (this.important.indexOf(i) !== -1)
+            if (this.important.includes(this.subset[i]))
                 count = 2;
 
             letters_left_count.push(count);
@@ -1167,18 +1180,18 @@ class MarkovGenerator extends TextGenerator {
         this.subset = new Array(...data["subset"]).map(x => this.symbols.indexOf(x));
         this.subset.push(this.symbols.indexOf(" "));
         if (data.hasOwnProperty("important"))
-            this.important = new Array(...data["important"]).map(x => this.subset.indexOf(this.symbols.indexOf(x)));
+            this.important = new Array(...data["important"]).map(x => this.symbols.indexOf(x));
     }
 
     get_data() {
         let subset = new Array(...this.subset).map(x => this.symbols[x]).filter(x => x != " ").join("");
-        let important = this.symbolize(this.important);
+        let important = this.symbolize(this.important.map(x => this.subset.indexOf(x)));
         return {"type": "markov", "subset": subset, "important": important};
     }
 
     text_completed(text_obj) {}
 
-    render_sidebar(sidebar) {
+    render_sidebar(sidebar, cb_save) {
         let table = document.createElement("div");
         table.id = "morse-table";
 
@@ -1203,13 +1216,20 @@ class MarkovGenerator extends TextGenerator {
 
             if (self.subset.indexOf(idx) === -1) {
                 el.classList.add("morse-inactive");
-            } else if (self.important.indexOf(self.subset.indexOf(idx)) !== -1) {
+            } else if (self.important.indexOf(idx) !== -1) {
                 el.classList.add("morse-important");
             }
 
             el.addEventListener("click", _ => {
-                self.toggle(letter);
-                self.render_sidebar(sidebar); // Maybe we should just toggle the class? This seems easier to guarantee to stay in sync
+                self.toggle(letter, false);
+                self.render_sidebar(sidebar, cb_save);
+                cb_save();
+            });
+            el.addEventListener("contextmenu", e => {
+                e.preventDefault();
+                self.toggle(letter, true);
+                self.render_sidebar(sidebar, cb_save);
+                cb_save();
             });
         });
     }
@@ -1295,7 +1315,7 @@ class QuoteLoader extends TextGenerator {
         this._set_completed(hashes);
     }
 
-    render_sidebar(sidebar) {
+    render_sidebar(sidebar, _cb_save) {
         let span = document.createElement("span");
         let n_quotes = this.quotes.length;
         let n_completed = this._get_completed().length;
@@ -1323,7 +1343,6 @@ class QuoteLoader extends TextGenerator {
         fill_morse_table(table, (el, morse_data) => {});
 
         sidebar.replaceChildren(span, table, document.createElement("br"), real);
-
     }
 
     set_data(data) {}
@@ -1468,8 +1487,18 @@ class SentenceLoader {
     }
 
     redraw() {
+        let self = this;
+        function cb_save() {
+            let data = self.current_generator.get_data();
+            localStorage.setItem("sentence-loader-data", JSON.stringify(data));
+
+            self.sentence_up_to_date = false;
+            self.redraw();
+        }
+
         this.assert_generator();
-        this.current_generator.render_sidebar(this.generator_sidebar);
+        this.current_generator.render_sidebar(this.generator_sidebar, cb_save);
+
         if (!this.sentence_up_to_date) {
             this.generator_sidebar.appendChild(document.createElement("br"));
 
